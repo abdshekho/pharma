@@ -1,0 +1,310 @@
+
+Table cities {
+  id           uuid      [pk, default: `uuid_generate_v4()`]
+  name_ar      varchar(100) [not null]
+  name_en      varchar(100)
+  country_code char(3)   [not null, default: 'DAM']
+  is_active    boolean   [not null, default: true]
+  created_at   timestamp [not null, default: `now()`]
+}
+
+// التخصصات الطبية
+// هضمية - قلبية
+Table specializations {
+  id          uuid      [pk, default: `uuid_generate_v4()`]
+  name_ar     varchar(100) [not null]
+  name_en     varchar(100)
+  description text
+  is_active   boolean   [not null, default: true]
+}
+
+//مثال عن التصنيفات
+// أدوية الجهاز الهضمي
+//    ├── أدوية الحموضة
+//    └── أدوية القولون
+
+// أدوية القلب والأوعية
+//    ├── أدوية الضغط
+//    └── أدوية الكوليسترول
+Table categories {
+  id        uuid      [pk, default: `uuid_generate_v4()`]
+  parent_id uuid      [ref: > categories.id, note: 'Self-reference']
+  name_ar   varchar(100) [not null]
+  name_en   varchar(100)
+  icon      varchar(255)
+  is_active boolean   [not null, default: true]
+}
+
+// ===== USERS =====
+
+Table users {
+  id                uuid      [pk, default: `uuid_generate_v4()`]
+  email             varchar(255) [unique, not null]
+  phone             varchar(20)  [unique]
+  password_hash     varchar(255) [not null]
+  role              varchar(20)  [not null, note: 'company | doctor | pharmacist | distributor | admin']
+  status            varchar(20)  [not null, default: 'pending', note: 'pending | active | suspended']
+  full_name         varchar(150)
+  avatar_url        varchar(500)
+  city_id           uuid         [ref: > cities.id]
+  email_verified_at timestamp
+  last_login_at     timestamp
+  created_at        timestamp    [not null, default: `now()`]
+  updated_at        timestamp    [not null, default: `now()`]
+}
+
+Table company_profiles {
+  id                      uuid      [pk, default: `uuid_generate_v4()`]
+  user_id                 uuid      [unique, not null, ref: > users.id]
+  company_name            varchar(200) [not null]
+  commercial_reg_no       varchar(50)  [not null, note:'رقم السجل التجاري']
+  health_ministry_license varchar(50)  [not null,note:'رقم ترخيص وزارة الصحة']
+  logo_url                varchar(500)
+  website                 varchar(500)
+  description             text
+  verified_at             timestamp
+  verified_by             uuid         [ref: > users.id]
+  created_at              timestamp    [not null, default: `now()`]
+}
+
+Table doctor_profiles {
+  id                uuid      [pk, default: `uuid_generate_v4()`]
+  user_id           uuid      [unique, not null, ref: > users.id]
+  license_number    varchar(50)  [unique, not null,note:'رقم الترخيص المهني — فريد']
+  specialization_id uuid         [ref: > specializations.id,note:'تخصص الطبيب — مرتبط بجدول specializations']
+  hospital_name     varchar(200)
+  license_doc_url   varchar(500) [not null,note:'رابط صورة الرخصة المرفوعة']
+  verified_by       uuid         [ref: > users.id,note:'من وافق على الطلب']
+  verified_at       timestamp     [note:'متى تمت الموافقة على الطلب']
+  created_at        timestamp    [not null, default: `now()`]
+}
+
+Table pharmacist_profiles {
+  id                  uuid      [pk, default: `uuid_generate_v4()`]
+  user_id             uuid      [unique, not null, ref: > users.id]
+  pharmacy_license_no varchar(50)  [unique, not null,note:'رقم ترخيص الصيدلية — فريد']
+  pharmacy_name       varchar(200) [not null]
+  commercial_reg_no   varchar(50) [note:'رقم السجل التجاري']
+  address             text         [not null]
+  license_doc_url     varchar(500)
+  verified_at         timestamp
+  verified_by         uuid         [ref: > users.id]
+  created_at          timestamp    [not null, default: `now()`]
+}
+
+Table distributor_profiles {
+  id              uuid      [pk, default: `uuid_generate_v4()`]
+  user_id         uuid      [unique, not null, ref: > users.id]
+  company_name    varchar(200) [not null]
+  license_doc_url varchar(500)
+  verified_at     timestamp
+  verified_by     uuid         [ref: > users.id]
+  created_at      timestamp    [not null, default: `now()`]
+}
+
+Table company_distributors {
+  id             uuid      [pk, default: `uuid_generate_v4()`]
+  company_id     uuid      [not null, ref: > company_profiles.id]
+  distributor_id uuid      [not null, ref: > distributor_profiles.id]
+  city_id        uuid      [not null, ref: > cities.id]
+  status         varchar(20) [not null, default: 'active', note: 'active | inactive']
+  assigned_at    timestamp   [not null, default: `now()`]
+
+  indexes {
+    (company_id, distributor_id, city_id) [unique]
+  }
+}
+
+// ===== PRODUCTS =====
+
+// أشكال الدواء: حبوب، شراب، مرهم، جل، حقن...
+// لح يكونو ENUM 
+
+// المجموعة الدوائية: الدواء بشكل عام بغض النظر عن شكله (الاسم العلمي)
+Table drug_groups {
+  id          uuid         [pk, default: `uuid_generate_v4()`]
+  company_id  uuid         [not null, ref: > company_profiles.id]
+  category_id uuid         [ref: > categories.id]
+  name_ar     varchar(200) [not null, note: 'مثال: أموكسيسيلين']
+  name_en     varchar(200)
+  description text
+  ingredients text         [note: 'المادة الفعّالة — مشتركة بين كل الأشكال']
+  created_at  timestamp    [not null, default: `now()`]
+  updated_at  timestamp    [not null, default: `now()`]
+}
+
+// كل صف = شكل واحد محدد من الدواء
+Table products {
+  id                 uuid          [pk, default: `uuid_generate_v4()`]
+  company_id         uuid          [not null, ref: > company_profiles.id]
+  drug_group_id      uuid          [not null, ref: > drug_groups.id, note: 'المجموعة الدوائية']
+  //dosage_form_id     uuid          [not null, ref: > dosage_forms.id, note: 'شكل الدواء']
+  dosage_form         varchar(50)          [not null, note: 'شكل الدواء:حب ، شراب ، مرهم ، جل']
+  strength           varchar(50)   [note: 'مثال عيار أو تركيز الدواء: 500 mg أو 250mg/5ml']
+  usage_instructions text
+  price              decimal(10,2) [not null, note: 'CHECK price >= 0']
+  unit               varchar(50)   [note: 'علبة | ظرف | زجاجة']
+  status             varchar(20)   [not null, default: 'draft', note: 'draft | active | inactive']
+  image_url          varchar(500)
+  brochure_url       varchar(500)  [note: 'PDF file']
+  created_at         timestamp     [not null, default: `now()`]
+  updated_at         timestamp     [not null, default: `now()`]
+
+  indexes {
+    (drug_group_id, dosage_form, strength) [unique, note: 'نفس الدواء لا يتكرر بنفس الشكل والتركيز و نوع الدواء']
+  }
+}
+
+Table product_target_specializations {
+  id                uuid [pk, default: `uuid_generate_v4()`]
+  drug_group_id     uuid [not null, ref: > drug_groups.id, note: 'مرتبط بالمجموعة لا بشكل معين']
+  specialization_id uuid [not null, ref: > specializations.id]
+
+  indexes {
+    (drug_group_id, specialization_id) [unique]
+  }
+}
+
+// العروض — بدون product_id لأن العرض قد يشمل أكثر من دواء
+Table promotions {
+  id          uuid         [pk, default: `uuid_generate_v4()`]
+  company_id  uuid         [not null, ref: > company_profiles.id]
+  title       varchar(200) [not null]
+  description text
+  starts_at   timestamp    [not null]
+  ends_at     timestamp    [not null]
+  target_type varchar(20)  [not null, default: 'all', note: 'all | doctors | pharmacists']
+  image_url   varchar(500)
+  is_active   boolean      [not null, default: false]
+  created_at  timestamp    [not null, default: `now()`]
+}
+
+// جدول وسيط — كل عرض يمكن أن يشمل أكثر من دواء بخصم مختلف
+Table promotion_products {
+  id               uuid          [pk, default: `uuid_generate_v4()`]
+  promotion_id     uuid          [not null, ref: > promotions.id]
+  product_id       uuid          [not null, ref: > products.id]
+  discount_percent decimal(5,2)  [not null, note: 'CHECK 0-100 — خصم خاص بهذا الدواء في العرض']
+
+  indexes {
+    (promotion_id, product_id) [unique]
+  }
+}
+//تحدد الشركة كم عينة يحق للطبيب أن يطلب شهرياً لكل دواء
+Table sample_quotas {
+  id             uuid [pk, default: `uuid_generate_v4()`]
+  company_id     uuid [not null, ref: > company_profiles.id]
+  product_id     uuid [not null, ref: > products.id]
+  max_per_doctor int  [not null, default: 1,  note: 'الحد الشهري']
+  cooldown_days  int  [not null, default: 30, note: 'أيام الانتظار بين الطلبات']
+  is_active      boolean   [not null, default: true]
+  created_at     timestamp [not null, default: `now()`]
+
+  indexes {
+    (company_id, product_id) [unique]
+  }
+}
+
+// ===== ORDERS =====
+
+Table orders {
+  id               uuid          [pk, default: `uuid_generate_v4()`]
+  order_number     varchar(20)   [unique, not null, note: 'ORD-2025-00001']
+  pharmacist_id    uuid          [not null, ref: > pharmacist_profiles.id]
+  company_id       uuid          [not null, ref: > company_profiles.id]
+  distributor_id   uuid          [ref: > distributor_profiles.id, note: 'Auto-assigned by trigger']
+  status           varchar(20)   [not null, default: 'pending', note: 'pending|approved|in_delivery|delivered|cancelled']
+  total_amount     decimal(10,2) [not null, default: 0]
+  payment_method   varchar(20)   [not null, default: 'cod', note: 'cod | bank_transfer']
+  delivery_address text          [not null]
+  notes            text
+  approved_at      timestamp
+  delivered_at     timestamp
+  created_at       timestamp     [not null, default: `now()`]
+  updated_at       timestamp     [not null, default: `now()`]
+}
+
+Table order_items {
+  id                   uuid          [pk, default: `uuid_generate_v4()`]
+  order_id             uuid          [not null, ref: > orders.id]
+  product_id           uuid          [not null, ref: > products.id]
+  quantity             int           [not null, note: 'CHECK > 0']
+  unit_price           decimal(10,2) [not null, note: 'سعر وقت الطلب']
+  promotion_product_id uuid          [ref: > promotion_products.id, note: 'العرض المطبّق على هذا الدواء']
+  discount_amount      decimal(10,2) [not null, default: 0]
+  subtotal             decimal(10,2) [note: 'Generated: qty * price - discount']
+}
+
+Table sample_requests {
+  id               uuid      [pk, default: `uuid_generate_v4()`]
+  doctor_id        uuid      [not null, ref: > doctor_profiles.id]
+  product_id       uuid      [not null, ref: > products.id]
+  company_id       uuid      [not null, ref: > company_profiles.id]
+  status           varchar(20) [not null, default: 'pending', note: 'pending|approved|rejected|delivered']
+  quantity         int         [not null, default: 1]
+  delivery_address text        [not null]
+  rejection_reason text
+  approved_at      timestamp
+  delivered_at     timestamp
+  created_at       timestamp   [not null, default: `now()`]
+  updated_at       timestamp   [not null, default: `now()`]
+}
+
+//مخزون الموزع
+Table distributor_inventory {
+  id                  uuid [pk, default: `uuid_generate_v4()`]
+  distributor_id      uuid [not null, ref: > distributor_profiles.id]
+  product_id          uuid [not null, ref: > products.id]
+  quantity_available  int  [not null, default: 0, note: 'CHECK >= 0']
+  low_stock_threshold int  [not null, default: 10,note:'الحد الأدنى — لما ينزل عنه يصدر تنبيه']
+  last_updated        timestamp [not null, default: `now()`]
+
+  indexes {
+    (distributor_id, product_id) [unique]
+  }
+}
+
+// ===== COMMUNICATION =====
+
+Table messages {
+  id                 uuid      [pk, default: `uuid_generate_v4()`]
+  sender_id          uuid      [not null, ref: > users.id]
+  receiver_id        uuid      [not null, ref: > users.id]
+  related_product_id uuid      [ref: > products.id]
+  body               text      [not null]
+  attachment_url     varchar(500)
+  read_at            timestamp
+  created_at         timestamp [not null, default: `now()`]
+}
+
+Table notifications {
+  id           uuid      [pk, default: `uuid_generate_v4()`]
+  user_id      uuid      [not null, ref: > users.id]
+  type         varchar(50) [not null, note: 'new_product|order_update|sample_update|new_offer|account_status|low_stock']
+  title        varchar(200) [not null]
+  body         text
+  related_id   uuid         [note: 'Polymorphic reference']
+  related_type varchar(50)  [note: 'order | product | sample ...']
+  read_at      timestamp
+  created_at   timestamp    [not null, default: `now()`]
+}
+
+// ===== AUDIT =====
+
+Table audit_logs {
+  id          uuid      [pk, default: `uuid_generate_v4()`]
+  user_id     uuid      [ref: > users.id]
+  action      varchar(100) [not null, note: 'e.g. order.created, user.verified']
+  entity_type varchar(50)
+  entity_id   uuid
+  old_data    jsonb
+  new_data    jsonb
+  ip_address  varchar(45)
+  user_agent  text
+  created_at  timestamp [not null, default: `now()`]
+}
+
+
+
+//1 عند طلب عينة من سيوصل العينة للطبيب (الموزع نفسه)
+// doctor --> sample_request --> company approve --> assign distributor --> distributor deliver
