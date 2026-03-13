@@ -21,6 +21,5 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "types": ["jest"],
-    "ignoreDeprecations": "6.0"
   }
 }

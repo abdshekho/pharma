@@ -1,15 +1,545 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model City {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  nameAr      String   @map("name_ar") @db.VarChar(100)
+  nameEn      String?  @map("name_en") @db.VarChar(100)
+  countryCode String   @default("DAM") @map("country_code") @db.Char(3)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  users                User[]
+  companyDistributors  CompanyDistributor[]
+  orders               Order[]
+
+  @@map("cities")
+}
+
+model Specialization {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  nameAr      String   @map("name_ar") @db.VarChar(100)
+  nameEn      String?  @map("name_en") @db.VarChar(100)
+  description String?  @db.Text
+  isActive    Boolean  @default(true) @map("is_active")
+
+  doctorProfiles              DoctorProfile[]
+  productTargetSpecializations ProductTargetSpecialization[]
+
+  @@map("specializations")
+}
+
+model Category {
+  id       String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  parentId String?   @map("parent_id") @db.Uuid
+  nameAr   String    @map("name_ar") @db.VarChar(100)
+  nameEn   String?   @map("name_en") @db.VarChar(100)
+  icon     String?   @db.VarChar(255)
+  isActive Boolean   @default(true) @map("is_active")
+
+  parent     Category?   @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children   Category[]  @relation("CategoryHierarchy")
+  drugGroups DrugGroup[]
+
+  @@map("categories")
+}
+
+enum UserRole {
+  company
+  doctor
+  pharmacist
+  distributor
+  admin
+}
+
+enum UserStatus {
+  pending
+  active
+  suspended
+}
+
+model User {
+  id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  email           String    @unique @db.VarChar(255)
+  phone           String?   @unique @db.VarChar(20)
+  passwordHash    String    @map("password_hash") @db.VarChar(255)
+  role            UserRole
+  status          UserStatus @default(pending)
+  fullName        String?   @map("full_name") @db.VarChar(150)
+  avatarUrl       String?   @map("avatar_url") @db.VarChar(500)
+  cityId          String?   @map("city_id") @db.Uuid
+  emailVerifiedAt DateTime? @map("email_verified_at")
+  lastLoginAt     DateTime? @map("last_login_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  city                        City?                 @relation(fields: [cityId], references: [id])
+  companyProfile              CompanyProfile?       @relation("UserCompanyProfile")
+  doctorProfile               DoctorProfile?        @relation("UserDoctorProfile")
+  pharmacistProfile           PharmacistProfile?    @relation("UserPharmacistProfile")
+  distributorProfile          DistributorProfile?   @relation("UserDistributorProfile")
+  verifiedCompanies           CompanyProfile[]      @relation("CompanyVerifier")
+  verifiedDoctors             DoctorProfile[]       @relation("DoctorVerifier")
+  verifiedPharmacists         PharmacistProfile[]   @relation("PharmacistVerifier")
+  verifiedDistributors        DistributorProfile[]  @relation("DistributorVerifier")
+  sentMessages                Message[]             @relation("SentMessages")
+  receivedMessages            Message[]             @relation("ReceivedMessages")
+  notifications               Notification[]
+  auditLogs                   AuditLog[]
+  inventoryMovementsCreated   InventoryMovement[]
+
+  @@map("users")
+}
+
+model CompanyProfile {
+  id                    String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId                String    @unique @map("user_id") @db.Uuid
+  companyName           String    @map("company_name") @db.VarChar(200)
+  commercialRegNo       String    @map("commercial_reg_no") @db.VarChar(50)
+  healthMinistryLicense String    @map("health_ministry_license") @db.VarChar(50)
+  logoUrl               String?   @map("logo_url") @db.VarChar(500)
+  website               String?   @db.VarChar(500)
+  description           String?   @db.Text
+  verifiedAt            DateTime? @map("verified_at")
+  verifiedBy            String?   @map("verified_by") @db.Uuid
+  createdAt             DateTime  @default(now()) @map("created_at")
+
+  user                 User                   @relation("UserCompanyProfile", fields: [userId], references: [id])
+  verifier             User?                  @relation("CompanyVerifier", fields: [verifiedBy], references: [id])
+  companyDistributors  CompanyDistributor[]
+  drugGroups           DrugGroup[]
+  products             Product[]
+  promotions           Promotion[]
+  sampleQuotas         SampleQuota[]
+  orders               Order[]
+  sampleRequests       SampleRequest[]
+
+  @@map("company_profiles")
+}
+
+model DoctorProfile {
+  id                String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId            String    @unique @map("user_id") @db.Uuid
+  licenseNumber     String    @unique @map("license_number") @db.VarChar(50)
+  specializationId  String?   @map("specialization_id") @db.Uuid
+  hospitalName      String?   @map("hospital_name") @db.VarChar(200)
+  licenseDocUrl     String    @map("license_doc_url") @db.VarChar(500)
+  verifiedBy        String?   @map("verified_by") @db.Uuid
+  verifiedAt        DateTime? @map("verified_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  user            User            @relation("UserDoctorProfile", fields: [userId], references: [id])
+  specialization  Specialization? @relation(fields: [specializationId], references: [id])
+  verifier        User?           @relation("DoctorVerifier", fields: [verifiedBy], references: [id])
+  sampleRequests  SampleRequest[]
+
+  @@map("doctor_profiles")
+}
+
+model PharmacistProfile {
+  id                 String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId             String    @unique @map("user_id") @db.Uuid
+  pharmacyLicenseNo  String    @unique @map("pharmacy_license_no") @db.VarChar(50)
+  pharmacyName       String    @map("pharmacy_name") @db.VarChar(200)
+  commercialRegNo    String?   @map("commercial_reg_no") @db.VarChar(50)
+  address            String    @db.Text
+  licenseDocUrl      String?   @map("license_doc_url") @db.VarChar(500)
+  verifiedAt         DateTime? @map("verified_at")
+  verifiedBy         String?   @map("verified_by") @db.Uuid
+  createdAt          DateTime  @default(now()) @map("created_at")
+
+  user      User    @relation("UserPharmacistProfile", fields: [userId], references: [id])
+  verifier  User?   @relation("PharmacistVerifier", fields: [verifiedBy], references: [id])
+  orders    Order[]
+
+  @@map("pharmacist_profiles")
+}
+
+model DistributorProfile {
+  id             String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId         String    @unique @map("user_id") @db.Uuid
+  companyName    String    @map("company_name") @db.VarChar(200)
+  licenseDocUrl  String?   @map("license_doc_url") @db.VarChar(500)
+  verifiedAt     DateTime? @map("verified_at")
+  verifiedBy     String?   @map("verified_by") @db.Uuid
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  user                   User                   @relation("UserDistributorProfile", fields: [userId], references: [id])
+  verifier               User?                  @relation("DistributorVerifier", fields: [verifiedBy], references: [id])
+  companyDistributors    CompanyDistributor[]
+  orders                 Order[]
+  sampleRequests         SampleRequest[]
+  distributorInventory   DistributorInventory[]
+  inventoryMovements     InventoryMovement[]
+
+  @@map("distributor_profiles")
+}
+
+enum CompanyDistributorStatus {
+  active
+  inactive
+}
+
+model CompanyDistributor {
+  id            String                     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  companyId     String                     @map("company_id") @db.Uuid
+  distributorId String                     @map("distributor_id") @db.Uuid
+  cityId        String                     @map("city_id") @db.Uuid
+  status        CompanyDistributorStatus   @default(active)
+  assignedAt    DateTime                   @default(now()) @map("assigned_at")
+
+  company     CompanyProfile     @relation(fields: [companyId], references: [id])
+  distributor DistributorProfile @relation(fields: [distributorId], references: [id])
+  city        City               @relation(fields: [cityId], references: [id])
+
+  @@unique([companyId, distributorId, cityId])
+  @@map("company_distributors")
+}
+
+model DrugGroup {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  companyId   String   @map("company_id") @db.Uuid
+  categoryId  String?  @map("category_id") @db.Uuid
+  nameAr      String   @map("name_ar") @db.VarChar(200)
+  nameEn      String?  @map("name_en") @db.VarChar(200)
+  description String?  @db.Text
+  ingredients String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  company                       CompanyProfile                @relation(fields: [companyId], references: [id])
+  category                      Category?                     @relation(fields: [categoryId], references: [id])
+  products                      Product[]
+  productTargetSpecializations  ProductTargetSpecialization[]
+
+  @@map("drug_groups")
+}
+
+enum DosageForm {
+  tablet
+  capsule
+  syrup
+  injection
+  cream
+  ointment
+  drop
+  inhaler
+}
+
+enum PackUnit {
+  tablet
+  capsule
+  ml
+  syringe
+  vial
+  ampoule
+}
+
+enum PackageType {
+  box
+  bottle
+  strip
+  tube
+  vial_pack
+}
+
+enum ProductStatus {
+  draft
+  active
+  inactive
+}
+
+model Product {
+  id                  String         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  companyId           String         @map("company_id") @db.Uuid
+  drugGroupId         String         @map("drug_group_id") @db.Uuid
+  dosageForm          DosageForm?    @map("dosage_form")
+  packSize            Int?           @map("pack_size")
+  packUnit            PackUnit?      @map("pack_unit")
+  packageType         PackageType?   @map("package_type")
+  barcode             String?        @unique @db.VarChar(100)
+  strength            String?        @db.VarChar(50)
+  usageInstructions   String?        @map("usage_instructions") @db.Text
+  price               Decimal        @db.Decimal(10, 2)
+  status              ProductStatus  @default(draft)
+  imageUrl            String?        @map("image_url") @db.VarChar(500)
+  brochureUrl         String?        @map("brochure_url") @db.VarChar(500)
+  createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime       @updatedAt @map("updated_at")
+
+  company                 CompanyProfile          @relation(fields: [companyId], references: [id])
+  drugGroup               DrugGroup               @relation(fields: [drugGroupId], references: [id])
+  promotionProducts       PromotionProduct[]
+  sampleQuotas            SampleQuota[]
+  orderItems              OrderItem[]
+  sampleRequests          SampleRequest[]
+  distributorInventory    DistributorInventory[]
+  inventoryMovements      InventoryMovement[]
+  messages                Message[]
+
+  @@unique([drugGroupId, dosageForm, strength, packSize])
+  @@map("products")
+}
+
+model ProductTargetSpecialization {
+  id                String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  drugGroupId       String   @map("drug_group_id") @db.Uuid
+  specializationId  String   @map("specialization_id") @db.Uuid
+
+  drugGroup       DrugGroup       @relation(fields: [drugGroupId], references: [id])
+  specialization  Specialization  @relation(fields: [specializationId], references: [id])
+
+  @@unique([drugGroupId, specializationId])
+  @@map("product_target_specializations")
+}
+
+enum PromotionTargetType {
+  all
+  doctors
+  pharmacists
+}
+
+model Promotion {
+  id          String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  companyId   String                @map("company_id") @db.Uuid
+  title       String                @db.VarChar(200)
+  description String?               @db.Text
+  startsAt    DateTime              @map("starts_at")
+  endsAt      DateTime              @map("ends_at")
+  targetType  PromotionTargetType   @default(all) @map("target_type")
+  imageUrl    String?               @map("image_url") @db.VarChar(500)
+  isActive    Boolean               @default(false) @map("is_active")
+  createdAt   DateTime              @default(now()) @map("created_at")
+
+  company            CompanyProfile      @relation(fields: [companyId], references: [id])
+  promotionProducts  PromotionProduct[]
+
+  @@map("promotions")
+}
+
+model PromotionProduct {
+  id              String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  promotionId     String   @map("promotion_id") @db.Uuid
+  productId       String   @map("product_id") @db.Uuid
+  discountPercent Decimal  @map("discount_percent") @db.Decimal(5, 2)
+
+  promotion   Promotion   @relation(fields: [promotionId], references: [id])
+  product     Product     @relation(fields: [productId], references: [id])
+  orderItems  OrderItem[]
+
+  @@unique([promotionId, productId])
+  @@map("promotion_products")
+}
+
+model SampleQuota {
+  id            String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  companyId     String   @map("company_id") @db.Uuid
+  productId     String   @map("product_id") @db.Uuid
+  maxPerDoctor  Int      @default(1) @map("max_per_doctor")
+  cooldownDays  Int      @default(30) @map("cooldown_days")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  company CompanyProfile @relation(fields: [companyId], references: [id])
+  product Product        @relation(fields: [productId], references: [id])
+
+  @@unique([companyId, productId])
+  @@map("sample_quotas")
+}
+
+enum OrderStatus {
+  pending
+  approved
+  in_delivery
+  delivered
+  cancelled
+}
+
+enum PaymentMethod {
+  cod
+  bank_transfer
+}
+
+model Order {
+  id              String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  orderNumber     String        @unique @map("order_number") @db.VarChar(20)
+  pharmacistId    String        @map("pharmacist_id") @db.Uuid
+  companyId       String        @map("company_id") @db.Uuid
+  distributorId   String?       @map("distributor_id") @db.Uuid
+  cityId          String        @map("city_id") @db.Uuid
+  status          OrderStatus   @default(pending)
+  totalAmount     Decimal       @default(0) @map("total_amount") @db.Decimal(10, 2)
+  paymentMethod   PaymentMethod @default(cod) @map("payment_method")
+  deliveryAddress String        @map("delivery_address") @db.Text
+  notes           String?       @db.Text
+  approvedAt      DateTime?     @map("approved_at")
+  deliveredAt     DateTime?     @map("delivered_at")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  pharmacist  PharmacistProfile   @relation(fields: [pharmacistId], references: [id])
+  company     CompanyProfile      @relation(fields: [companyId], references: [id])
+  distributor DistributorProfile? @relation(fields: [distributorId], references: [id])
+  city        City                @relation(fields: [cityId], references: [id])
+  orderItems  OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id                 String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  orderId            String   @map("order_id") @db.Uuid
+  productId          String   @map("product_id") @db.Uuid
+  productName        String?  @map("product_name") @db.VarChar(200)
+  quantity           Int
+  unitPrice          Decimal  @map("unit_price") @db.Decimal(10, 2)
+  promotionProductId String?  @map("promotion_product_id") @db.Uuid
+  discountAmount     Decimal  @default(0) @map("discount_amount") @db.Decimal(10, 2)
+  subtotal           Decimal? @db.Decimal(10, 2)
+
+  order            Order             @relation(fields: [orderId], references: [id])
+  product          Product           @relation(fields: [productId], references: [id])
+  promotionProduct PromotionProduct? @relation(fields: [promotionProductId], references: [id])
+
+  @@map("order_items")
+}
+
+enum SampleRequestStatus {
+  pending
+  approved
+  rejected
+  delivered
+}
+
+model SampleRequest {
+  id              String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  doctorId        String              @map("doctor_id") @db.Uuid
+  productId       String              @map("product_id") @db.Uuid
+  companyId       String              @map("company_id") @db.Uuid
+  distributorId   String?             @map("distributor_id") @db.Uuid
+  status          SampleRequestStatus @default(pending)
+  quantity        Int                 @default(1)
+  deliveryAddress String              @map("delivery_address") @db.Text
+  rejectionReason String?             @map("rejection_reason") @db.Text
+  approvedAt      DateTime?           @map("approved_at")
+  deliveredAt     DateTime?           @map("delivered_at")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  doctor      DoctorProfile       @relation(fields: [doctorId], references: [id])
+  product     Product             @relation(fields: [productId], references: [id])
+  company     CompanyProfile      @relation(fields: [companyId], references: [id])
+  distributor DistributorProfile? @relation(fields: [distributorId], references: [id])
+
+  @@map("sample_requests")
+}
+
+model DistributorInventory {
+  id                 String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  distributorId      String   @map("distributor_id") @db.Uuid
+  productId          String   @map("product_id") @db.Uuid
+  quantityAvailable  Int      @default(0) @map("quantity_available")
+  lowStockThreshold  Int      @default(10) @map("low_stock_threshold")
+  lastUpdated        DateTime @default(now()) @map("last_updated")
+
+  distributor DistributorProfile @relation(fields: [distributorId], references: [id])
+  product     Product            @relation(fields: [productId], references: [id])
+
+  @@unique([distributorId, productId])
+  @@map("distributor_inventory")
+}
+
+enum InventoryMovementType {
+  in
+  out
+  adjustment
+}
+
+model InventoryMovement {
+  id            String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  distributorId String?               @map("distributor_id") @db.Uuid
+  productId     String?               @map("product_id") @db.Uuid
+  type          InventoryMovementType
+  quantity      Int?
+  referenceId   String?               @map("reference_id") @db.Uuid
+  createdBy     String?               @map("created_by") @db.Uuid
+  createdAt     DateTime?             @default(now()) @map("created_at")
+
+  distributor DistributorProfile? @relation(fields: [distributorId], references: [id])
+  product     Product?            @relation(fields: [productId], references: [id])
+  creator     User?               @relation(fields: [createdBy], references: [id])
+
+  @@map("inventory_movements")
+}
+
+model Message {
+  id               String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  conversationId   String?   @map("conversation_id") @db.Uuid
+  parentMessageId  String?   @map("parent_message_id") @db.Uuid
+  senderId         String    @map("sender_id") @db.Uuid
+  receiverId       String    @map("receiver_id") @db.Uuid
+  relatedProductId String?   @map("related_product_id") @db.Uuid
+  body             String    @db.Text
+  attachmentUrl    String?   @map("attachment_url") @db.VarChar(500)
+  readAt           DateTime? @map("read_at")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  sender         User      @relation("SentMessages", fields: [senderId], references: [id])
+  receiver       User      @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  relatedProduct Product?  @relation(fields: [relatedProductId], references: [id])
+  parentMessage  Message?  @relation("MessageReplies", fields: [parentMessageId], references: [id])
+  replies        Message[] @relation("MessageReplies")
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@map("messages")
+}
+
+enum NotificationRelatedType {
+  order
+  product
+  sample_request
+  promotion
+  user
+}
+
+model Notification {
+  id          String                   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId      String                   @map("user_id") @db.Uuid
+  type        String                   @db.VarChar(50)
+  title       String                   @db.VarChar(200)
+  body        String?                  @db.Text
+  relatedId   String?                  @map("related_id") @db.Uuid
+  relatedType NotificationRelatedType? @map("related_type")
+  readAt      DateTime?                @map("read_at")
+  createdAt   DateTime                 @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, readAt])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId     String?   @map("user_id") @db.Uuid
+  action     String    @db.VarChar(100)
+  entityType String?   @map("entity_type") @db.VarChar(50)
+  entityId   String?   @map("entity_id") @db.Uuid
+  oldData    Json?     @map("old_data")
+  newData    Json?     @map("new_data")
+  ipAddress  String?   @map("ip_address") @db.VarChar(45)
+  userAgent  String?   @map("user_agent") @db.Text
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
 }

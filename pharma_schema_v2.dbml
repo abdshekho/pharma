@@ -133,17 +133,52 @@ Table drug_groups {
   updated_at  timestamp    [not null, default: `now()`]
 }
 
+Enum dosage_forms {
+  tablet
+  capsule
+  syrup
+  injection
+  cream
+  ointment
+  drop
+  inhaler
+}
+
+Enum pack_units {
+  tablet
+  capsule
+  ml
+  syringe
+  vial
+  ampoule
+}
+
+Enum package_types {
+  box
+  bottle
+  strip
+  tube
+  vial_pack
+}
+//dosage_form   → شكل الدواء
+//pack_size     → عدد الوحدات (20 tablet - 100 ml)
+//pack_unit     → نوع الوحدة  (ml - tablet)
+//package_type  → نوع العبوة  (علبة - زجاجة)
+
 // كل صف = شكل واحد محدد من الدواء
 Table products {
   id                 uuid          [pk, default: `uuid_generate_v4()`]
   company_id         uuid          [not null, ref: > company_profiles.id]
   drug_group_id      uuid          [not null, ref: > drug_groups.id, note: 'المجموعة الدوائية']
   //dosage_form_id     uuid          [not null, ref: > dosage_forms.id, note: 'شكل الدواء']
-  dosage_form         varchar(50)          [not null, note: 'شكل الدواء:حب ، شراب ، مرهم ، جل']
+  dosage_form        dosage_forms
+  pack_size int
+  pack_unit pack_units [note: 'علبة | ظرف | زجاجة']
+  package_type package_types
+  barcode varchar(100) [unique]
   strength           varchar(50)   [note: 'مثال عيار أو تركيز الدواء: 500 mg أو 250mg/5ml']
   usage_instructions text
   price              decimal(10,2) [not null, note: 'CHECK price >= 0']
-  unit               varchar(50)   [note: 'علبة | ظرف | زجاجة']
   status             varchar(20)   [not null, default: 'draft', note: 'draft | active | inactive']
   image_url          varchar(500)
   brochure_url       varchar(500)  [note: 'PDF file']
@@ -151,10 +186,11 @@ Table products {
   updated_at         timestamp     [not null, default: `now()`]
 
   indexes {
-    (drug_group_id, dosage_form, strength) [unique, note: 'نفس الدواء لا يتكرر بنفس الشكل والتركيز و نوع الدواء']
+    (drug_group_id, dosage_form, strength, pack_size) [unique, note: 'نفس الدواء لا يتكرر بنفس الشكل والتركيز و نوع الدواء']
   }
 }
 
+// يحدد أي تخصصات طبية يستهدفها هذا الدواء
 Table product_target_specializations {
   id                uuid [pk, default: `uuid_generate_v4()`]
   drug_group_id     uuid [not null, ref: > drug_groups.id, note: 'مرتبط بالمجموعة لا بشكل معين']
@@ -213,6 +249,7 @@ Table orders {
   pharmacist_id    uuid          [not null, ref: > pharmacist_profiles.id]
   company_id       uuid          [not null, ref: > company_profiles.id]
   distributor_id   uuid          [ref: > distributor_profiles.id, note: 'Auto-assigned by trigger']
+  city_id uuid [not null, ref: > cities.id]
   status           varchar(20)   [not null, default: 'pending', note: 'pending|approved|in_delivery|delivered|cancelled']
   total_amount     decimal(10,2) [not null, default: 0]
   payment_method   varchar(20)   [not null, default: 'cod', note: 'cod | bank_transfer']
@@ -228,6 +265,7 @@ Table order_items {
   id                   uuid          [pk, default: `uuid_generate_v4()`]
   order_id             uuid          [not null, ref: > orders.id]
   product_id           uuid          [not null, ref: > products.id]
+  product_name varchar(200)
   quantity             int           [not null, note: 'CHECK > 0']
   unit_price           decimal(10,2) [not null, note: 'سعر وقت الطلب']
   promotion_product_id uuid          [ref: > promotion_products.id, note: 'العرض المطبّق على هذا الدواء']
@@ -240,6 +278,7 @@ Table sample_requests {
   doctor_id        uuid      [not null, ref: > doctor_profiles.id]
   product_id       uuid      [not null, ref: > products.id]
   company_id       uuid      [not null, ref: > company_profiles.id]
+  distributor_id uuid [ref: > distributor_profiles.id]
   status           varchar(20) [not null, default: 'pending', note: 'pending|approved|rejected|delivered']
   quantity         int         [not null, default: 1]
   delivery_address text        [not null]
@@ -250,7 +289,7 @@ Table sample_requests {
   updated_at       timestamp   [not null, default: `now()`]
 }
 
-//مخزون الموزع
+//المخزون الحالي لكل موزع
 Table distributor_inventory {
   id                  uuid [pk, default: `uuid_generate_v4()`]
   distributor_id      uuid [not null, ref: > distributor_profiles.id]
@@ -264,10 +303,29 @@ Table distributor_inventory {
   }
 }
 
+Enum inventory_movement_types {
+  in // الداخلات(عندما تعطي الشركة الموزع منتجات)
+  out //عينة لطبيب أو باع لصيدلية 
+  adjustment //تصحيح جرد
+}
+
+Table inventory_movements {
+  id uuid [pk]
+  distributor_id uuid [ref: > distributor_profiles.id]
+  product_id uuid [ref: > products.id]
+  type inventory_movement_types
+  quantity int
+  reference_id uuid
+  created_by uuid [ref: > users.id]
+  created_at timestamp
+}
+
 // ===== COMMUNICATION =====
 
 Table messages {
   id                 uuid      [pk, default: `uuid_generate_v4()`]
+  conversation_id uuid // لتجميع الرسائل بمحادثة واحدة
+  parent_message_id uuid [ref: > messages.id] // للردود
   sender_id          uuid      [not null, ref: > users.id]
   receiver_id        uuid      [not null, ref: > users.id]
   related_product_id uuid      [ref: > products.id]
@@ -275,6 +333,14 @@ Table messages {
   attachment_url     varchar(500)
   read_at            timestamp
   created_at         timestamp [not null, default: `now()`]
+  indexes { (conversation_id) (sender_id) (receiver_id)  }
+}
+Enum notification_related_types {
+  order
+  product
+  sample_request
+  promotion
+  user
 }
 
 Table notifications {
@@ -284,9 +350,10 @@ Table notifications {
   title        varchar(200) [not null]
   body         text
   related_id   uuid         [note: 'Polymorphic reference']
-  related_type varchar(50)  [note: 'order | product | sample ...']
+  related_type notification_related_types
   read_at      timestamp
   created_at   timestamp    [not null, default: `now()`]
+  indexes { (user_id, read_at) }
 }
 
 // ===== AUDIT =====
@@ -306,5 +373,4 @@ Table audit_logs {
 
 
 
-//1 عند طلب عينة من سيوصل العينة للطبيب (الموزع نفسه)
 // doctor --> sample_request --> company approve --> assign distributor --> distributor deliver
