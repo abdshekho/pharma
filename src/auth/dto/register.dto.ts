@@ -4,18 +4,18 @@ import { Transform } from 'class-transformer';
 
 export class RegisterDto {
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsString()
   @MinLength(6)
-  password: string;
+  password!: string;
 
   @IsEnum(UserRole)
-  role: UserRole;
+  role!: UserRole;
 
   @IsString()
   @IsNotEmpty()
-  fullName: string;
+  fullName!: string;
 
   @IsString()
   @IsOptional()
