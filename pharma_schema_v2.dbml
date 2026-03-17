@@ -74,8 +74,8 @@ Table doctor_profiles {
   specialization_id uuid         [ref: > specializations.id,note:'تخصص الطبيب — مرتبط بجدول specializations']
   hospital_name     varchar(200)
   license_doc_url   varchar(500) [not null,note:'رابط صورة الرخصة المرفوعة']
-  verified_by       uuid         [ref: > users.id,note:'من وافق على الطلب']
-  verified_at       timestamp     [note:'متى تمت الموافقة على الطلب']
+  verified_at       timestamp    [note: 'متى تمت الموافقة']
+  verified_by       uuid         [ref: > users.id, note: 'من وافق على الطلب']
   created_at        timestamp    [not null, default: `now()`]
 }
 

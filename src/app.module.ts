@@ -5,6 +5,10 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { CompanyProfileModule } from './profiles/company/company-profile.module';
+import { DoctorProfileModule } from './profiles/doctor/doctor-profile.module';
+import { PharmacistProfileModule } from './profiles/pharmacist/pharmacist-profile.module';
+import { DistributorProfileModule } from './profiles/distributor/distributor-profile.module';
 
 @Module({
   imports: [
@@ -12,6 +16,10 @@ import { PrismaModule } from './prisma/prisma.module';
     PrismaModule,
     AuthModule,
     UsersModule,
+    CompanyProfileModule,
+    DoctorProfileModule,
+    PharmacistProfileModule,
+    DistributorProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

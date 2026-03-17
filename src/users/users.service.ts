@@ -1,9 +1,9 @@
-import { Injectable, NotFoundException, ConflictException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { UserRole } from '@prisma/client';
+import { UserRole, UserStatus } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -67,6 +67,30 @@ export class UsersService {
     }
   }
 
+  async verifyUser(userId: string, adminId: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    if (user.status === UserStatus.active) throw new BadRequestException('User is already verified');
+    if (user.role === UserRole.admin) throw new ForbiddenException('Cannot verify an admin account');
+
+    const verifiedAt = new Date();
+    const verifiedBy = adminId;
+
+    const profileMap: Record<string, () => Promise<any>> = {
+      company:     () => this.prisma.companyProfile.update({ where: { userId }, data: { verifiedAt, verifiedBy } }),
+      doctor:      () => this.prisma.doctorProfile.update({ where: { userId }, data: { verifiedAt, verifiedBy } }),
+      pharmacist:  () => this.prisma.pharmacistProfile.update({ where: { userId }, data: { verifiedAt, verifiedBy } }),
+      distributor: () => this.prisma.distributorProfile.update({ where: { userId }, data: { verifiedAt, verifiedBy } }),
+    };
+
+    await profileMap[user.role]();
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { status: UserStatus.active },
+      select: { id: true, email: true, role: true, status: true,fullName: true },
+    });
+  }
+
   async remove(id: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) {
@@ -74,7 +98,7 @@ export class UsersService {
     }
 
     if (user.role === UserRole.admin) {
-      throw new ForbiddenException('Cannot delete an admin account');
+      throw new ForbiddenException('Cannot delete an admin account, shuld be delete it from DB');
     }
 
     await this.prisma.user.delete({ where: { id } });

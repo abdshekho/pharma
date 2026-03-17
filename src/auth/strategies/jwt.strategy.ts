@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -25,9 +25,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       },
     });
 
-    if (!user || user.status !== 'active') {
-      throw new UnauthorizedException();
-    }
+    // if (!user || user.status !== 'active') {
+    //   throw new UnauthorizedException();
+    // }
 
     return user;
   }

@@ -1,0 +1,1249 @@
+{
+  "info": {
+    "_postman_id": "147f39b8-cad5-44db-900a-f05b01abf133",
+    "name": "pharma project",
+    "description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Scripts\" tab**\n\nAdding tests to your requests can help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/fa30ea0a-373d-4545-a668-e7b283cca343/aW1hZ2UucG5n\" alt=\"\" height=\"1530\" width=\"2162\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n    \n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "25845278"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "Get my profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "profile"
+              ]
+            },
+            "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+          },
+          "response": [
+            {
+              "name": "Get my profile",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/auth/profile",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "profile"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "136"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"88-waGuEquVKBKEOrgeXL9Sc5JUMK8\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 13 Mar 2026 14:33:08 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"8317bb1f-1d48-4568-8708-8c710c753917\",\n    \"email\": \"comany@example.com\",\n    \"role\": \"company\",\n    \"status\": \"active\",\n    \"fullName\": \"شركة ما\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// التحقق من نجاح الطلب أولاً",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    // extract jsonData from response body and store it in a variable.",
+                  "    var jsonData = pm.response.json();",
+                  "",
+                  "    //set variable",
+                  "    pm.environment.set(\"access_token\", jsonData.access_token);",
+                  "    pm.environment.set(\"user_id\", jsonData.user.id);",
+                  "    pm.environment.set(\"fullName\", jsonData.user.fullName);",
+                  "    pm.environment.set(\"user_role\", jsonData.user.role);",
+                  "    pm.environment.set(\"status\", jsonData.user.status);",
+                  "    pm.environment.set(\"email\", jsonData.user.email);",
+                  "    pm.environment.set(\"phone\", jsonData.user.phone);",
+                  "",
+                  "    // log the token to the console for verification.",
+                  "    console.log(\"✅ Token saved:\", jsonData.access_token);",
+                  "} else {",
+                  "    console.log(\"❌ Request failed with status:\", pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"Admin@example.com\",\r\n  \"password\": \"password123\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+          },
+          "response": [
+            {
+              "name": "success 201",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"email\": \"doctor@example.com\",\r\n  \"password\": \"password123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "418"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1a2-0gifn/c3Lt7ffmyev6B+br206Ck\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 13 Mar 2026 13:52:03 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRvY3RvckBleGFtcGxlLmNvbSIsInN1YiI6IjFmM2QwMjVmLWFlM2QtNGVjYi05YjhiLTk2NGUxNmFiZjNmNiIsInJvbGUiOiJkb2N0b3IiLCJpYXQiOjE3NzM0MDk5MjMsImV4cCI6MTc3MzQ5NjMyM30.YIfbSaY-ibssgDLubmb_zxb0C5LBmU5Wk4O3NZ7brlE\",\n    \"user\": {\n        \"id\": \"1f3d025f-ae3d-4ecb-9b8b-964e16abf3f6\",\n        \"email\": \"doctor@example.com\",\n        \"role\": \"doctor\",\n        \"status\": \"active\",\n        \"fullName\": \"د. أحمد محمد\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// التحقق من نجاح الطلب أولاً",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    // extract jsonData from response body and store it in a variable.",
+                  "    var jsonData = pm.response.json();",
+                  "",
+                  "    //set variable",
+                  "    pm.environment.set(\"access_token\", jsonData.access_token);",
+                  "    pm.environment.set(\"user_id\", jsonData.user.id);",
+                  "    pm.environment.set(\"fullName\", jsonData.user.fullName);",
+                  "    pm.environment.set(\"user_role\", jsonData.user.role);",
+                  "    pm.environment.set(\"email\", jsonData.user.email);",
+                  "    pm.environment.set(\"status\", jsonData.user.status);",
+                  "    pm.environment.set(\"phone\", jsonData.user.phone);",
+                  "    // log the token to the console for verification.",
+                  "    console.log(\"✅ Token saved:\", jsonData.access_token);",
+                  "} else {",
+                  "    console.log(\"❌ Request failed with status:\", pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"company@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"company\",\n  \"fullName\": \"test company\",\n  \"phone\": \"+963123456780\",\n  \"cityId\": \"edd9340a-4ecb-4873-9b53-a0b790555419\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+          },
+          "response": [
+            {
+              "name": "Create User",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"comany@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"company\",\n  \"fullName\": \"شركة ما\",\n  \"phone\": \"+963123456781\",\n  \"cityId\": \"edd9340a-4ecb-4873-9b53-a0b790555419\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/register",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "413"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"19d-xnU/FT8kPYllkyO7Ahxtx/m+TDc\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 13 Mar 2026 14:26:11 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNvbWFueUBleGFtcGxlLmNvbSIsInN1YiI6IjgzMTdiYjFmLTFkNDgtNDU2OC04NzA4LThjNzEwYzc1MzkxNyIsInJvbGUiOiJjb21wYW55IiwiaWF0IjoxNzczNDExOTcxLCJleHAiOjE3NzM0OTgzNzF9.SpF6d7jMc2z_023zGPc0Aog9CYNta_ZvYni1VMcv8_Q\",\n    \"user\": {\n        \"id\": \"8317bb1f-1d48-4568-8708-8c710c753917\",\n        \"email\": \"comany@example.com\",\n        \"role\": \"company\",\n        \"status\": \"pending\",\n        \"fullName\": \"شركة ما\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Create Admin (Admin only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// التحقق من نجاح الطلب أولاً",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    // extract jsonData from response body and store it in a variable.",
+                  "    var jsonData = pm.response.json();",
+                  "",
+                  "    //set variable",
+                  "    pm.environment.set(\"access_token\", jsonData.access_token);",
+                  "    pm.environment.set(\"user_id\", jsonData.user.id);",
+                  "    pm.environment.set(\"fullName\", jsonData.user.fullName);",
+                  "    pm.environment.set(\"user_role\", jsonData.user.role);",
+                  "    pm.environment.set(\"email\", jsonData.user.email);",
+                  "    pm.environment.set(\"status\", jsonData.user.status);",
+                  "    pm.environment.set(\"phone\", jsonData.user.phone);",
+                  "    // log the token to the console for verification.",
+                  "    console.log(\"✅ Token saved:\", jsonData.access_token);",
+                  "} else {",
+                  "    console.log(\"❌ Request failed with status:\", pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"Admin2@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"admin\",\n  \"fullName\": \"super Admin\",\n  \"phone\": \"+9631234567812\",\n  \"cityId\": \"edd9340a-4ecb-4873-9b53-a0b790555419\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register-admin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "register-admin"
+              ]
+            },
+            "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+          },
+          "response": [
+            {
+              "name": "Create Admin",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"Admin2@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"admin\",\n  \"fullName\": \"super Admin\",\n  \"phone\": \"+963123456780\",\n  \"cityId\": \"edd9340a-4ecb-4873-9b53-a0b790555419\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/auth/register-admin",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register-admin"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "407"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"197-VzhS82Wmod6lK+4pLKFGgPmaxRI\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 14 Mar 2026 16:31:47 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkFkbWluMkBleGFtcGxlLmNvbSIsInN1YiI6ImVlNmVmMTU1LWI5ZjAtNDliMC1hNzk3LTFlYzc4MDAwMTQ2MCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3MzUwNTkwNywiZXhwIjoxNzczNTkyMzA3fQ.vyhd-YoWycSlnlBeZmrDzdEDQ4JWYRAgDz5VGg87bVE\",\n    \"user\": {\n        \"id\": \"ee6ef155-b9f0-49b0-a797-1ec780001460\",\n        \"email\": \"Admin2@example.com\",\n        \"role\": \"admin\",\n        \"status\": \"pending\",\n        \"fullName\": \"super Admin\"\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "profiles/company",
+      "item": [
+        {
+          "name": "Create Company Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"شركة الدواء\",\n  \"commercialRegNo\": \"CR-12345\",\n  \"healthMinistryLicense\": \"HML-67890\",\n  \"website\": \"https://pharma.com\",\n  \"description\": \"شركة أدوية متخصصة\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/profiles/company", "host": ["{{base_url}}"], "path": ["profiles", "company"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Company Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/company/me", "host": ["{{base_url}}"], "path": ["profiles", "company", "me"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Company Profiles (Admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/company", "host": ["{{base_url}}"], "path": ["profiles", "company"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Company Profile by ID (Admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/company/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "company", "{{profile_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Company Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"شركة الدواء المحدثة\",\n  \"website\": \"https://pharma-updated.com\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/profiles/company/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "company", "{{profile_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Company Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/company/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "company", "{{profile_id}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "profiles/doctor",
+      "item": [
+        {
+          "name": "Create Doctor Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"licenseNumber\": \"LIC-12345\",\n  \"hospitalName\": \"مشفى الشفاء\",\n  \"licenseDocUrl\": \"https://docs.example.com/license.pdf\",\n  \"specializationId\": null\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/profiles/doctor", "host": ["{{base_url}}"], "path": ["profiles", "doctor"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Doctor Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/doctor/me", "host": ["{{base_url}}"], "path": ["profiles", "doctor", "me"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Doctor Profiles (Admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/doctor", "host": ["{{base_url}}"], "path": ["profiles", "doctor"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Doctor Profile by ID (Admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/doctor/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "doctor", "{{profile_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Doctor Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hospitalName\": \"مشفى النور\",\n  \"licenseDocUrl\": \"https://docs.example.com/new-license.pdf\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/profiles/doctor/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "doctor", "{{profile_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Doctor Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/doctor/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "doctor", "{{profile_id}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "profiles/pharmacist",
+      "item": [
+        {
+          "name": "Create Pharmacist Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pharmacyLicenseNo\": \"PH-12345\",\n  \"pharmacyName\": \"صيدلية الشفاء\",\n  \"address\": \"دمشق - شارع الثورة\",\n  \"commercialRegNo\": \"CR-99999\",\n  \"licenseDocUrl\": \"https://docs.example.com/ph-license.pdf\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/profiles/pharmacist", "host": ["{{base_url}}"], "path": ["profiles", "pharmacist"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Pharmacist Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/pharmacist/me", "host": ["{{base_url}}"], "path": ["profiles", "pharmacist", "me"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Pharmacist Profiles (Admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/pharmacist", "host": ["{{base_url}}"], "path": ["profiles", "pharmacist"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Pharmacist Profile by ID (Admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/pharmacist/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "pharmacist", "{{profile_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Pharmacist Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pharmacyName\": \"صيدلية النور\",\n  \"address\": \"دمشق - شارع بغداد\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/profiles/pharmacist/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "pharmacist", "{{profile_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Pharmacist Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/pharmacist/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "pharmacist", "{{profile_id}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "profiles/distributor",
+      "item": [
+        {
+          "name": "Create Distributor Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"شركة التوزيع الطبي\",\n  \"licenseDocUrl\": \"https://docs.example.com/dist-license.pdf\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/profiles/distributor", "host": ["{{base_url}}"], "path": ["profiles", "distributor"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Distributor Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/distributor/me", "host": ["{{base_url}}"], "path": ["profiles", "distributor", "me"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Distributor Profiles (Admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/distributor", "host": ["{{base_url}}"], "path": ["profiles", "distributor"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Distributor Profile by ID (Admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/distributor/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "distributor", "{{profile_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Distributor Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyName\": \"شركة التوزيع المحدثة\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/profiles/distributor/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "distributor", "{{profile_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Distributor Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/distributor/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "distributor", "{{profile_id}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "get me",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successful POST request\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "me"
+              ]
+            },
+            "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+          },
+          "response": [
+            {
+              "name": "get me",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/me",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "212"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"d4-Jq1x7JGypKKGEn2rauaoSU0BSVs\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 14 Mar 2026 16:33:40 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"ee6ef155-b9f0-49b0-a797-1ec780001460\",\n    \"email\": \"Admin2@example.com\",\n    \"role\": \"admin\",\n    \"status\": \"active\",\n    \"fullName\": \"super Admin\",\n    \"phone\": \"+963123456780\",\n    \"avatarUrl\": null,\n    \"createdAt\": \"2026-03-14T16:31:47.155Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// التحقق من نجاح الطلب أولاً",
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "    // extract jsonData from response body and store it in a variable.",
+                  "    var jsonData = pm.response.json();",
+                  "",
+                  "    //set variable",
+                  "    pm.environment.set(\"user_id\", jsonData.id);",
+                  "    pm.environment.set(\"fullName\", jsonData.fullName);",
+                  "    pm.environment.set(\"user_role\", jsonData.role);",
+                  "    pm.environment.set(\"email\", jsonData.email);",
+                  "    pm.environment.set(\"phone\", jsonData.phone);",
+                  "",
+                  "    // log the token to the console for verification.",
+                  "    console.log(\"✅ Response received successfully with status:\", pm.response.code);",
+                  "} else {",
+                  "    console.log(\"❌ Request failed with status:\", pm.response.code);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"comany8@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/{{user_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{user_id}}"
+              ]
+            },
+            "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+          },
+          "response": [
+            {
+              "name": "Update user",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}",
+                    "type": "text",
+                    "disabled": true
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"comany4@example.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/{{user_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "{{user_id}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "216"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"d8-G7pum1Y9yBqbWu9csyK5ON1QnuU\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 13 Mar 2026 15:35:46 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"8317bb1f-1d48-4568-8708-8c710c753917\",\n    \"email\": \"comany4@example.com\",\n    \"role\": \"company\",\n    \"status\": \"active\",\n    \"fullName\": \"some company\",\n    \"phone\": \"+963123456781\",\n    \"avatarUrl\": null,\n    \"updatedAt\": \"2026-03-13T15:35:46.589Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete User (Admin only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successful DELETE request\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 202, 204]);",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/8317bb1f-1d48-4568-8708-8c710c753917",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "8317bb1f-1d48-4568-8708-8c710c753917"
+              ]
+            },
+            "description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
+          },
+          "response": [
+            {
+              "name": "Delete User (Admin only)",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/users/8317bb1f-1d48-4568-8708-8c710c753917",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "users",
+                    "8317bb1f-1d48-4568-8708-8c710c753917"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "39"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"27-27o4zzUjhHNmthTJyia4gBCjpos\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 14 Mar 2026 17:08:55 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"message\": \"User deleted successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "id",
+      "value": "1"
+    },
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "profile_id",
+      "value": ""
+    }
+  ]
+}

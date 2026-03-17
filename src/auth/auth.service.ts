@@ -93,9 +93,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    if (user.status !== 'active') {
-      throw new UnauthorizedException('Account is not active');
-    }
+    // if (user.status !== 'active') {
+    //   throw new UnauthorizedException('Account is not active');
+    // }
 
     await this.prisma.user.update({
       where: { id: user.id },
