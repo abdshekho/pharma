@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "147f39b8-cad5-44db-900a-f05b01abf133",
+    "_postman_id": "6fc487fc-d853-4e5e-82c4-fdd3eb74e7dc",
     "name": "pharma project",
     "description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Scripts\" tab**\n\nAdding tests to your requests can help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/fa30ea0a-373d-4545-a668-e7b283cca343/aW1hZ2UucG5n\" alt=\"\" height=\"1530\" width=\"2162\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n    \n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -73,7 +73,7 @@
               },
               "status": "OK",
               "code": 200,
-              "_postman_previewlanguage": null,
+              "_postman_previewlanguage": "Text",
               "header": [
                 {
                   "key": "X-Powered-By",
@@ -198,7 +198,7 @@
               },
               "status": "Created",
               "code": 201,
-              "_postman_previewlanguage": null,
+              "_postman_previewlanguage": "Text",
               "header": [
                 {
                   "key": "X-Powered-By",
@@ -328,7 +328,7 @@
               },
               "status": "Created",
               "code": 201,
-              "_postman_previewlanguage": null,
+              "_postman_previewlanguage": "Text",
               "header": [
                 {
                   "key": "X-Powered-By",
@@ -464,7 +464,7 @@
               },
               "status": "Created",
               "code": 201,
-              "_postman_previewlanguage": null,
+              "_postman_previewlanguage": "Text",
               "header": [
                 {
                   "key": "X-Powered-By",
@@ -507,306 +507,6 @@
       ]
     },
     {
-      "name": "profiles/company",
-      "item": [
-        {
-          "name": "Create Company Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"companyName\": \"شركة الدواء\",\n  \"commercialRegNo\": \"CR-12345\",\n  \"healthMinistryLicense\": \"HML-67890\",\n  \"website\": \"https://pharma.com\",\n  \"description\": \"شركة أدوية متخصصة\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": { "raw": "{{base_url}}/profiles/company", "host": ["{{base_url}}"], "path": ["profiles", "company"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get My Company Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/company/me", "host": ["{{base_url}}"], "path": ["profiles", "company", "me"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get All Company Profiles (Admin)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/company", "host": ["{{base_url}}"], "path": ["profiles", "company"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Company Profile by ID (Admin)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/company/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "company", "{{profile_id}}"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Update Company Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"companyName\": \"شركة الدواء المحدثة\",\n  \"website\": \"https://pharma-updated.com\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": { "raw": "{{base_url}}/profiles/company/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "company", "{{profile_id}}"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Company Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "DELETE",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/company/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "company", "{{profile_id}}"] }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "profiles/doctor",
-      "item": [
-        {
-          "name": "Create Doctor Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"licenseNumber\": \"LIC-12345\",\n  \"hospitalName\": \"مشفى الشفاء\",\n  \"licenseDocUrl\": \"https://docs.example.com/license.pdf\",\n  \"specializationId\": null\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": { "raw": "{{base_url}}/profiles/doctor", "host": ["{{base_url}}"], "path": ["profiles", "doctor"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get My Doctor Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/doctor/me", "host": ["{{base_url}}"], "path": ["profiles", "doctor", "me"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get All Doctor Profiles (Admin)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/doctor", "host": ["{{base_url}}"], "path": ["profiles", "doctor"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Doctor Profile by ID (Admin)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/doctor/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "doctor", "{{profile_id}}"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Update Doctor Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"hospitalName\": \"مشفى النور\",\n  \"licenseDocUrl\": \"https://docs.example.com/new-license.pdf\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": { "raw": "{{base_url}}/profiles/doctor/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "doctor", "{{profile_id}}"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Doctor Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "DELETE",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/doctor/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "doctor", "{{profile_id}}"] }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "profiles/pharmacist",
-      "item": [
-        {
-          "name": "Create Pharmacist Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"pharmacyLicenseNo\": \"PH-12345\",\n  \"pharmacyName\": \"صيدلية الشفاء\",\n  \"address\": \"دمشق - شارع الثورة\",\n  \"commercialRegNo\": \"CR-99999\",\n  \"licenseDocUrl\": \"https://docs.example.com/ph-license.pdf\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": { "raw": "{{base_url}}/profiles/pharmacist", "host": ["{{base_url}}"], "path": ["profiles", "pharmacist"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get My Pharmacist Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/pharmacist/me", "host": ["{{base_url}}"], "path": ["profiles", "pharmacist", "me"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get All Pharmacist Profiles (Admin)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/pharmacist", "host": ["{{base_url}}"], "path": ["profiles", "pharmacist"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Pharmacist Profile by ID (Admin)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/pharmacist/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "pharmacist", "{{profile_id}}"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Update Pharmacist Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"pharmacyName\": \"صيدلية النور\",\n  \"address\": \"دمشق - شارع بغداد\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": { "raw": "{{base_url}}/profiles/pharmacist/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "pharmacist", "{{profile_id}}"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Pharmacist Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "DELETE",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/pharmacist/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "pharmacist", "{{profile_id}}"] }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "profiles/distributor",
-      "item": [
-        {
-          "name": "Create Distributor Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"companyName\": \"شركة التوزيع الطبي\",\n  \"licenseDocUrl\": \"https://docs.example.com/dist-license.pdf\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": { "raw": "{{base_url}}/profiles/distributor", "host": ["{{base_url}}"], "path": ["profiles", "distributor"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get My Distributor Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/distributor/me", "host": ["{{base_url}}"], "path": ["profiles", "distributor", "me"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get All Distributor Profiles (Admin)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/distributor", "host": ["{{base_url}}"], "path": ["profiles", "distributor"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Distributor Profile by ID (Admin)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/distributor/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "distributor", "{{profile_id}}"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Update Distributor Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"companyName\": \"شركة التوزيع المحدثة\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": { "raw": "{{base_url}}/profiles/distributor/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "distributor", "{{profile_id}}"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Distributor Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "DELETE",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/distributor/{{profile_id}}", "host": ["{{base_url}}"], "path": ["profiles", "distributor", "{{profile_id}}"] }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
       "name": "users",
       "item": [
         {
@@ -836,15 +536,6 @@
                 "type": "text"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
             "url": {
               "raw": "{{base_url}}/users/me",
               "host": [
@@ -869,15 +560,6 @@
                     "type": "text"
                   }
                 ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
                 "url": {
                   "raw": "{{base_url}}/users/me",
                   "host": [
@@ -891,7 +573,7 @@
               },
               "status": "OK",
               "code": 200,
-              "_postman_previewlanguage": null,
+              "_postman_previewlanguage": "Text",
               "header": [
                 {
                   "key": "X-Powered-By",
@@ -1049,7 +731,7 @@
               },
               "status": "OK",
               "code": 200,
-              "_postman_previewlanguage": null,
+              "_postman_previewlanguage": "Text",
               "header": [
                 {
                   "key": "X-Powered-By",
@@ -1088,6 +770,39 @@
               "body": "{\n    \"id\": \"8317bb1f-1d48-4568-8708-8c710c753917\",\n    \"email\": \"comany4@example.com\",\n    \"role\": \"company\",\n    \"status\": \"active\",\n    \"fullName\": \"some company\",\n    \"phone\": \"+963123456781\",\n    \"avatarUrl\": null,\n    \"updatedAt\": \"2026-03-13T15:35:46.589Z\"\n}"
             }
           ]
+        },
+        {
+          "name": "verify user (Admin only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/users/1f3d025f-ae3d-4ecb-9b8b-964e16abf3f6/verify",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "1f3d025f-ae3d-4ecb-9b8b-964e16abf3f6",
+                "verify"
+              ]
+            }
+          },
+          "response": []
         },
         {
           "name": "Delete User (Admin only)",
@@ -1169,7 +884,7 @@
               },
               "status": "OK",
               "code": 200,
-              "_postman_previewlanguage": null,
+              "_postman_previewlanguage": "Text",
               "header": [
                 {
                   "key": "X-Powered-By",
@@ -1206,6 +921,848 @@
               ],
               "cookie": [],
               "body": "{\n    \"message\": \"User deleted successfully\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Profiles",
+      "item": [
+        {
+          "name": "profiles/company",
+          "item": [
+            {
+              "name": "Create Company Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"companyName\": \"شركة الدواء\",\n  \"commercialRegNo\": \"CR-12345\",\n  \"healthMinistryLicense\": \"HML-67890\",\n  \"website\": \"https://pharma.com\",\n  \"description\": \"شركة أدوية متخصصة\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/profiles/company",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "company"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Company Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/company/me",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "company",
+                    "me"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Company Profiles (Admin)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/company",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "company"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Get All Company Profiles (Admin)",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/profiles/company",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "profiles",
+                        "company"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "551"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"227-auEPgaSyuho89djESKlDfFKitAw\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 16 Mar 2026 21:51:59 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "[\n    {\n        \"id\": \"3293e899-88da-4e5e-951b-0b70aace9724\",\n        \"userId\": \"fafa9bb3-4312-45a0-aeae-691888dd3c7a\",\n        \"companyName\": \"شركة الدواء\",\n        \"commercialRegNo\": \"CR-12345\",\n        \"healthMinistryLicense\": \"HML-67890\",\n        \"logoUrl\": null,\n        \"website\": \"https://pharma.com\",\n        \"description\": \"شركة أدوية متخصصة\",\n        \"verifiedAt\": \"2026-03-16T21:29:31.399Z\",\n        \"verifiedBy\": \"2a808c54-d4ec-4703-84df-6983453fbca8\",\n        \"createdAt\": \"2026-03-16T00:07:41.182Z\",\n        \"user\": {\n            \"id\": \"fafa9bb3-4312-45a0-aeae-691888dd3c7a\",\n            \"email\": \"company@example.com\",\n            \"fullName\": \"test company\",\n            \"status\": \"active\"\n        }\n    }\n]"
+                }
+              ]
+            },
+            {
+              "name": "Get Company Profile by ID (Admin)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/company/{{profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "company",
+                    "{{profile_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Company Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"companyName\": \"شركة الدواء المحدثة\",\n  \"website\": \"https://pharma-updated.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/profiles/company/{{profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "company",
+                    "{{profile_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Company Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/company/{{profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "company",
+                    "{{profile_id}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "profiles/doctor",
+          "item": [
+            {
+              "name": "Create Doctor Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"licenseNumber\": \"LIC-12345\",\n  \"hospitalName\": \"مشفى الشفاء\",\n  \"licenseDocUrl\": \"https://docs.example.com/license.pdf\",\n  \"specializationId\": null\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/profiles/doctor",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "doctor"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Doctor Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/doctor/me",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "doctor",
+                    "me"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Doctor Profiles (Admin)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/doctor",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "doctor"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Doctor Profile by ID (Admin)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/doctor/{{profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "doctor",
+                    "{{profile_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Doctor Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"hospitalName\": \"مشفى النور\",\n  \"licenseDocUrl\": \"https://docs.example.com/new-license.pdf\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/profiles/doctor/{{profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "doctor",
+                    "{{profile_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Doctor Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/doctor/{{profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "doctor",
+                    "{{profile_id}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "profiles/pharmacist",
+          "item": [
+            {
+              "name": "Create Pharmacist Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"pharmacyLicenseNo\": \"PH-12345\",\n  \"pharmacyName\": \"صيدلية الشفاء\",\n  \"address\": \"دمشق - شارع الثورة\",\n  \"commercialRegNo\": \"CR-99999\",\n  \"licenseDocUrl\": \"https://docs.example.com/ph-license.pdf\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/profiles/pharmacist",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "pharmacist"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Pharmacist Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/pharmacist/me",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "pharmacist",
+                    "me"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Pharmacist Profiles (Admin)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/pharmacist",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "pharmacist"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Pharmacist Profile by ID (Admin)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/pharmacist/{{profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "pharmacist",
+                    "{{profile_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Pharmacist Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"pharmacyName\": \"صيدلية النور\",\n  \"address\": \"دمشق - شارع بغداد\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/profiles/pharmacist/{{profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "pharmacist",
+                    "{{profile_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Pharmacist Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/pharmacist/{{profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "pharmacist",
+                    "{{profile_id}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "profiles/distributor",
+          "item": [
+            {
+              "name": "Create Distributor Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"companyName\": \"شركة التوزيع الطبي\",\n  \"licenseDocUrl\": \"https://docs.example.com/dist-license.pdf\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/profiles/distributor",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "distributor"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Distributor Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/distributor/me",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "distributor",
+                    "me"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Distributor Profiles (Admin)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/distributor",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "distributor"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Distributor Profile by ID (Admin)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/distributor/{{profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "distributor",
+                    "{{profile_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Distributor Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"companyName\": \"شركة التوزيع المحدثة\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/profiles/distributor/{{profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "distributor",
+                    "{{profile_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Distributor Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/distributor/{{profile_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "distributor",
+                    "{{profile_id}}"
+                  ]
+                }
+              },
+              "response": []
             }
           ]
         }

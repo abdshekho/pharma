@@ -9,6 +9,7 @@ import { CompanyProfileModule } from './profiles/company/company-profile.module'
 import { DoctorProfileModule } from './profiles/doctor/doctor-profile.module';
 import { PharmacistProfileModule } from './profiles/pharmacist/pharmacist-profile.module';
 import { DistributorProfileModule } from './profiles/distributor/distributor-profile.module';
+import { CitiesModule } from './cities/cities.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { DistributorProfileModule } from './profiles/distributor/distributor-pro
     DoctorProfileModule,
     PharmacistProfileModule,
     DistributorProfileModule,
+    CitiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
