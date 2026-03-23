@@ -1767,6 +1767,756 @@
           ]
         }
       ]
+    },
+    {
+      "name": "cities",
+      "item": [
+        {
+          "name": "Get all cities",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/cities?isActive=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cities"
+              ],
+              "query": [
+                {
+                  "key": "isActive",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Get all cities",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/cities",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "cities"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "319"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"13f-nlmPc/uB0/J/RSeiYJRmJAOJXiI\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 19 Mar 2026 13:30:33 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "[\n    {\n        \"id\": \"17129ff1-c241-4aba-b2cf-e8af813371c7\",\n        \"nameAr\": \"حمص\",\n        \"nameEn\": \"Homs\",\n        \"countryCode\": \"HMS\",\n        \"isActive\": false,\n        \"createdAt\": \"2026-03-19T13:17:22.780Z\"\n    },\n    {\n        \"id\": \"edd9340a-4ecb-4873-9b53-a0b790555419\",\n        \"nameAr\": \"دمشق\",\n        \"nameEn\": \"Damascuse\",\n        \"countryCode\": \"132\",\n        \"isActive\": true,\n        \"createdAt\": \"2026-03-13T16:39:12.000Z\"\n    }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Get city by id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/cities/edd9340a-4ecb-4873-9b53-a0b790555419",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cities",
+                "edd9340a-4ecb-4873-9b53-a0b790555419"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Get city by id",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/cities/edd9340a-4ecb-4873-9b53-a0b790555419",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "cities",
+                    "edd9340a-4ecb-4873-9b53-a0b790555419"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "161"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"a1-aAWJjRwI5reW/MSCd10gOHlUovU\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 19 Mar 2026 13:30:54 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"edd9340a-4ecb-4873-9b53-a0b790555419\",\n    \"nameAr\": \"دمشق\",\n    \"nameEn\": \"Damascuse\",\n    \"countryCode\": \"132\",\n    \"isActive\": true,\n    \"createdAt\": \"2026-03-13T16:39:12.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "create city",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nameEn\":\"Homs\",\r\n    \"nameAr\":\"حمص\",\r\n    \"countryCode\":\"HMS\",\r\n    \"isActive\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/cities",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cities"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "create city",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nameEn\":\"Homs\",\r\n    \"nameAr\":\"حمص\",\r\n    \"countryCode\":\"HMS\",\r\n    \"isActive\": true\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/cities",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "cities"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "154"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"9a-Fz4N3TWePbOryHI2wx1B9lhi3g4\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 19 Mar 2026 13:17:24 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"17129ff1-c241-4aba-b2cf-e8af813371c7\",\n    \"nameAr\": \"حمص\",\n    \"nameEn\": \"Homs\",\n    \"countryCode\": \"HMS\",\n    \"isActive\": true,\n    \"createdAt\": \"2026-03-19T13:17:22.780Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "update city",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"isActive\": false\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/cities/17129ff1-c241-4aba-b2cf-e8af813371c7",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cities",
+                "17129ff1-c241-4aba-b2cf-e8af813371c7"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "update city",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"isActive\": false\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/cities/17129ff1-c241-4aba-b2cf-e8af813371c7",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "cities",
+                    "17129ff1-c241-4aba-b2cf-e8af813371c7"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "155"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"9b-rTa4WBhXiZ8+zw29Hhy+8K+W7Fw\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Thu, 19 Mar 2026 13:20:31 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"17129ff1-c241-4aba-b2cf-e8af813371c7\",\n    \"nameAr\": \"حمص\",\n    \"nameEn\": \"Homs\",\n    \"countryCode\": \"HMS\",\n    \"isActive\": false,\n    \"createdAt\": \"2026-03-19T13:17:22.780Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "categories",
+      "item": [
+        {
+          "name": "Get all categories",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/categories?isActive=true&fields=id,nameAr,nameEn,icon",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ],
+              "query": [
+                {
+                  "key": "isActive",
+                  "value": "true"
+                },
+                {
+                  "key": "fields",
+                  "value": "id,nameAr,nameEn,icon"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get category by id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categories/29d86842-dc67-46a9-bc8b-609a4c638c4a?fields=id,nameAr,children",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "29d86842-dc67-46a9-bc8b-609a4c638c4a"
+              ],
+              "query": [
+                {
+                  "key": "fields",
+                  "value": "id,nameAr,children"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create category",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nameEn\":\"en sub subcategory\",\r\n    \"parentId\": \"63d21265-ecf2-4f10-a21d-aa73f536bbd2\",\r\n    \"nameAr\":\"شحوم ثلاثية\",\r\n    \"icon\":\"HMS\",\r\n    \"isActive\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update category",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"icon\":\"HMS2\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/categories/cd149601-cc5f-41e3-b18f-16b537b615d7",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "cd149601-cc5f-41e3-b18f-16b537b615d7"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete category (Admin only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/categories/55dc08e8-5608-4ddb-aa20-793796fd8676",
+              "host": ["{{base_url}}"],
+              "path": ["categories", "55dc08e8-5608-4ddb-aa20-793796fd8676"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "drug-groups",
+      "item": [
+        {
+          "name": "Get all drug groups",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/drug-groups?fields=id,nameAr,nameEn,description,categories,products",
+              "host": ["{{base_url}}"],
+              "path": ["drug-groups"],
+              "query": [
+                { "key": "fields", "value": "id,nameAr,nameEn,description,categories,products" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get drug group by id",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/drug-groups/{{drug_group_id}}?fields=id,nameAr,categories,products",
+              "host": ["{{base_url}}"],
+              "path": ["drug-groups", "{{drug_group_id}}"],
+              "query": [
+                { "key": "fields", "value": "id,nameAr,categories,products" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create drug group (Admin only)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameAr\": \"\u0623\u0645\u0648\u0643\u0633\u064a\u0633\u064a\u0644\u064a\u0646\",\n  \"nameEn\": \"Amoxicillin\",\n  \"description\": \"\u0645\u0636\u0627\u062f \u062d\u064a\u0648\u064a \u0648\u0627\u0633\u0639 \u0627\u0644\u0637\u064a\u0641\",\n  \"isActive\": true,\n  \"categoryIds\": []\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/drug-groups",
+              "host": ["{{base_url}}"],
+              "path": ["drug-groups"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update drug group (Admin only)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"\u0648\u0635\u0641 \u0645\u062d\u062f\u062b\",\n  \"categoryIds\": []\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/drug-groups/{{drug_group_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["drug-groups", "{{drug_group_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete drug group (Admin only)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/drug-groups/{{drug_group_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["drug-groups", "{{drug_group_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "products",
+      "item": [
+        {
+          "name": "Get all products",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products?fields=id,nameAr,nameEn,price,status,dosageForm,strength,drugGroups",
+              "host": ["{{base_url}}"],
+              "path": ["products"],
+              "query": [
+                { "key": "fields", "value": "id,nameAr,nameEn,price,status,dosageForm,strength,drugGroups" },
+                { "key": "companyId", "value": "", "disabled": true }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get product by id",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/{{product_id}}?fields=id,nameAr,price,status,drugGroups",
+              "host": ["{{base_url}}"],
+              "path": ["products", "{{product_id}}"],
+              "query": [
+                { "key": "fields", "value": "id,nameAr,price,status,drugGroups" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create product (Company only)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameAr\": \"\u0623\u0645\u0648\u0643\u0633\u064a\u0644 500\",\n  \"nameEn\": \"Amoxil 500\",\n  \"dosageForm\": \"capsule\",\n  \"strength\": \"500mg\",\n  \"packSize\": 20,\n  \"packUnit\": \"capsule\",\n  \"packageType\": \"box\",\n  \"price\": \"5.50\",\n  \"drugGroupIds\": []\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": ["{{base_url}}"],
+              "path": ["products"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update product (Company only)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": \"6.00\",\n  \"status\": \"active\",\n  \"drugGroupIds\": []\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/products/{{product_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["products", "{{product_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete product (Company only)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/{{product_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["products", "{{product_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "event": [
@@ -1800,6 +2550,14 @@
     },
     {
       "key": "profile_id",
+      "value": ""
+    },
+    {
+      "key": "drug_group_id",
+      "value": ""
+    },
+    {
+      "key": "product_id",
       "value": ""
     }
   ]

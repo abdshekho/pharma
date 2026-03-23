@@ -22,12 +22,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         role: true,
         status: true,
         fullName: true,
+        companyProfile: { select: { id: true } },
       },
     });
-
-    // if (!user || user.status !== 'active') {
-    //   throw new UnauthorizedException();
-    // }
 
     return user;
   }

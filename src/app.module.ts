@@ -12,6 +12,9 @@ import { DistributorProfileModule } from './profiles/distributor/distributor-pro
 import { CitiesModule } from './cities/cities.module';
 import { CategoriesModule } from './categories/categories.module';
 
+import { DrugGroupsModule } from './drug-groups/drug-groups.module';
+import { ProductsModule } from './products/products.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -24,6 +27,8 @@ import { CategoriesModule } from './categories/categories.module';
     DistributorProfileModule,
     CitiesModule,
     CategoriesModule,
+    DrugGroupsModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

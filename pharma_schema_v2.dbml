@@ -120,17 +120,26 @@ Table company_distributors {
 // أشكال الدواء: حبوب، شراب، مرهم، جل، حقن...
 // لح يكونو ENUM 
 
-// المجموعة الدوائية: الدواء بشكل عام بغض النظر عن شكله (الاسم العلمي)
+// المجموعة الدوائية: المادة الفعالة العامة (يديرها admin فقط)
+// مثال: Amoxicillin — بغض النظر عن الشركة أو الشكل
 Table drug_groups {
   id          uuid         [pk, default: `uuid_generate_v4()`]
-  company_id  uuid         [not null, ref: > company_profiles.id]
-  category_id uuid         [ref: > categories.id]
-  name_ar     varchar(200) [not null, note: 'مثال: أموكسيسيلين']
+  name_ar     varchar(200) [not null, unique, note: 'مثال: أموكسيسيلين']
   name_en     varchar(200)
   description text
-  ingredients text         [note: 'المادة الفعّالة — مشتركة بين كل الأشكال']
+  is_active   boolean      [not null, default: true]
   created_at  timestamp    [not null, default: `now()`]
   updated_at  timestamp    [not null, default: `now()`]
+}
+
+// many-to-many: drug_group <-> category
+Table drug_group_categories {
+  drug_group_id uuid [not null, ref: > drug_groups.id]
+  category_id   uuid [not null, ref: > categories.id]
+
+  indexes {
+    (drug_group_id, category_id) [pk]
+  }
 }
 
 Enum dosage_forms {
@@ -165,17 +174,18 @@ Enum package_types {
 //pack_unit     → نوع الوحدة  (ml - tablet)
 //package_type  → نوع العبوة  (علبة - زجاجة)
 
-// كل صف = شكل واحد محدد من الدواء
+// كل صف = منتج فعلي تابع لشركة معينة
+// الشركة تربط منتجها بمادة فعالة واحدة أو أكثر عبر product_drug_groups
 Table products {
   id                 uuid          [pk, default: `uuid_generate_v4()`]
   company_id         uuid          [not null, ref: > company_profiles.id]
-  drug_group_id      uuid          [not null, ref: > drug_groups.id, note: 'المجموعة الدوائية']
-  //dosage_form_id     uuid          [not null, ref: > dosage_forms.id, note: 'شكل الدواء']
+  name_ar            varchar(200)  [not null]
+  name_en            varchar(200)
   dosage_form        dosage_forms
-  pack_size int
-  pack_unit pack_units [note: 'علبة | ظرف | زجاجة']
-  package_type package_types
-  barcode varchar(100) [unique]
+  pack_size          int
+  pack_unit          pack_units    [note: 'علبة | ظرف | زجاجة']
+  package_type       package_types
+  barcode            varchar(100)  [unique]
   strength           varchar(50)   [note: 'مثال عيار أو تركيز الدواء: 500 mg أو 250mg/5ml']
   usage_instructions text
   price              decimal(10,2) [not null, note: 'CHECK price >= 0']
@@ -184,16 +194,22 @@ Table products {
   brochure_url       varchar(500)  [note: 'PDF file']
   created_at         timestamp     [not null, default: `now()`]
   updated_at         timestamp     [not null, default: `now()`]
+}
+
+// many-to-many: product <-> drug_group
+Table product_drug_groups {
+  product_id    uuid [not null, ref: > products.id]
+  drug_group_id uuid [not null, ref: > drug_groups.id]
 
   indexes {
-    (drug_group_id, dosage_form, strength, pack_size) [unique, note: 'نفس الدواء لا يتكرر بنفس الشكل والتركيز و نوع الدواء']
+    (product_id, drug_group_id) [pk]
   }
 }
 
 // يحدد أي تخصصات طبية يستهدفها هذا الدواء
 Table product_target_specializations {
   id                uuid [pk, default: `uuid_generate_v4()`]
-  drug_group_id     uuid [not null, ref: > drug_groups.id, note: 'مرتبط بالمجموعة لا بشكل معين']
+  drug_group_id     uuid [not null, ref: > drug_groups.id]
   specialization_id uuid [not null, ref: > specializations.id]
 
   indexes {

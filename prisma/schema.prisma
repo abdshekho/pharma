@@ -45,7 +45,7 @@ model Category {
 
   parent     Category?   @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children   Category[]  @relation("CategoryHierarchy")
-  drugGroups DrugGroup[]
+  drugGroupCategories DrugGroupCategory[]
 
   @@map("categories")
 }
@@ -113,7 +113,6 @@ model CompanyProfile {
   user                 User                   @relation("UserCompanyProfile", fields: [userId], references: [id])
   verifier             User?                  @relation("CompanyVerifier", fields: [verifiedBy], references: [id])
   companyDistributors  CompanyDistributor[]
-  drugGroups           DrugGroup[]
   products             Product[]
   promotions           Promotion[]
   sampleQuotas         SampleQuota[]
@@ -204,21 +203,29 @@ model CompanyDistributor {
 
 model DrugGroup {
   id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  companyId   String   @map("company_id") @db.Uuid
-  categoryId  String?  @map("category_id") @db.Uuid
-  nameAr      String   @map("name_ar") @db.VarChar(200)
+  nameAr      String   @unique @map("name_ar") @db.VarChar(200)
   nameEn      String?  @map("name_en") @db.VarChar(200)
   description String?  @db.Text
-  ingredients String?  @db.Text
+  isActive    Boolean  @default(true) @map("is_active")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  company                       CompanyProfile                @relation(fields: [companyId], references: [id])
-  category                      Category?                     @relation(fields: [categoryId], references: [id])
-  products                      Product[]
-  productTargetSpecializations  ProductTargetSpecialization[]
+  drugGroupCategories          DrugGroupCategory[]
+  productDrugGroups            ProductDrugGroup[]
+  productTargetSpecializations ProductTargetSpecialization[]
 
   @@map("drug_groups")
+}
+
+model DrugGroupCategory {
+  drugGroupId String @map("drug_group_id") @db.Uuid
+  categoryId  String @map("category_id") @db.Uuid
+
+  drugGroup DrugGroup @relation(fields: [drugGroupId], references: [id])
+  category  Category  @relation(fields: [categoryId], references: [id])
+
+  @@id([drugGroupId, categoryId])
+  @@map("drug_group_categories")
 }
 
 enum DosageForm {
@@ -256,44 +263,55 @@ enum ProductStatus {
 }
 
 model Product {
-  id                  String         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  companyId           String         @map("company_id") @db.Uuid
-  drugGroupId         String         @map("drug_group_id") @db.Uuid
-  dosageForm          DosageForm?    @map("dosage_form")
-  packSize            Int?           @map("pack_size")
-  packUnit            PackUnit?      @map("pack_unit")
-  packageType         PackageType?   @map("package_type")
-  barcode             String?        @unique @db.VarChar(100)
-  strength            String?        @db.VarChar(50)
-  usageInstructions   String?        @map("usage_instructions") @db.Text
-  price               Decimal        @db.Decimal(10, 2)
-  status              ProductStatus  @default(draft)
-  imageUrl            String?        @map("image_url") @db.VarChar(500)
-  brochureUrl         String?        @map("brochure_url") @db.VarChar(500)
-  createdAt           DateTime       @default(now()) @map("created_at")
-  updatedAt           DateTime       @updatedAt @map("updated_at")
+  id                String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  companyId         String        @map("company_id") @db.Uuid
+  nameAr            String        @map("name_ar") @db.VarChar(200)
+  nameEn            String?       @map("name_en") @db.VarChar(200)
+  dosageForm        DosageForm?   @map("dosage_form")
+  packSize          Int?          @map("pack_size")
+  packUnit          PackUnit?     @map("pack_unit")
+  packageType       PackageType?  @map("package_type")
+  barcode           String?       @unique @db.VarChar(100)
+  strength          String?       @db.VarChar(50)
+  usageInstructions String?       @map("usage_instructions") @db.Text
+  price             Decimal       @db.Decimal(10, 2)
+  status            ProductStatus @default(draft)
+  imageUrl          String?       @map("image_url") @db.VarChar(500)
+  brochureUrl       String?       @map("brochure_url") @db.VarChar(500)
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
 
-  company                 CompanyProfile          @relation(fields: [companyId], references: [id])
-  drugGroup               DrugGroup               @relation(fields: [drugGroupId], references: [id])
-  promotionProducts       PromotionProduct[]
-  sampleQuotas            SampleQuota[]
-  orderItems              OrderItem[]
-  sampleRequests          SampleRequest[]
-  distributorInventory    DistributorInventory[]
-  inventoryMovements      InventoryMovement[]
-  messages                Message[]
+  company              CompanyProfile       @relation(fields: [companyId], references: [id])
+  productDrugGroups    ProductDrugGroup[]
+  promotionProducts    PromotionProduct[]
+  sampleQuotas         SampleQuota[]
+  orderItems           OrderItem[]
+  sampleRequests       SampleRequest[]
+  distributorInventory DistributorInventory[]
+  inventoryMovements   InventoryMovement[]
+  messages             Message[]
 
-  @@unique([drugGroupId, dosageForm, strength, packSize])
   @@map("products")
 }
 
-model ProductTargetSpecialization {
-  id                String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  drugGroupId       String   @map("drug_group_id") @db.Uuid
-  specializationId  String   @map("specialization_id") @db.Uuid
+model ProductDrugGroup {
+  productId   String @map("product_id") @db.Uuid
+  drugGroupId String @map("drug_group_id") @db.Uuid
 
-  drugGroup       DrugGroup       @relation(fields: [drugGroupId], references: [id])
-  specialization  Specialization  @relation(fields: [specializationId], references: [id])
+  product   Product   @relation(fields: [productId], references: [id])
+  drugGroup DrugGroup @relation(fields: [drugGroupId], references: [id])
+
+  @@id([productId, drugGroupId])
+  @@map("product_drug_groups")
+}
+
+model ProductTargetSpecialization {
+  id               String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  drugGroupId      String @map("drug_group_id") @db.Uuid
+  specializationId String @map("specialization_id") @db.Uuid
+
+  drugGroup      DrugGroup      @relation(fields: [drugGroupId], references: [id])
+  specialization Specialization @relation(fields: [specializationId], references: [id])
 
   @@unique([drugGroupId, specializationId])
   @@map("product_target_specializations")
