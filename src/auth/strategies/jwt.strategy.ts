@@ -25,7 +25,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         companyProfile: { select: { id: true } },
       },
     });
-
+    // if (!user || user.status !== 'active') {
+    //   throw new UnauthorizedException();
+    // }
     return user;
   }
 }

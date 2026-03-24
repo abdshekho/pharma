@@ -24,12 +24,15 @@ model City {
 
 model Specialization {
   id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  parentId    String?  @map("parent_id") @db.Uuid
   nameAr      String   @map("name_ar") @db.VarChar(100)
   nameEn      String?  @map("name_en") @db.VarChar(100)
   description String?  @db.Text
   isActive    Boolean  @default(true) @map("is_active")
 
-  doctorProfiles              DoctorProfile[]
+  parent                       Specialization?              @relation("SpecializationHierarchy", fields: [parentId], references: [id])
+  children                     Specialization[]             @relation("SpecializationHierarchy")
+  doctorProfiles               DoctorProfile[]
   productTargetSpecializations ProductTargetSpecialization[]
 
   @@map("specializations")

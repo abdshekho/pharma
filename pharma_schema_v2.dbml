@@ -9,13 +9,17 @@ Table cities {
 }
 
 // التخصصات الطبية
-// هضمية - قلبية
+// مثال:
+// باطنية
+//   ├── هضمية
+//   └── قلبية
 Table specializations {
-  id          uuid      [pk, default: `uuid_generate_v4()`]
+  id          uuid         [pk, default: `uuid_generate_v4()`]
+  parent_id   uuid         [ref: > specializations.id, note: 'null = تخصص رئيسي']
   name_ar     varchar(100) [not null]
   name_en     varchar(100)
   description text
-  is_active   boolean   [not null, default: true]
+  is_active   boolean      [not null, default: true]
 }
 
 //مثال عن التصنيفات

@@ -12,6 +12,7 @@ import { DistributorProfileModule } from './profiles/distributor/distributor-pro
 import { CitiesModule } from './cities/cities.module';
 import { CategoriesModule } from './categories/categories.module';
 
+import { SpecializationsModule } from './specializations/specializations.module';
 import { DrugGroupsModule } from './drug-groups/drug-groups.module';
 import { ProductsModule } from './products/products.module';
 
@@ -27,6 +28,7 @@ import { ProductsModule } from './products/products.module';
     DistributorProfileModule,
     CitiesModule,
     CategoriesModule,
+    SpecializationsModule,
     DrugGroupsModule,
     ProductsModule,
   ],
