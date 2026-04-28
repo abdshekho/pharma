@@ -179,6 +179,7 @@ model DistributorProfile {
   sampleRequests         SampleRequest[]
   distributorInventory   DistributorInventory[]
   inventoryMovements     InventoryMovement[]
+  promotions             Promotion[]
 
   @@map("distributor_profiles")
 }
@@ -293,6 +294,8 @@ model Product {
   distributorInventory DistributorInventory[]
   inventoryMovements   InventoryMovement[]
   messages             Message[]
+  buyXgetYAsBuy        PromotionBuyXGetY[]  @relation("BuyProduct")
+  buyXgetYAsFree       PromotionBuyXGetY[]  @relation("FreeProduct")
 
   @@map("products")
 }
@@ -326,20 +329,38 @@ enum PromotionTargetType {
   pharmacists
 }
 
-model Promotion {
-  id          String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  companyId   String                @map("company_id") @db.Uuid
-  title       String                @db.VarChar(200)
-  description String?               @db.Text
-  startsAt    DateTime              @map("starts_at")
-  endsAt      DateTime              @map("ends_at")
-  targetType  PromotionTargetType   @default(all) @map("target_type")
-  imageUrl    String?               @map("image_url") @db.VarChar(500)
-  isActive    Boolean               @default(false) @map("is_active")
-  createdAt   DateTime              @default(now()) @map("created_at")
+enum PromotionType {
+  percentage
+  buyXgetY
+}
 
-  company            CompanyProfile      @relation(fields: [companyId], references: [id])
-  promotionProducts  PromotionProduct[]
+enum PromotionLevel {
+  distributor
+  pharmacist
+}
+
+model Promotion {
+  id                  String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  companyId           String              @map("company_id") @db.Uuid
+  distributorId       String?             @map("distributor_id") @db.Uuid
+  parentPromotionId   String?             @map("parent_promotion_id") @db.Uuid
+  title               String              @db.VarChar(200)
+  description         String?             @db.Text
+  type                PromotionType       @default(percentage)
+  level               PromotionLevel      @default(pharmacist)
+  startsAt            DateTime            @map("starts_at")
+  endsAt              DateTime            @map("ends_at")
+  targetType          PromotionTargetType @default(all) @map("target_type")
+  imageUrl            String?             @map("image_url") @db.VarChar(500)
+  isActive            Boolean             @default(false) @map("is_active")
+  createdAt           DateTime            @default(now()) @map("created_at")
+
+  company           CompanyProfile      @relation(fields: [companyId], references: [id])
+  distributor       DistributorProfile? @relation(fields: [distributorId], references: [id])
+  parentPromotion   Promotion?          @relation("PromotionVariants", fields: [parentPromotionId], references: [id])
+  childPromotions   Promotion[]         @relation("PromotionVariants")
+  promotionProducts PromotionProduct[]
+  buyXgetY          PromotionBuyXGetY?
 
   @@map("promotions")
 }
@@ -356,6 +377,21 @@ model PromotionProduct {
 
   @@unique([promotionId, productId])
   @@map("promotion_products")
+}
+
+model PromotionBuyXGetY {
+  id             String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  promotionId    String  @unique @map("promotion_id") @db.Uuid
+  buyProductId   String  @map("buy_product_id") @db.Uuid
+  buyQuantity    Int     @map("buy_quantity")
+  freeProductId  String  @map("free_product_id") @db.Uuid
+  freeQuantity   Int     @map("free_quantity")
+
+  promotion   Promotion @relation(fields: [promotionId], references: [id])
+  buyProduct  Product   @relation("BuyProduct", fields: [buyProductId], references: [id])
+  freeProduct Product   @relation("FreeProduct", fields: [freeProductId], references: [id])
+
+  @@map("promotion_buyxgety")
 }
 
 model SampleQuota {
@@ -380,6 +416,7 @@ enum OrderStatus {
   in_delivery
   delivered
   cancelled
+  rejected
 }
 
 enum PaymentMethod {
@@ -399,6 +436,7 @@ model Order {
   paymentMethod   PaymentMethod @default(cod) @map("payment_method")
   deliveryAddress String        @map("delivery_address") @db.Text
   notes           String?       @db.Text
+  rejectionReason String?       @map("rejection_reason") @db.Text
   approvedAt      DateTime?     @map("approved_at")
   deliveredAt     DateTime?     @map("delivered_at")
   createdAt       DateTime      @default(now()) @map("created_at")

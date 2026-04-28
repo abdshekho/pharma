@@ -15,6 +15,9 @@ import { CategoriesModule } from './categories/categories.module';
 import { SpecializationsModule } from './specializations/specializations.module';
 import { DrugGroupsModule } from './drug-groups/drug-groups.module';
 import { ProductsModule } from './products/products.module';
+import { OrdersModule } from './orders/orders.module';
+import { PromotionsModule } from './promotions/promotions.module';
+import { DistributorInventoryModule } from './distributor-inventory/distributor-inventory.module';
 
 @Module({
   imports: [
@@ -31,6 +34,9 @@ import { ProductsModule } from './products/products.module';
     SpecializationsModule,
     DrugGroupsModule,
     ProductsModule,
+    OrdersModule,
+    PromotionsModule,
+    DistributorInventoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "6fc487fc-d853-4e5e-82c4-fdd3eb74e7dc",
+    "_postman_id": "14a3c0f6-801d-44cd-a738-e89ae1c43c1a",
     "name": "pharma project",
     "description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Scripts\" tab**\n\nAdding tests to your requests can help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/fa30ea0a-373d-4545-a668-e7b283cca343/aW1hZ2UucG5n\" alt=\"\" height=\"1530\" width=\"2162\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n    \n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -1043,7 +1043,7 @@
                   },
                   "status": "OK",
                   "code": 200,
-                  "_postman_previewlanguage": null,
+                  "_postman_previewlanguage": "Text",
                   "header": [
                     {
                       "key": "X-Powered-By",
@@ -1820,7 +1820,7 @@
               },
               "status": "OK",
               "code": 200,
-              "_postman_previewlanguage": null,
+              "_postman_previewlanguage": "Text",
               "header": [
                 {
                   "key": "X-Powered-By",
@@ -1905,7 +1905,7 @@
               },
               "status": "OK",
               "code": 200,
-              "_postman_previewlanguage": null,
+              "_postman_previewlanguage": "Text",
               "header": [
                 {
                   "key": "X-Powered-By",
@@ -2006,7 +2006,7 @@
               },
               "status": "Created",
               "code": 201,
-              "_postman_previewlanguage": null,
+              "_postman_previewlanguage": "Text",
               "header": [
                 {
                   "key": "X-Powered-By",
@@ -2109,7 +2109,7 @@
               },
               "status": "OK",
               "code": 200,
-              "_postman_previewlanguage": null,
+              "_postman_previewlanguage": "Text",
               "header": [
                 {
                   "key": "X-Powered-By",
@@ -2326,9 +2326,197 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/categories/55dc08e8-5608-4ddb-aa20-793796fd8676",
-              "host": ["{{base_url}}"],
-              "path": ["categories", "55dc08e8-5608-4ddb-aa20-793796fd8676"]
+              "raw": "{{base_url}}/categories/29d86842-dc67-46a9-bc8b-609a4c638c4a",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "categories",
+                "29d86842-dc67-46a9-bc8b-609a4c638c4a"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "specializations",
+      "item": [
+        {
+          "name": "Get all specializations",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/specializations?isActive=true&fields=id,nameAr,nameEn",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "specializations"
+              ],
+              "query": [
+                {
+                  "key": "isActive",
+                  "value": "true"
+                },
+                {
+                  "key": "fields",
+                  "value": "id,nameAr,nameEn"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get specialization by id",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/specializations/c9b5a884-d60e-41af-9512-d186822d9b2c",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "specializations",
+                "c9b5a884-d60e-41af-9512-d186822d9b2c"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create specialization",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nameEn\":\"test specialization\",\r\n    \"parentId\": null,\r\n    \"nameAr\":\"تجربة اختصاص\",\r\n    \"isActive\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/specializations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "specializations"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update specialization",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"nameAr\":\"kk\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/specializations/bbecb33b-cef3-4cec-a477-5d9569806590",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "specializations",
+                "bbecb33b-cef3-4cec-a477-5d9569806590"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete category (Admin only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/specializations/bbecb33b-cef3-4cec-a477-5d9569806590",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "specializations",
+                "bbecb33b-cef3-4cec-a477-5d9569806590"
+              ]
             }
           },
           "response": []
@@ -2341,15 +2529,31 @@
         {
           "name": "Get all drug groups",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/drug-groups?fields=id,nameAr,nameEn,description,categories,products",
-              "host": ["{{base_url}}"],
-              "path": ["drug-groups"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "drug-groups"
+              ],
               "query": [
-                { "key": "fields", "value": "id,nameAr,nameEn,description,categories,products" }
+                {
+                  "key": "fields",
+                  "value": "id,nameAr,nameEn,description,categories,products"
+                }
               ]
             }
           },
@@ -2358,15 +2562,32 @@
         {
           "name": "Get drug group by id",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/drug-groups/{{drug_group_id}}?fields=id,nameAr,categories,products",
-              "host": ["{{base_url}}"],
-              "path": ["drug-groups", "{{drug_group_id}}"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "drug-groups",
+                "{{drug_group_id}}"
+              ],
               "query": [
-                { "key": "fields", "value": "id,nameAr,categories,products" }
+                {
+                  "key": "fields",
+                  "value": "id,nameAr,categories,products"
+                }
               ]
             }
           },
@@ -2375,37 +2596,137 @@
         {
           "name": "Create drug group (Admin only)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nameAr\": \"\u0623\u0645\u0648\u0643\u0633\u064a\u0633\u064a\u0644\u064a\u0646\",\n  \"nameEn\": \"Amoxicillin\",\n  \"description\": \"\u0645\u0636\u0627\u062f \u062d\u064a\u0648\u064a \u0648\u0627\u0633\u0639 \u0627\u0644\u0637\u064a\u0641\",\n  \"isActive\": true,\n  \"categoryIds\": []\n}",
-              "options": { "raw": { "language": "json" } }
+              "raw": "{\n  \"nameAr\": \"أموكسيسيلين\",\n  \"nameEn\": \"Amoxicillin\",\n  \"description\": \"مضاد حيوي واسع الطيف\",\n  \"isActive\": true,\n  \"categoryIds\": [\"cd149601-cc5f-41e3-b18f-16b537b615d7\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/drug-groups",
-              "host": ["{{base_url}}"],
-              "path": ["drug-groups"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "drug-groups"
+              ]
             }
           },
-          "response": []
+          "response": [
+            {
+              "name": "Create drug group (Admin only)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nameAr\": \"أموكسيسيلين\",\n  \"nameEn\": \"Amoxicillin\",\n  \"description\": \"مضاد حيوي واسع الطيف\",\n  \"isActive\": true,\n  \"categoryIds\": [\"cd149601-cc5f-41e3-b18f-16b537b615d7\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/drug-groups",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "drug-groups"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "581"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"245-SxELPKuJ7S6F9SQ7BVEGO5qpURU\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Mon, 23 Mar 2026 02:48:12 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"id\": \"a43e9bef-f46d-4883-a265-bc58c5f9e248\",\n    \"nameAr\": \"أموكسيسيلين\",\n    \"nameEn\": \"Amoxicillin\",\n    \"description\": \"مضاد حيوي واسع الطيف\",\n    \"isActive\": true,\n    \"createdAt\": \"2026-03-23T02:48:10.722Z\",\n    \"updatedAt\": \"2026-03-23T02:48:10.722Z\",\n    \"drugGroupCategories\": [\n        {\n            \"drugGroupId\": \"a43e9bef-f46d-4883-a265-bc58c5f9e248\",\n            \"categoryId\": \"cd149601-cc5f-41e3-b18f-16b537b615d7\",\n            \"category\": {\n                \"id\": \"cd149601-cc5f-41e3-b18f-16b537b615d7\",\n                \"parentId\": \"63d21265-ecf2-4f10-a21d-aa73f536bbd2\",\n                \"nameAr\": \"شحوم ثلاثية\",\n                \"nameEn\": \"en sub subcategory\",\n                \"icon\": \"HMS2\",\n                \"isActive\": true\n            }\n        }\n    ]\n}"
+            }
+          ]
         },
         {
           "name": "Update drug group (Admin only)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"description\": \"\u0648\u0635\u0641 \u0645\u062d\u062f\u062b\",\n  \"categoryIds\": []\n}",
-              "options": { "raw": { "language": "json" } }
+              "raw": "{\n  \"description\": \"وصف محدث\",\n  \"categoryIds\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/drug-groups/{{drug_group_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["drug-groups", "{{drug_group_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "drug-groups",
+                "{{drug_group_id}}"
+              ]
             }
           },
           "response": []
@@ -2413,13 +2734,292 @@
         {
           "name": "Delete drug group (Admin only)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "DELETE",
             "header": [],
             "url": {
               "raw": "{{base_url}}/drug-groups/{{drug_group_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "drug-groups",
+                "{{drug_group_id}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "orders",
+      "item": [
+        {
+          "name": "Create Order (Pharmacist)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"productId\": \"{{product_id}}\",\n      \"quantity\": 10,\n      \"promotionProductId\": null\n    }\n  ],\n  \"paymentMethod\": \"cod\",\n  \"deliveryAddress\": \"دمشق - شارع الثورة\",\n  \"notes\": \"يرجى التوصيل صباحاً\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/orders", "host": ["{{base_url}}"], "path": ["orders"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Orders",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/orders", "host": ["{{base_url}}"], "path": ["orders"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/orders/{{order_id}}", "host": ["{{base_url}}"], "path": ["orders", "{{order_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Order (Distributor)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"approved\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/orders/{{order_id}}/status", "host": ["{{base_url}}"], "path": ["orders", "{{order_id}}", "status"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Order (Distributor)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"rejected\",\n  \"rejectionReason\": \"المنتج غير متوفر حالياً\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/orders/{{order_id}}/status", "host": ["{{base_url}}"], "path": ["orders", "{{order_id}}", "status"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark In Delivery (Distributor)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"in_delivery\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/orders/{{order_id}}/status", "host": ["{{base_url}}"], "path": ["orders", "{{order_id}}", "status"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Delivered (Distributor)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"delivered\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/orders/{{order_id}}/status", "host": ["{{base_url}}"], "path": ["orders", "{{order_id}}", "status"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Order (Pharmacist)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"cancelled\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/orders/{{order_id}}/status", "host": ["{{base_url}}"], "path": ["orders", "{{order_id}}", "status"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "promotions",
+      "item": [
+        {
+          "name": "Create Promotion - Percentage (Company)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"عرض الربيع\",\n  \"description\": \"خصم 10% على أموكسيل\",\n  \"type\": \"percentage\",\n  \"level\": \"pharmacist\",\n  \"targetType\": \"pharmacists\",\n  \"startsAt\": \"2025-04-01T00:00:00Z\",\n  \"endsAt\": \"2025-04-30T23:59:59Z\",\n  \"isActive\": true,\n  \"products\": [\n    { \"productId\": \"{{product_id}}\", \"discountPercent\": 10 }\n  ]\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/promotions", "host": ["{{base_url}}"], "path": ["promotions"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Promotion - BuyXGetY (Company)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"اشتري 10 خذ 3 مجاناً\",\n  \"type\": \"buyXgetY\",\n  \"level\": \"distributor\",\n  \"targetType\": \"all\",\n  \"startsAt\": \"2025-04-01T00:00:00Z\",\n  \"endsAt\": \"2025-06-30T23:59:59Z\",\n  \"isActive\": true,\n  \"buyXgetY\": {\n    \"buyProductId\": \"{{product_id}}\",\n    \"buyQuantity\": 10,\n    \"freeProductId\": \"{{product_id}}\",\n    \"freeQuantity\": 3\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/promotions", "host": ["{{base_url}}"], "path": ["promotions"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Promotion - Distributor variant",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"عرض الموزع - اشتري 12 خذ 2\",\n  \"type\": \"buyXgetY\",\n  \"level\": \"pharmacist\",\n  \"targetType\": \"pharmacists\",\n  \"startsAt\": \"2025-04-01T00:00:00Z\",\n  \"endsAt\": \"2025-06-30T23:59:59Z\",\n  \"isActive\": true,\n  \"parentPromotionId\": \"{{promotion_id}}\",\n  \"buyXgetY\": {\n    \"buyProductId\": \"{{product_id}}\",\n    \"buyQuantity\": 12,\n    \"freeProductId\": \"{{product_id}}\",\n    \"freeQuantity\": 2\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/promotions", "host": ["{{base_url}}"], "path": ["promotions"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Promotions",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/promotions?level=pharmacist&type=buyXgetY",
               "host": ["{{base_url}}"],
-              "path": ["drug-groups", "{{drug_group_id}}"]
+              "path": ["promotions"],
+              "query": [
+                { "key": "level", "value": "pharmacist" },
+                { "key": "type", "value": "buyXgetY" },
+                { "key": "companyId", "value": "", "disabled": true },
+                { "key": "distributorId", "value": "", "disabled": true }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Promotion by ID",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/promotions/{{promotion_id}}", "host": ["{{base_url}}"], "path": ["promotions", "{{promotion_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Active Promotion",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "url": { "raw": "{{base_url}}/promotions/{{promotion_id}}/toggle-active", "host": ["{{base_url}}"], "path": ["promotions", "{{promotion_id}}", "toggle-active"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "distributor-inventory",
+      "item": [
+        {
+          "name": "Add Stock (Distributor)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{product_id}}\",\n  \"companyId\": \"{{company_profile_id}}\",\n  \"quantity\": 100,\n  \"lowStockThreshold\": 15\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/distributor-inventory/add", "host": ["{{base_url}}"], "path": ["distributor-inventory", "add"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Adjust Stock (Distributor)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{product_id}}\",\n  \"quantity\": -5,\n  \"reason\": \"تلف في المخزن\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/distributor-inventory/adjust", "host": ["{{base_url}}"], "path": ["distributor-inventory", "adjust"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Inventory (Distributor)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/distributor-inventory", "host": ["{{base_url}}"], "path": ["distributor-inventory"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Inventory Movements (Distributor)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/distributor-inventory/movements",
+              "host": ["{{base_url}}"],
+              "path": ["distributor-inventory", "movements"],
+              "query": [{ "key": "productId", "value": "", "disabled": true }]
             }
           },
           "response": []
@@ -2432,16 +3032,36 @@
         {
           "name": "Get all products",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/products?fields=id,nameAr,nameEn,price,status,dosageForm,strength,drugGroups",
-              "host": ["{{base_url}}"],
-              "path": ["products"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ],
               "query": [
-                { "key": "fields", "value": "id,nameAr,nameEn,price,status,dosageForm,strength,drugGroups" },
-                { "key": "companyId", "value": "", "disabled": true }
+                {
+                  "key": "fields",
+                  "value": "id,nameAr,nameEn,price,status,dosageForm,strength,drugGroups"
+                },
+                {
+                  "key": "companyId",
+                  "value": "",
+                  "disabled": true
+                }
               ]
             }
           },
@@ -2450,15 +3070,32 @@
         {
           "name": "Get product by id",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/products/{{product_id}}?fields=id,nameAr,price,status,drugGroups",
-              "host": ["{{base_url}}"],
-              "path": ["products", "{{product_id}}"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "{{product_id}}"
+              ],
               "query": [
-                { "key": "fields", "value": "id,nameAr,price,status,drugGroups" }
+                {
+                  "key": "fields",
+                  "value": "id,nameAr,price,status,drugGroups"
+                }
               ]
             }
           },
@@ -2467,18 +3104,35 @@
         {
           "name": "Create product (Company only)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nameAr\": \"\u0623\u0645\u0648\u0643\u0633\u064a\u0644 500\",\n  \"nameEn\": \"Amoxil 500\",\n  \"dosageForm\": \"capsule\",\n  \"strength\": \"500mg\",\n  \"packSize\": 20,\n  \"packUnit\": \"capsule\",\n  \"packageType\": \"box\",\n  \"price\": \"5.50\",\n  \"drugGroupIds\": []\n}",
-              "options": { "raw": { "language": "json" } }
+              "raw": "{\n  \"nameAr\": \"أموكسيل 500\",\n  \"nameEn\": \"Amoxil 500\",\n  \"dosageForm\": \"capsule\",\n  \"strength\": \"500mg\",\n  \"packSize\": 20,\n  \"packUnit\": \"capsule\",\n  \"packageType\": \"box\",\n  \"price\": \"5.50\",\n  \"drugGroupIds\": [\"a43e9bef-f46d-4883-a265-bc58c5f9e248\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/products",
-              "host": ["{{base_url}}"],
-              "path": ["products"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ]
             }
           },
           "response": []
@@ -2486,18 +3140,36 @@
         {
           "name": "Update product (Company only)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"price\": \"6.00\",\n  \"status\": \"active\",\n  \"drugGroupIds\": []\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "url": {
               "raw": "{{base_url}}/products/{{product_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["products", "{{product_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "{{product_id}}"
+              ]
             }
           },
           "response": []
@@ -2505,13 +3177,27 @@
         {
           "name": "Delete product (Company only)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "DELETE",
             "header": [],
             "url": {
               "raw": "{{base_url}}/products/{{product_id}}",
-              "host": ["{{base_url}}"],
-              "path": ["products", "{{product_id}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "{{product_id}}"
+              ]
             }
           },
           "response": []
@@ -2556,9 +3242,9 @@
       "key": "drug_group_id",
       "value": ""
     },
-    {
-      "key": "product_id",
-      "value": ""
-    }
+    { "key": "product_id", "value": "" },
+    { "key": "order_id", "value": "" },
+    { "key": "promotion_id", "value": "" },
+    { "key": "company_profile_id", "value": "" }
   ]
 }
