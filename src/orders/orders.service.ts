@@ -249,6 +249,7 @@ export class OrdersService {
       },
       [UserRole.company]: {},
       [UserRole.doctor]: {},
+      [UserRole.representative]: {},
     };
 
     const allowedNext = allowed[role]?.[current] ?? [];

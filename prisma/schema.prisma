@@ -18,6 +18,7 @@ model City {
   users                User[]
   companyDistributors  CompanyDistributor[]
   orders               Order[]
+  representatives      RepresentativeProfile[]
 
   @@map("cities")
 }
@@ -58,6 +59,7 @@ enum UserRole {
   doctor
   pharmacist
   distributor
+  representative
   admin
 }
 
@@ -87,10 +89,12 @@ model User {
   doctorProfile               DoctorProfile?        @relation("UserDoctorProfile")
   pharmacistProfile           PharmacistProfile?    @relation("UserPharmacistProfile")
   distributorProfile          DistributorProfile?   @relation("UserDistributorProfile")
+  representativeProfile       RepresentativeProfile? @relation("UserRepresentativeProfile")
   verifiedCompanies           CompanyProfile[]      @relation("CompanyVerifier")
   verifiedDoctors             DoctorProfile[]       @relation("DoctorVerifier")
   verifiedPharmacists         PharmacistProfile[]   @relation("PharmacistVerifier")
   verifiedDistributors        DistributorProfile[]  @relation("DistributorVerifier")
+  verifiedRepresentatives     RepresentativeProfile[] @relation("RepresentativeVerifier")
   sentMessages                Message[]             @relation("SentMessages")
   receivedMessages            Message[]             @relation("ReceivedMessages")
   notifications               Notification[]
@@ -121,6 +125,7 @@ model CompanyProfile {
   sampleQuotas         SampleQuota[]
   orders               Order[]
   sampleRequests       SampleRequest[]
+  representatives      RepresentativeProfile[]
 
   @@map("company_profiles")
 }
@@ -174,12 +179,11 @@ model DistributorProfile {
 
   user                   User                   @relation("UserDistributorProfile", fields: [userId], references: [id])
   verifier               User?                  @relation("DistributorVerifier", fields: [verifiedBy], references: [id])
-  companyDistributors    CompanyDistributor[]
-  orders                 Order[]
-  sampleRequests         SampleRequest[]
-  distributorInventory   DistributorInventory[]
-  inventoryMovements     InventoryMovement[]
-  promotions             Promotion[]
+  companyDistributors      CompanyDistributor[]
+  orders                   Order[]
+  distributorInventory     DistributorInventory[]
+  inventoryMovements       InventoryMovement[]
+  promotions               Promotion[]
 
   @@map("distributor_profiles")
 }
@@ -476,25 +480,43 @@ enum SampleRequestStatus {
   delivered
 }
 
-model SampleRequest {
-  id              String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  doctorId        String              @map("doctor_id") @db.Uuid
-  productId       String              @map("product_id") @db.Uuid
-  companyId       String              @map("company_id") @db.Uuid
-  distributorId   String?             @map("distributor_id") @db.Uuid
-  status          SampleRequestStatus @default(pending)
-  quantity        Int                 @default(1)
-  deliveryAddress String              @map("delivery_address") @db.Text
-  rejectionReason String?             @map("rejection_reason") @db.Text
-  approvedAt      DateTime?           @map("approved_at")
-  deliveredAt     DateTime?           @map("delivered_at")
-  createdAt       DateTime            @default(now()) @map("created_at")
-  updatedAt       DateTime            @updatedAt @map("updated_at")
+model RepresentativeProfile {
+  id            String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId        String    @unique @map("user_id") @db.Uuid
+  companyId     String    @map("company_id") @db.Uuid
+  cityId        String    @map("city_id") @db.Uuid
+  verifiedAt    DateTime? @map("verified_at")
+  verifiedBy    String?   @map("verified_by") @db.Uuid
+  createdAt     DateTime  @default(now()) @map("created_at")
 
-  doctor      DoctorProfile       @relation(fields: [doctorId], references: [id])
-  product     Product             @relation(fields: [productId], references: [id])
-  company     CompanyProfile      @relation(fields: [companyId], references: [id])
-  distributor DistributorProfile? @relation(fields: [distributorId], references: [id])
+  user           User             @relation("UserRepresentativeProfile", fields: [userId], references: [id])
+  company        CompanyProfile   @relation(fields: [companyId], references: [id])
+  city           City             @relation(fields: [cityId], references: [id])
+  verifier       User?            @relation("RepresentativeVerifier", fields: [verifiedBy], references: [id])
+  sampleRequests SampleRequest[]
+
+  @@map("representative_profiles")
+}
+
+model SampleRequest {
+  id                   String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  doctorId             String              @map("doctor_id") @db.Uuid
+  productId            String              @map("product_id") @db.Uuid
+  companyId            String              @map("company_id") @db.Uuid
+  representativeId     String?             @map("representative_id") @db.Uuid
+  status               SampleRequestStatus @default(pending)
+  quantity             Int                 @default(1)
+  deliveryAddress      String              @map("delivery_address") @db.Text
+  rejectionReason      String?             @map("rejection_reason") @db.Text
+  approvedAt           DateTime?           @map("approved_at")
+  deliveredAt          DateTime?           @map("delivered_at")
+  createdAt            DateTime            @default(now()) @map("created_at")
+  updatedAt            DateTime            @updatedAt @map("updated_at")
+
+  doctor         DoctorProfile          @relation(fields: [doctorId], references: [id])
+  product        Product                @relation(fields: [productId], references: [id])
+  company        CompanyProfile         @relation(fields: [companyId], references: [id])
+  representative RepresentativeProfile? @relation(fields: [representativeId], references: [id])
 
   @@map("sample_requests")
 }

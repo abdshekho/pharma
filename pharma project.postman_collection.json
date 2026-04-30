@@ -3027,6 +3027,286 @@
       ]
     },
     {
+      "name": "profiles/representative",
+      "item": [
+        {
+          "name": "Create Representative Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"{{company_profile_id}}\",\n  \"cityId\": \"{{city_id}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/profiles/representative", "host": ["{{base_url}}"], "path": ["profiles", "representative"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Representative Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/representative/me", "host": ["{{base_url}}"], "path": ["profiles", "representative", "me"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Representative Profiles (Admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/representative", "host": ["{{base_url}}"], "path": ["profiles", "representative"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Representative Profile by ID",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/representative/{{representative_id}}", "host": ["{{base_url}}"], "path": ["profiles", "representative", "{{representative_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Representative (Admin)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/representative/{{representative_id}}/verify", "host": ["{{base_url}}"], "path": ["profiles", "representative", "{{representative_id}}", "verify"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Representative Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/profiles/representative/{{representative_id}}", "host": ["{{base_url}}"], "path": ["profiles", "representative", "{{representative_id}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "sample-requests",
+      "item": [
+        {
+          "name": "Create Sample Request (Doctor)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{product_id}}\",\n  \"quantity\": 2,\n  \"deliveryAddress\": \"دمشق - مشفى الشفاء\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/sample-requests", "host": ["{{base_url}}"], "path": ["sample-requests"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Sample Requests",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/sample-requests", "host": ["{{base_url}}"], "path": ["sample-requests"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Sample Request by ID",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/sample-requests/{{sample_request_id}}", "host": ["{{base_url}}"], "path": ["sample-requests", "{{sample_request_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Sample Request (Company)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"approved\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/status", "host": ["{{base_url}}"], "path": ["sample-requests", "{{sample_request_id}}", "status"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Sample Request (Company)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"rejected\",\n  \"rejectionReason\": \"تجاوزت الحد المسموح لهذا الشهر\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/status", "host": ["{{base_url}}"], "path": ["sample-requests", "{{sample_request_id}}", "status"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Delivered (Representative)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"delivered\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/status", "host": ["{{base_url}}"], "path": ["sample-requests", "{{sample_request_id}}", "status"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Sample Request (Doctor)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"rejected\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/status", "host": ["{{base_url}}"], "path": ["sample-requests", "{{sample_request_id}}", "status"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "company-distributors",
+      "item": [
+        {
+          "name": "Assign Distributor to City (Company)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"distributorId\": \"{{distributor_profile_id}}\",\n  \"cityId\": \"{{city_id}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/company-distributors", "host": ["{{base_url}}"], "path": ["company-distributors"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Company Distributors",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/company-distributors", "host": ["{{base_url}}"], "path": ["company-distributors"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Distributor Status (Company)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"inactive\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/company-distributors/{{company_distributor_id}}/status", "host": ["{{base_url}}"], "path": ["company-distributors", "{{company_distributor_id}}", "status"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Distributor (Company)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/company-distributors/{{company_distributor_id}}", "host": ["{{base_url}}"], "path": ["company-distributors", "{{company_distributor_id}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "sample-quotas",
+      "item": [
+        {
+          "name": "Create Sample Quota (Company)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{product_id}}\",\n  \"maxPerDoctor\": 2,\n  \"cooldownDays\": 30,\n  \"isActive\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/sample-quotas", "host": ["{{base_url}}"], "path": ["sample-quotas"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Sample Quotas (Company)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/sample-quotas", "host": ["{{base_url}}"], "path": ["sample-quotas"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Sample Quota (Company)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"maxPerDoctor\": 3,\n  \"cooldownDays\": 15,\n  \"isActive\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{base_url}}/sample-quotas/{{sample_quota_id}}", "host": ["{{base_url}}"], "path": ["sample-quotas", "{{sample_quota_id}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Sample Quota (Company)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{base_url}}/sample-quotas/{{sample_quota_id}}", "host": ["{{base_url}}"], "path": ["sample-quotas", "{{sample_quota_id}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "products",
       "item": [
         {
@@ -3245,6 +3525,12 @@
     { "key": "product_id", "value": "" },
     { "key": "order_id", "value": "" },
     { "key": "promotion_id", "value": "" },
-    { "key": "company_profile_id", "value": "" }
+    { "key": "company_profile_id", "value": "" },
+    { "key": "representative_id", "value": "" },
+    { "key": "sample_request_id", "value": "" },
+    { "key": "city_id", "value": "" },
+    { "key": "distributor_profile_id", "value": "" },
+    { "key": "company_distributor_id", "value": "" },
+    { "key": "sample_quota_id", "value": "" }
   ]
 }
