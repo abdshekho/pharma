@@ -1,0 +1,31 @@
+sequenceDiagram
+    participant Dr as Doctor
+    participant S as System
+    participant C as Company
+    participant R as Representative
+    participant Q as Quota System
+
+    Dr->>S: Request Sample (product, quantity)
+    S->>Q: Check Sample Quota
+    Q-->>S: Quota Available/Not Available
+    alt Quota Available
+        S->>S: Find Representative by City
+        S->>R: Auto-assign Representative
+        S->>C: Sample Request (pending)
+        S->>Dr: Request Created
+        
+        C->>S: View Pending Requests
+        C->>S: Approve/Reject Request
+        alt Approve
+            S->>S: Update status to "approved"
+            S->>R: Notification: Request Approved
+            S->>Dr: Notification: Request Approved
+            R->>S: Mark as "delivered"
+            S->>Dr: Notification: Sample Delivered
+        else Reject
+            S->>S: Update status to "rejected"
+            S->>Dr: Notification: Request Rejected
+        end
+    else Quota Exceeded
+        S->>Dr: Error: Quota exceeded
+    end

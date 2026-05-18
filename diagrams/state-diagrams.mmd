@@ -1,0 +1,263 @@
+%% ===== ORDER STATE DIAGRAM =====
+stateDiagram-v2
+    [*] --> Pending : Pharmacist creates order
+    
+    state Pending {
+        [*] --> WaitingApproval
+        WaitingApproval --> AutoAssigned : System assigns distributor
+        AutoAssigned --> ReadyForReview : Distributor notified
+    }
+    
+    Pending --> Approved : Distributor approves
+    Pending --> Rejected : Distributor rejects
+    Pending --> Cancelled : Pharmacist cancels
+    
+    state Approved {
+        [*] --> PaymentProcessing
+        PaymentProcessing --> PaymentVerified : Payment confirmed
+        PaymentVerified --> ReadyForDelivery : Order prepared
+    }
+    
+    Approved --> InDelivery : Distributor starts delivery
+    Approved --> Cancelled : Pharmacist cancels (before delivery)
+    
+    state InDelivery {
+        [*] --> OutForDelivery
+        OutForDelivery --> DeliveryInProgress : On the way
+        DeliveryInProgress --> Arrived : Reached destination
+    }
+    
+    InDelivery --> Delivered : Delivery completed
+    InDelivery --> Cancelled : Pharmacist cancels (during delivery)
+    InDelivery --> FailedDelivery : Delivery failed
+    
+    FailedDelivery --> Rescheduled : New delivery scheduled
+    FailedDelivery --> Cancelled : Order cancelled
+    
+    Delivered --> [*] : Order completed
+    Rejected --> [*] : Order rejected
+    Cancelled --> [*] : Order cancelled
+    Rescheduled --> InDelivery : Retry delivery
+
+%% ===== SAMPLE REQUEST STATE DIAGRAM =====
+stateDiagram-v2
+    [*] --> PendingSample : Doctor requests sample
+    
+    state PendingSample {
+        [*] --> QuotaCheck
+        QuotaCheck --> QuotaAvailable : Within limits
+        QuotaCheck --> QuotaExceeded : Exceeds limit
+        QuotaAvailable --> AutoAssignRep : System assigns representative
+        QuotaExceeded --> [*] : Request rejected automatically
+    }
+    
+    PendingSample --> ApprovedSample : Company approves
+    PendingSample --> RejectedSample : Company rejects
+    PendingSample --> CancelledSample : Doctor cancels
+    
+    state ApprovedSample {
+        [*] --> SamplePrepared
+        SamplePrepared --> ReadyForDelivery : Sample packaged
+    }
+    
+    ApprovedSample --> InDeliverySample : Representative starts delivery
+    ApprovedSample --> CancelledSample : Doctor cancels (before delivery)
+    
+    state InDeliverySample {
+        [*] --> OutForDeliverySample
+        OutForDeliverySample --> DeliveryInProgressSample
+    }
+    
+    InDeliverySample --> DeliveredSample : Delivery completed
+    InDeliverySample --> CancelledSample : Doctor cancels (during delivery)
+    InDeliverySample --> FailedDeliverySample : Delivery failed
+    
+    FailedDeliverySample --> RescheduledSample : New delivery scheduled
+    FailedDeliverySample --> CancelledSample : Request cancelled
+    
+    DeliveredSample --> [*] : Sample delivered
+    RejectedSample --> [*] : Request rejected
+    CancelledSample --> [*] : Request cancelled
+    RescheduledSample --> InDeliverySample : Retry delivery
+
+%% ===== USER ACCOUNT STATE DIAGRAM =====
+stateDiagram-v2
+    [*] --> Unregistered : Not yet registered
+    
+    Unregistered --> Registered : User registers
+    Registered --> PendingVerification : Email/phone verification needed
+    
+    state PendingVerification {
+        [*] --> EmailSent
+        EmailSent --> EmailVerified : Email confirmed
+        EmailSent --> PhoneVerified : Phone confirmed
+    }
+    
+    PendingVerification --> Active : Verification completed
+    PendingVerification --> VerificationFailed : Verification failed
+    
+    VerificationFailed --> Registered : Retry verification
+    
+    state Active {
+        [*] --> Normal
+        Normal --> Suspended : Violation detected
+        Suspended --> Normal : Suspension lifted
+        Normal --> Restricted : Limited access
+        Restricted --> Normal : Restrictions removed
+    }
+    
+    Active --> Inactive : User deactivates account
+    Active --> Banned : Admin bans account
+    
+    Inactive --> Active : User reactivates
+    Banned --> [*] : Permanent ban
+    
+    Active --> [*] : Account deleted
+
+%% ===== PROMOTION STATE DIAGRAM =====
+stateDiagram-v2
+    [*] --> Draft : Promotion created
+    
+    Draft --> Scheduled : Start date set
+    Draft --> Cancelled : Promotion cancelled
+    
+    state Scheduled {
+        [*] --> WaitingStart
+        WaitingStart --> AboutToStart : 24h before start
+    }
+    
+    Scheduled --> Active : Start date reached
+    Scheduled --> Cancelled : Promotion cancelled before start
+    
+    state Active {
+        [*] --> Running
+        Running --> Paused : Manually paused
+        Paused --> Running : Resumed
+    }
+    
+    Active --> Ended : End date reached
+    Active --> Cancelled : Promotion cancelled during run
+    Active --> Extended : End date extended
+    
+    Extended --> Active : Continues running
+    Ended --> [*] : Promotion completed
+    Cancelled --> [*] : Promotion cancelled
+
+%% ===== INVENTORY ITEM STATE DIAGRAM =====
+stateDiagram-v2
+    [*] --> InStock : Product in inventory
+    
+    InStock --> LowStock : Quantity below threshold
+    LowStock --> InStock : Stock replenished
+    LowStock --> OutOfStock : Quantity reaches zero
+    
+    OutOfStock --> OnOrder : New order placed
+    OutOfStock --> Discontinued : Product discontinued
+    
+    OnOrder --> InTransit : Order shipped
+    InTransit --> InStock : Received in inventory
+    
+    Discontinued --> [*] : Product removed
+    
+    state LowStock {
+        [*] --> WarningSent
+        WarningSent --> Critical : Very low stock
+        Critical --> Emergency : Almost out
+    }
+    
+    Critical --> InStock : Emergency restock
+    Emergency --> OutOfStock : Completely out
+
+%% ===== PAYMENT STATE DIAGRAM =====
+stateDiagram-v2
+    [*] --> Unpaid : Order created
+    
+    Unpaid --> Processing : Payment initiated
+    Processing --> Authorized : Payment authorized
+    Processing --> Failed : Payment failed
+    
+    Failed --> Retry : Retry payment
+    Retry --> Processing : Payment retried
+    Failed --> Cancelled : Payment cancelled
+    
+    Authorized --> Captured : Funds captured
+    Authorized --> Voided : Authorization voided
+    
+    Captured --> Refunded : Partial/full refund
+    Captured --> Completed : Payment finalized
+    
+    Voided --> [*] : Payment voided
+    Refunded --> [*] : Refund processed
+    Completed --> [*] : Payment completed
+    Cancelled --> [*] : Payment cancelled
+
+%% ===== NOTIFICATION STATE DIAGRAM =====
+stateDiagram-v2
+    [*] --> Created : Notification generated
+    
+    Created --> Queued : Added to queue
+    Queued --> Processing : Being processed
+    
+    state Processing {
+        [*] --> SelectingChannel
+        SelectingChannel --> Sending : Channel selected
+        Sending --> Delivered : Sent successfully
+        Sending --> Failed : Send failed
+    }
+    
+    Delivered --> Read : User reads notification
+    Delivered --> Unread : User hasn't read
+    
+    Failed --> RetryNotification : Retry sending
+    RetryNotification --> Processing : Retry processing
+    
+    Failed --> Discarded : Max retries exceeded
+    
+    Read --> [*] : Notification read
+    Unread --> [*] : Notification unread (expired)
+    Discarded --> [*] : Notification discarded
+
+%% ===== AUDIT LOG STATE DIAGRAM =====
+stateDiagram-v2
+    [*] --> EventOccurred : System event occurs
+    
+    EventOccurred --> Capturing : Capturing event data
+    Capturing --> Validating : Validating data
+    
+    state Validating {
+        [*] --> CheckIntegrity
+        CheckIntegrity --> CheckSensitivity
+        CheckSensitivity --> DataMasked : Mask PII data
+    }
+    
+    Validating --> Formatting : Formatting log entry
+    Formatting --> Storing : Storing in database
+    
+    Storing --> Indexed : Added to search index
+    Storing --> Archived : Moved to archive
+    
+    Indexed --> [*] : Available for search
+    Archived --> [*] : Long-term storage
+
+%% ===== MESSAGE STATE DIAGRAM =====
+stateDiagram-v2
+    [*] --> Composing : User composes message
+    
+    Composing --> Sending : User sends message
+    Sending --> Sent : Message sent successfully
+    Sending --> FailedSend : Send failed
+    
+    FailedSend --> RetryMessage : Retry sending
+    RetryMessage --> Sending : Retry send
+    FailedSend --> DiscardedMessage : Message discarded
+    
+    Sent --> DeliveredMessage : Delivered to recipient
+    Sent --> PendingDelivery : Waiting for delivery
+    
+    DeliveredMessage --> ReadMessage : Recipient reads message
+    DeliveredMessage --> UnreadMessage : Recipient hasn't read
+    
+    ReadMessage --> [*] : Message read
+    UnreadMessage --> [*] : Message unread
+    DiscardedMessage --> [*] : Message discarded
+    PendingDelivery --> [*] : Delivery pending

@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmaceutical System - Complete Diagrams</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #4CAF50;
+        }
+        h2 {
+            color: #444;
+            background: linear-gradient(90deg, #4CAF50, #2196F3);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 40px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h3 {
+            color: #2196F3;
+            margin-top: 25px;
+            padding-left: 10px;
+            border-left: 4px solid #2196F3;
+        }
+        .diagram-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            overflow-x: auto;
+            border: 1px solid #e0e0e0;
+        }
+        .mermaid {
+            text-align: center;
+            min-height: 400px;
+            margin: 20px 0;
+        }
+        .note {
+            background: #e8f4fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .warning {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .file-list {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .file-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .file-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .file-list li:last-child {
+            border-bottom: none;
+        }
+        .file-list a {
+            color: #2196F3;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .file-list a:hover {
+            text-decoration: underline;
+        }
+        .toc {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .toc h3 {
+            margin-top: 0;
+        }
+        .toc ul {
+            columns: 2;
+            list-style-type: none;
+            padding: 0;
+        }
+        .toc li {
+            padding: 5px 0;
+        }
+        .toc a {
+            color: #333;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            color: #2196F3;
+        }
+        .legend {
+            background: #f0f7ff;
+            border: 1px solid #cce5ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .client { background: #e1f5fe; color: #01579b; }
+        .gateway { background: #f3e5f5; color: #4a148c; }
+        .service { background: #e8f5e8; color: #1b5e20; }
+        .database { background: #fff3e0; color: #e65100; }
+        .external { background: #fce4ec; color: #880e4f; }
+        .infra { background: #e0f2f1; color: #004d40; }
+        .security { background: #fff8e1; color: #ff6f00; }
+    </style>
+</head>
+<body>
+    <h1>Pharmaceutical System - Complete Diagrams</h1>
+    
+    <div class="note">
+        <strong>📋 Note:</strong> All diagrams are generated using Mermaid.js. If diagrams don't render immediately, refresh the page or check browser console.
+    </div>
+    
+    <div class="toc">
+        <h3>📑 Table of Contents</h3>
+        <ul>
+            <li><a href="#system-architecture">1. System Architecture</a></li>
+            <li><a href="#order-states">2. Order State Diagram</a></li>
+            <li><a href="#sample-states">3. Sample Request State Diagram</a></li>
+            <li><a href="#user-states">4. User Account State Diagram</a></li>
+            <li><a href="#promotion-states">5. Promotion State Diagram</a></li>
+            <li><a href="#inventory-states">6. Inventory State Diagram</a></li>
+            <li><a href="#payment-states">7. Payment State Diagram</a></li>
+            <li><a href="#notification-states">8. Notification State Diagram</a></li>
+            <li><a href="#audit-states">9. Audit Log State Diagram</a></li>
+            <li><a href="#message-states">10. Message State Diagram</a></li>
+            <li><a href="#previous-diagrams">11. Previous Diagrams</a></li>
+            <li><a href="#files">12. Available Files</a></li>
+        </ul>
+    </div>
+
+    <h2 id="system-architecture">🏗️ System Architecture Diagram</h2>
+    <div class="legend">
+        <strong>Legend:</strong>
+        <span class="legend-item client">Client Applications</span>
+        <span class="legend-item gateway">API Gateway</span>
+        <span class="legend-item service">Business Services</span>
+        <span class="legend-item database">Databases & Storage</span>
+        <span class="legend-item external">External Integrations</span>
+        <span class="legend-item infra">Infrastructure</span>
+        <span class="legend-item security">Security Layer</span>
+    </div>
+    <div class="diagram-container">
+        <div class="mermaid">
+graph TB
+    %% ===== CLIENT LAYER =====
+    subgraph Client["Client Layer (Frontend)"]
+        Web["Web Application<br/>React/Nextjs"]
+        Mobile["Mobile App<br/>React Native/Flutter"]
+        Admin["Admin Panel<br/>Dashboard"]
+    end
+
+    %% ===== API GATEWAY =====
+    Gateway["API Gateway<br/>NestJS + Nginx"]
+    
+    %% ===== MICROSERVICES LAYER =====
+    subgraph Services["Microservices Layer"]
+        Auth["Auth Service<br/>JWT, OAuth2"]
+        Users["User Service<br/>Profiles Management"]
+        Orders["Order Service<br/>Order Processing"]
+        Samples["Sample Service<br/>Sample Requests"]
+        Inventory["Inventory Service<br/>Stock Management"]
+        Promo["Promotion Service<br/>Discounts & Offers"]
+        Notif["Notification Service<br/>Real-time Alerts"]
+        Comm["Communication Service<br/>Chat & Messages"]
+        Audit["Audit Service<br/>Logging & Tracking"]
+        Geo["Geo Service<br/>Location & Mapping"]
+    end
+
+    %% ===== DATA LAYER =====
+    subgraph Data["Data Layer"]
+        DB1["PostgreSQL<br/>Primary Database"]
+        DB2["Redis<br/>Cache & Sessions"]
+        DB3["Elasticsearch<br/>Search & Analytics"]
+        DB4["MongoDB<br/>Audit Logs & Notifications"]
+    end
+
+    %% ===== EXTERNAL SERVICES =====
+    subgraph External["External Services"]
+        SMS["SMS Gateway<br/>Twilio/Unifonic"]
+        Email["Email Service<br/>SendGrid/SES"]
+        Payment["Payment Gateway<br/>Stripe/Tap"]
+        Maps["Maps API<br/>Google Maps/Mapbox"]
+        FileStorage["File Storage<br/>AWS S3/Cloudinary"]
+        AI["AI Services<br/>Recommendations & Predictions"]
+    end
+
+    %% ===== INFRASTRUCTURE =====
+    subgraph Infra["Infrastructure"]
+        LoadBalancer["Load Balancer"]
+        CDN["CDN<br/>Static Assets"]
+        Monitoring["Monitoring<br/>Prometheus/Grafana"]
+        Logging["Logging<br/>ELK Stack"]
+        Container["Container Orchestration<br/>Kubernetes"]
+    end
+
+    %% ===== CONNECTIONS =====
+    Web --> Gateway
+    Mobile --> Gateway
+    Admin --> Gateway
+
+    Gateway --> LoadBalancer
+    LoadBalancer --> Auth
+    LoadBalancer --> Users
+    LoadBalancer --> Orders
+    LoadBalancer --> Samples
+    LoadBalancer --> Inventory
+    LoadBalancer --> Promo
+    LoadBalancer --> Notif
+    LoadBalancer --> Comm
+    LoadBalancer --> Audit
+    LoadBalancer --> Geo
+
+    Auth --> DB1
+    Users --> DB1
+    Orders --> DB1
+    Samples --> DB1
+    Inventory --> DB1
+    Promo --> DB1
+    
+    Auth --> DB2
+    Orders --> DB2
+    Promo --> DB2
+    
+    Orders --> DB3
+    Samples --> DB3
+    Users --> DB3
+    
+    Audit --> DB4
+    Notif --> DB4
+    Comm --> DB4
+
+    Notif --> SMS
+    Notif --> Email
+    Orders --> Payment
+    Geo --> Maps
+    Users --> FileStorage
+    Orders --> FileStorage
+    Promo --> FileStorage
+    
+    Orders -.-> AI
+    Inventory -.-> AI
+    Promo -.-> AI
+
+    Gateway --> CDN
+    Services --> Monitoring
+    Services --> Logging
+    Services --> Container
+
+    %% ===== SECURITY LAYER =====
+    subgraph Security["Security Layer"]
+        WAF["WAF<br/>Web Application Firewall"]
+        DDoS["DDoS Protection"]
+        SSL["SSL/TLS Encryption"]
+        RateLimit["Rate Limiting"]
+    end
+
+    Client --> WAF
+    WAF --> Gateway
+    Gateway --> SSL
+    Gateway --> RateLimit
+    External --> DDoS
+
+    classDef client fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef gateway fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef service fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef database fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef external fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef infra fill:#e0f2f1,stroke:#004d40,stroke-width:2px
+    classDef security fill:#fff8e1,stroke:#ff6f00,stroke-width:2px
+
+    class Web,Mobile,Admin client
+    class Gateway gateway
+    class Auth,Users,Orders,Samples,Inventory,Promo,Notif,Comm,Audit,Geo service
+    class DB1,DB2,DB3,DB4 database
+    class SMS,Email,Payment,Maps,FileStorage,AI external
+    class LoadBalancer,CDN,Monitoring,Logging,Container infra
+    class WAF,DDoS,SSL,RateLimit security
+        </div>
+    </div>
+
+    <h2 id="order-states">📦 Order State Diagram</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> Pending : Pharmacist creates order
+    
+    state Pending {
+        [*] --> WaitingApproval
+        WaitingApproval --> AutoAssigned : System assigns distributor
+        AutoAssigned --> ReadyForReview : Distributor notified
+    }
+    
+    Pending --> Approved : Distributor approves
+    Pending --> Rejected : Distributor rejects
+    Pending --> Cancelled : Pharmacist cancels
+    
+    state Approved {
+        [*] --> PaymentProcessing
+        PaymentProcessing --> PaymentVerified : Payment confirmed
+        PaymentVerified --> ReadyForDelivery : Order prepared
+    }
+    
+    Approved --> InDelivery : Distributor starts delivery
+    Approved --> Cancelled : Pharmacist cancels (before delivery)
+    
+    state InDelivery {
+        [*] --> OutForDelivery
+        OutForDelivery --> DeliveryInProgress : On the way
+        DeliveryInProgress --> Arrived : Reached destination
+    }
+    
+    InDelivery --> Delivered : Delivery completed
+    InDelivery --> Cancelled : Pharmacist cancels (during delivery)
+    InDelivery --> FailedDelivery : Delivery failed
+    
+    FailedDelivery --> Rescheduled : New delivery scheduled
+    FailedDelivery --> Cancelled : Order cancelled
+    
+    Delivered --> [*] : Order completed
+    Rejected --> [*] : Order rejected
+    Cancelled --> [*] : Order cancelled
+    Rescheduled --> InDelivery : Retry delivery
+        </div>
+    </div>
+
+    <h2 id="sample-states">💊 Sample Request State Diagram</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> PendingSample : Doctor requests sample
+    
+    state PendingSample {
+        [*] --> QuotaCheck
+        QuotaCheck --> QuotaAvailable : Within limits
+        QuotaCheck --> QuotaExceeded : Exceeds limit
+        QuotaAvailable --> AutoAssignRep : System assigns representative
+        QuotaExceeded --> [*] : Request rejected automatically
+    }
+    
+    PendingSample --> ApprovedSample : Company approves
+    PendingSample --> RejectedSample : Company rejects
+    PendingSample --> CancelledSample : Doctor cancels
+    
+    state ApprovedSample {
+        [*] --> SamplePrepared
+        SamplePrepared --> ReadyForDelivery : Sample packaged
+    }
+    
+    ApprovedSample --> InDeliverySample : Representative starts delivery
+    ApprovedSample --> CancelledSample : Doctor cancels (before delivery)
+    
+    state InDeliverySample {
+        [*] --> OutForDeliverySample
+        OutForDeliverySample --> DeliveryInProgressSample
+    }
+    
+    InDeliverySample --> DeliveredSample : Delivery completed
+    InDeliverySample --> CancelledSample : Doctor cancels (during delivery)
+    InDeliverySample --> FailedDeliverySample : Delivery failed
+    
+    FailedDeliverySample --> RescheduledSample : New delivery scheduled
+    FailedDeliverySample --> CancelledSample : Request cancelled
+    
+    DeliveredSample --> [*] : Sample delivered
+    RejectedSample --> [*] : Request rejected
+    CancelledSample --> [*] : Request cancelled
+    RescheduledSample --> InDeliverySample : Retry delivery
+        </div>
+    </div>
+
+    <h2 id="user-states">👤 User Account State Diagram</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> Unregistered : Not yet registered
+    
+    Unregistered --> Registered : User registers
+    Registered --> PendingVerification : Email/phone verification needed
+    
+    state PendingVerification {
+        [*] --> EmailSent
+        EmailSent --> EmailVerified : Email confirmed
+        EmailSent --> PhoneVerified : Phone confirmed
+    }
+    
+    PendingVerification --> Active : Verification completed
+    PendingVerification --> VerificationFailed : Verification failed
+    
+    VerificationFailed --> Registered : Retry verification
+    
+    state Active {
+        [*] --> Normal
+        Normal --> Suspended : Violation detected
+        Suspended --> Normal : Suspension lifted
+        Normal --> Restricted : Limited access
+        Restricted --> Normal : Restrictions removed
+    }
+    
+    Active --> Inactive : User deactivates account
+    Active --> Banned : Admin bans account
+    
+    Inactive --> Active : User reactivates
+    Banned --> [*] : Permanent ban
+    
+    Active --> [*] : Account deleted
+        </div>
+    </div>
+
+    <h2 id="promotion-states">🎯 Promotion State Diagram</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> Draft : Promotion created
+    
+    Draft --> Scheduled : Start date set
+    Draft --> Cancelled : Promotion cancelled
+    
+    state Scheduled {
+        [*] --> WaitingStart
+        WaitingStart --> AboutToStart : 24h before start
+    }
+    
+    Scheduled --> Active : Start date reached
+    Scheduled --> Cancelled : Promotion cancelled before start
+    
+    state Active {
+        [*] --> Running
+        Running --> Paused : Manually paused
+        Paused --> Running : Resumed
+    }
+    
+    Active --> Ended : End date reached
+    Active --> Cancelled : Promotion cancelled during run
+    Active --> Extended : End date extended
+    
+    Extended --> Active : Continues running
+    Ended --> [*] : Promotion completed
+    Cancelled --> [*] : Promotion cancelled
+        </div>
+    </div>
+
+    <h2 id="inventory-states">📊 Inventory State Diagram</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> InStock : Product in inventory
+    
+    InStock --> LowStock : Quantity below threshold
+    LowStock --> InStock : Stock replenished
+    LowStock --> OutOfStock : Quantity reaches zero
+    
+    OutOfStock --> OnOrder : New order placed
+    OutOfStock --> Discontinued : Product discontinued
+    
+    OnOrder --> InTransit : Order shipped
+    InTransit --> InStock : Received in inventory
+    
+    Discontinued --> [*] : Product removed
+    
+    state LowStock {
+        [*] --> WarningSent
+        WarningSent --> Critical : Very low stock
+        Critical --> Emergency : Almost out
+    }
+    
+    Critical --> InStock : Emergency restock
+    Emergency --> OutOfStock : Completely out
+        </div>
+    </div>
+
+    <h2 id="payment-states">💳 Payment State Diagram</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> Unpaid : Order created
+    
+    Unpaid --> Processing : Payment initiated
+    Processing --> Authorized : Payment authorized
+    Processing --> Failed : Payment failed
+    
+    Failed --> Retry : Retry payment
+    Retry --> Processing : Payment retried
+    Failed --> Cancelled : Payment cancelled
+    
+    Authorized --> Captured : Funds captured
+    Authorized --> Voided : Authorization voided
+    
+    Captured --> Refunded : Partial/full refund
+    Captured --> Completed : Payment finalized
+    
+    Voided --> [*] : Payment voided
+    Refunded --> [*] : Refund processed
+    Completed --> [*] : Payment completed
+    Cancelled --> [*] : Payment cancelled
+        </div>
+    </div>
+
+    <h2 id="notification-states">🔔 Notification State Diagram</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> Created : Notification generated
+    
+    Created --> Queued : Added to queue
+    Queued --> Processing : Being processed
+    
+    state Processing {
+        [*] --> SelectingChannel
+        SelectingChannel --> Sending : Channel selected
+        Sending --> Delivered : Sent successfully
+        Sending --> Failed : Send failed
+    }
+    
+    Delivered --> Read : User reads notification
+    Delivered --> Unread : User hasn't read
+    
+    Failed --> RetryNotification : Retry sending
+    RetryNotification --> Processing : Retry processing
+    
+    Failed --> Discarded : Max retries exceeded
+    
+    Read --> [*] : Notification read
+    Unread --> [*] : Notification unread (expired)
+    Discarded --> [*] : Notification discarded
+        </div>
+    </div>
+
+    <h2 id="audit-states">📝 Audit Log State Diagram</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> EventOccurred : System event occurs
+    
+    EventOccurred --> Capturing : Capturing event data
+    Capturing --> Validating : Validating data
+    
+    state Validating {
+        [*] --> CheckIntegrity
+        CheckIntegrity --> CheckSensitivity
+        CheckSensitivity --> DataMasked : Mask PII data
+    }
+    
+    Validating --> Formatting : Formatting log entry
+    Formatting --> Storing : Storing in database
+    
+    Storing --> Indexed : Added to search index
+    Storing --> Archived : Moved to archive
+    
+    Indexed --> [*] : Available for search
+    Archived --> [*] : Long-term storage
+        </div>
+    </div>
+
+    <h2 id="message-states">💬 Message State Diagram</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> Composing : User composes message
+    
+    Composing --> Sending : User sends message
+    Sending --> Sent : Message sent successfully
+    Sending --> FailedSend : Send failed
+    
+    FailedSend --> RetryMessage : Retry sending
+    RetryMessage --> Sending : Retry send
+    FailedSend --> DiscardedMessage : Message discarded
+    
+    Sent --> DeliveredMessage : Delivered to recipient
+    Sent --> PendingDelivery : Waiting for delivery
+    
+    DeliveredMessage --> ReadMessage : Recipient reads message
+    DeliveredMessage --> UnreadMessage : Recipient hasn't read
+    
+    ReadMessage --> [*] : Message read
+    UnreadMessage --> [*] : Message unread
+    DiscardedMessage --> [*] : Message discarded
+    PendingDelivery --> [*] : Delivery pending
+        </div>
+    </div>
+
+    <h2 id="previous-diagrams">📋 Previous Diagrams Summary</h2>
+    <div class="note">
+        <strong>Note:</strong> The following diagrams were created earlier and are available in separate files:
+    </div>
+    
+    <div class="file-list">
+        <h3>Available Diagram Files:</h3>
+        <ul>
+            <li><strong>📊 Sequence Diagrams:</strong>
+                <ul>
+                    <li><a href="order-sequence-diagram.mmd">order-sequence-diagram.mmd</a> - Order flow sequence</li>
+                    <li><a href="sample-request-sequence-diagram.mmd">sample-request-sequence-diagram.mmd</a> - Sample request flow</li>
+                </ul>
+            </li>
+            <li><strong>🔄 Activity Diagrams:</strong>
+                <ul>
+                    <li><a href="activity-diagram.mmd">activity-diagram.mmd</a> - Overall system activity flow</li>
+                </ul>
+            </li>
+            <li><strong>🏛️ Class Diagrams:</strong>
+                <ul>
+                    <li><a href="class-diagram.mmd">class-diagram.mmd</a> - UML class diagram</li>
+                </ul>
+            </li>
+            <li><strong>🏗️ Architecture Diagrams:</strong>
+                <ul>
+                    <li><a href="system-architecture.mmd">system-architecture.mmd</a> - Complete system architecture</li>
+                </ul>
+            </li>
+            <li><strong>📈 State Diagrams:</strong>
+                <ul>
+                    <li><a href="state-diagrams.mmd">state-diagrams.mmd</a> - All state diagrams (this page)</li>
+                </ul>
+            </li>
+            <li><strong>📄 Documentation:</strong>
+                <ul>
+                    <li><a href="system-diagrams.md">system-diagrams.md</a> - Complete documentation</li>
+                    <li><a href="uml-class-diagram.md">uml-class-diagram.md</a> - UML documentation</li>
+                </ul>
+            </li>
+            <li><strong>🌐 Viewers:</strong>
+                <ul>
+                    <li><a href="view-diagrams.html">view-diagrams.html</a> - Previous diagrams viewer</li>
+                    <li><a href="view-all-diagrams.html">view-all-diagrams.html</a> - This complete viewer</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <h2 id="files">📁 File Usage Instructions</h2>
+    <div class="warning">
+        <strong>⚠️ Important:</strong> For Mermaid Live Editor, use the <code>.mmd</code> files only. Copy the entire content and paste into <a href="https://mermaid.live/" target="_blank">Mermaid Live Editor</a>.
+    </div>
+    
+    <div class="note">
+        <strong>🎯 Best Practices:</strong>
+        <ol>
+            <li><strong>For quick viewing:</strong> Open <code>view-all-diagrams.html</code> in your browser</li>
+            <li><strong>For editing/exporting:</strong> Use the <code>.mmd</code> files with Mermaid Live Editor</li>
+            <li><strong>For documentation:</strong> Use the <code>.md</code> files for Markdown documentation</li>
+            <li><strong>For development reference:</strong> Keep all files in your project documentation folder</li>
+        </ol>
+    </div>
+
+    <script>
+        // Initialize Mermaid with better settings
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            sequence: {
+                useMaxWidth: true,
+                showSequenceNumbers: false,
+                actorMargin: 50
+            },
+            state: {
+                useMaxWidth: true,
+                htmlLabels: true
+            },
+            class: {
+                useMaxWidth: true
+            },
+            securityLevel: 'loose'
+        });
+        
+        // Add smooth scrolling for TOC links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

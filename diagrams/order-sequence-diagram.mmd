@@ -1,0 +1,30 @@
+sequenceDiagram
+    participant P as Pharmacist
+    participant S as System
+    participant D as Distributor
+    participant C as Company
+    participant I as Inventory
+
+    P->>S: Create Order (items, delivery address)
+    S->>S: Group items by Company
+    S->>S: Find Distributor by City
+    S->>S: Calculate discounts from Promotions
+    S->>S: Generate Order Number
+    S->>D: Auto-assign Distributor
+    S->>P: Order Created (pending)
+    
+    D->>S: View Pending Orders
+    D->>S: Approve/Reject Order
+    alt Approve
+        S->>S: Update status to "approved"
+        S->>P: Notification: Order Approved
+        S->>D: Order ready for delivery
+        D->>S: Mark as "in_delivery"
+        S->>P: Notification: Order in Delivery
+        D->>S: Mark as "delivered"
+        S->>I: Deduct from Inventory
+        S->>P: Notification: Order Delivered
+    else Reject
+        S->>S: Update status to "rejected"
+        S->>P: Notification: Order Rejected
+    end

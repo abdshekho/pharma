@@ -1,0 +1,153 @@
+graph TB
+    %% ===== CLIENT LAYER =====
+    subgraph Client["Client Layer (Frontend)"]
+        Web["Web Application<br/>React/Angular"]
+        Mobile["Mobile App<br/>React Native/Flutter"]
+        Admin["Admin Panel<br/>Dashboard"]
+    end
+
+    %% ===== API GATEWAY =====
+    Gateway["API Gateway<br/>NestJS + Nginx"]
+    
+    %% ===== MICROSERVICES LAYER =====
+    subgraph Services["Microservices Layer"]
+        Auth["Auth Service<br/>JWT, OAuth2"]
+        Users["User Service<br/>Profiles Management"]
+        Orders["Order Service<br/>Order Processing"]
+        Samples["Sample Service<br/>Sample Requests"]
+        Inventory["Inventory Service<br/>Stock Management"]
+        Promo["Promotion Service<br/>Discounts & Offers"]
+        Notif["Notification Service<br/>Real-time Alerts"]
+        Comm["Communication Service<br/>Chat & Messages"]
+        Audit["Audit Service<br/>Logging & Tracking"]
+        Geo["Geo Service<br/>Location & Mapping"]
+    end
+
+    %% ===== DATA LAYER =====
+    subgraph Data["Data Layer"]
+        DB1["PostgreSQL<br/>Primary Database"]
+        DB2["Redis<br/>Cache & Sessions"]
+        DB3["Elasticsearch<br/>Search & Analytics"]
+        DB4["MongoDB<br/>Audit Logs & Notifications"]
+    end
+
+    %% ===== EXTERNAL SERVICES =====
+    subgraph External["External Services"]
+        SMS["SMS Gateway<br/>Twilio/Unifonic"]
+        Email["Email Service<br/>SendGrid/SES"]
+        Payment["Payment Gateway<br/>Stripe/Tap"]
+        Maps["Maps API<br/>Google Maps/Mapbox"]
+        FileStorage["File Storage<br/>AWS S3/Cloudinary"]
+        AI["AI Services<br/>Recommendations & Predictions"]
+    end
+
+    %% ===== INFRASTRUCTURE =====
+    subgraph Infra["Infrastructure"]
+        LoadBalancer["Load Balancer"]
+        CDN["CDN<br/>Static Assets"]
+        Monitoring["Monitoring<br/>Prometheus/Grafana"]
+        Logging["Logging<br/>ELK Stack"]
+        Container["Container Orchestration<br/>Kubernetes"]
+    end
+
+    %% ===== CONNECTIONS =====
+    %% Client to Gateway
+    Web --> Gateway
+    Mobile --> Gateway
+    Admin --> Gateway
+
+    %% Gateway to Services
+    Gateway --> LoadBalancer
+    LoadBalancer --> Auth
+    LoadBalancer --> Users
+    LoadBalancer --> Orders
+    LoadBalancer --> Samples
+    LoadBalancer --> Inventory
+    LoadBalancer --> Promo
+    LoadBalancer --> Notif
+    LoadBalancer --> Comm
+    LoadBalancer --> Audit
+    LoadBalancer --> Geo
+
+    %% Services to Databases
+    Auth --> DB1
+    Users --> DB1
+    Orders --> DB1
+    Samples --> DB1
+    Inventory --> DB1
+    Promo --> DB1
+    
+    Auth --> DB2
+    Orders --> DB2
+    Promo --> DB2
+    
+    Orders --> DB3
+    Samples --> DB3
+    Users --> DB3
+    
+    Audit --> DB4
+    Notif --> DB4
+    Comm --> DB4
+
+    %% Services to External
+    Notif --> SMS
+    Notif --> Email
+    Orders --> Payment
+    Geo --> Maps
+    Users --> FileStorage
+    Orders --> FileStorage
+    Promo --> FileStorage
+    
+    %% AI Integration
+    Orders -.-> AI
+    Inventory -.-> AI
+    Promo -.-> AI
+
+    %% Infrastructure
+    Gateway --> CDN
+    Services --> Monitoring
+    Services --> Logging
+    Services --> Container
+
+    %% ===== SECURITY LAYER =====
+    subgraph Security["Security Layer"]
+        WAF["WAF<br/>Web Application Firewall"]
+        DDoS["DDoS Protection"]
+        SSL["SSL/TLS Encryption"]
+        RateLimit["Rate Limiting"]
+    end
+
+    %% Security Connections
+    Client --> WAF
+    WAF --> Gateway
+    Gateway --> SSL
+    Gateway --> RateLimit
+    External --> DDoS
+
+    %% ===== STYLING =====
+    classDef client fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef gateway fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef service fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef database fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef external fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    classDef infra fill:#e0f2f1,stroke:#004d40,stroke-width:2px
+    classDef security fill:#fff8e1,stroke:#ff6f00,stroke-width:2px
+
+    class Web,Mobile,Admin client
+    class Gateway gateway
+    class Auth,Users,Orders,Samples,Inventory,Promo,Notif,Comm,Audit,Geo service
+    class DB1,DB2,DB3,DB4 database
+    class SMS,Email,Payment,Maps,FileStorage,AI external
+    class LoadBalancer,CDN,Monitoring,Logging,Container infra
+    class WAF,DDoS,SSL,RateLimit security
+
+    %% ===== LEGEND =====
+    subgraph Legend["Legend"]
+        L1["Client Applications"]:::client
+        L2["API Gateway"]:::gateway
+        L3["Business Services"]:::service
+        L4["Databases & Storage"]:::database
+        L5["External Integrations"]:::external
+        L6["Infrastructure"]:::infra
+        L7["Security"]:::security
+    end

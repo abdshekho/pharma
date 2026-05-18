@@ -1,0 +1,49 @@
+flowchart TD
+    Start([Start]) --> Auth{Authentication}
+    Auth -->|Success| RoleCheck{User Role}
+    
+    RoleCheck -->|Pharmacist| P1[View Products]
+    P1 --> P2[Create Order]
+    P2 --> P3[Auto-assign Distributor]
+    P3 --> P4[Order Pending]
+    P4 --> P5{Distributor Action}
+    P5 -->|Approve| P6[Order Approved]
+    P5 -->|Reject| P7[Order Rejected]
+    P6 --> P8[In Delivery]
+    P8 --> P9[Delivered]
+    P9 --> End1([End])
+    P7 --> End1
+    
+    RoleCheck -->|Doctor| D1[View Products]
+    D1 --> D2[Request Sample]
+    D2 --> D3[Check Quota]
+    D3 -->|Available| D4[Auto-assign Representative]
+    D3 -->|Exceeded| D5[Quota Error]
+    D4 --> D6[Request Pending]
+    D6 --> D7{Company Action}
+    D7 -->|Approve| D8[Request Approved]
+    D7 -->|Reject| D9[Request Rejected]
+    D8 --> D10[Delivered]
+    D10 --> End2([End])
+    D9 --> End2
+    D5 --> End2
+    
+    RoleCheck -->|Distributor| Dis1[View Assigned Orders]
+    Dis1 --> Dis2{Order Status}
+    Dis2 -->|Pending| Dis3[Approve/Reject]
+    Dis2 -->|Approved| Dis4[Mark In Delivery]
+    Dis2 -->|In Delivery| Dis5[Mark Delivered]
+    Dis3 --> Dis6[Update Inventory]
+    Dis5 --> Dis6
+    Dis6 --> End3([End])
+    
+    RoleCheck -->|Company| C1[Manage Products]
+    C1 --> C2[Create Promotions]
+    C2 --> C3[Set Sample Quotas]
+    C3 --> C4[View Sample Requests]
+    C4 --> C5[Approve/Reject Requests]
+    C5 --> End4([End])
+    
+    RoleCheck -->|Representative| R1[View Assigned Sample Requests]
+    R1 --> R2[Deliver Samples]
+    R2 --> End5([End])

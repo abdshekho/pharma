@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmaceutical System Diagrams</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #444;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        .diagram-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        .mermaid {
+            text-align: center;
+            min-height: 300px;
+        }
+        .code-block {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .note {
+            background: #e8f4fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pharmaceutical System Diagrams</h1>
+    
+    <div class="note">
+        <strong>Note:</strong> These diagrams are generated using Mermaid.js. If diagrams don't render immediately, refresh the page.
+    </div>
+
+    <h2>1. Order Flow Sequence Diagram</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+sequenceDiagram
+    participant P as Pharmacist
+    participant S as System
+    participant D as Distributor
+    participant C as Company
+    participant I as Inventory
+
+    P->>S: Create Order (items, delivery address)
+    S->>S: Group items by Company
+    S->>S: Find Distributor by City
+    S->>S: Calculate discounts from Promotions
+    S->>S: Generate Order Number
+    S->>D: Auto-assign Distributor
+    S->>P: Order Created (pending)
+    
+    D->>S: View Pending Orders
+    D->>S: Approve/Reject Order
+    alt Approve
+        S->>S: Update status to "approved"
+        S->>P: Notification: Order Approved
+        S->>D: Order ready for delivery
+        D->>S: Mark as "in_delivery"
+        S->>P: Notification: Order in Delivery
+        D->>S: Mark as "delivered"
+        S->>I: Deduct from Inventory
+        S->>P: Notification: Order Delivered
+    else Reject
+        S->>S: Update status to "rejected"
+        S->>P: Notification: Order Rejected
+    end
+        </div>
+    </div>
+
+    <h2>2. Sample Request Sequence Diagram</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+sequenceDiagram
+    participant Dr as Doctor
+    participant S as System
+    participant C as Company
+    participant R as Representative
+    participant Q as Quota System
+
+    Dr->>S: Request Sample (product, quantity)
+    S->>Q: Check Sample Quota
+    Q-->>S: Quota Available/Not Available
+    alt Quota Available
+        S->>S: Find Representative by City
+        S->>R: Auto-assign Representative
+        S->>C: Sample Request (pending)
+        S->>Dr: Request Created
+        
+        C->>S: View Pending Requests
+        C->>S: Approve/Reject Request
+        alt Approve
+            S->>S: Update status to "approved"
+            S->>R: Notification: Request Approved
+            S->>Dr: Notification: Request Approved
+            R->>S: Mark as "delivered"
+            S->>Dr: Notification: Sample Delivered
+        else Reject
+            S->>S: Update status to "rejected"
+            S->>Dr: Notification: Request Rejected
+        end
+    else Quota Exceeded
+        S->>Dr: Error: Quota exceeded
+    end
+        </div>
+    </div>
+
+    <h2>3. Activity Diagram - Overall System Flow</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+flowchart TD
+    Start([Start]) --> Auth{Authentication}
+    Auth -->|Success| RoleCheck{User Role}
+    
+    RoleCheck -->|Pharmacist| P1[View Products]
+    P1 --> P2[Create Order]
+    P2 --> P3[Auto-assign Distributor]
+    P3 --> P4[Order Pending]
+    P4 --> P5{Distributor Action}
+    P5 -->|Approve| P6[Order Approved]
+    P5 -->|Reject| P7[Order Rejected]
+    P6 --> P8[In Delivery]
+    P8 --> P9[Delivered]
+    P9 --> End1([End])
+    P7 --> End1
+    
+    RoleCheck -->|Doctor| D1[View Products]
+    D1 --> D2[Request Sample]
+    D2 --> D3[Check Quota]
+    D3 -->|Available| D4[Auto-assign Representative]
+    D3 -->|Exceeded| D5[Quota Error]
+    D4 --> D6[Request Pending]
+    D6 --> D7{Company Action}
+    D7 -->|Approve| D8[Request Approved]
+    D7 -->|Reject| D9[Request Rejected]
+    D8 --> D10[Delivered]
+    D10 --> End2([End])
+    D9 --> End2
+    D5 --> End2
+    
+    RoleCheck -->|Distributor| Dis1[View Assigned Orders]
+    Dis1 --> Dis2{Order Status}
+    Dis2 -->|Pending| Dis3[Approve/Reject]
+    Dis2 -->|Approved| Dis4[Mark In Delivery]
+    Dis2 -->|In Delivery| Dis5[Mark Delivered]
+    Dis3 --> Dis6[Update Inventory]
+    Dis5 --> Dis6
+    Dis6 --> End3([End])
+    
+    RoleCheck -->|Company| C1[Manage Products]
+    C1 --> C2[Create Promotions]
+    C2 --> C3[Set Sample Quotas]
+    C3 --> C4[View Sample Requests]
+    C4 --> C5[Approve/Reject Requests]
+    C5 --> End4([End])
+    
+    RoleCheck -->|Representative| R1[View Assigned Sample Requests]
+    R1 --> R2[Deliver Samples]
+    R2 --> End5([End])
+        </div>
+    </div>
+
+    <h2>4. UML Class Diagram</h2>
+    <div class="diagram-container">
+        <div class="mermaid">
+classDiagram
+    class User {
+        +uuid id
+        +string email
+        +string passwordHash
+        +UserRole role
+        +string fullName
+        +string phone
+        +uuid cityId
+        +UserStatus status
+        +timestamp createdAt
+        +timestamp updatedAt
+    }
+
+    class CompanyProfile {
+        +uuid id
+        +uuid userId
+        +string companyName
+        +string commercialRegister
+        +string taxNumber
+        +string logoUrl
+        +timestamp createdAt
+    }
+
+    class DistributorProfile {
+        +uuid id
+        +uuid userId
+        +string companyName
+        +string commercialRegister
+        +string taxNumber
+        +timestamp createdAt
+    }
+
+    class PharmacistProfile {
+        +uuid id
+        +uuid userId
+        +string pharmacyName
+        +string licenseNumber
+        +timestamp createdAt
+    }
+
+    class DoctorProfile {
+        +uuid id
+        +uuid userId
+        +string licenseNumber
+        +uuid specializationId
+        +timestamp createdAt
+    }
+
+    class RepresentativeProfile {
+        +uuid id
+        +uuid userId
+        +uuid companyId
+        +uuid cityId
+        +timestamp createdAt
+    }
+
+    class City {
+        +uuid id
+        +string nameAr
+        +string nameEn
+    }
+
+    class CompanyDistributor {
+        +uuid id
+        +uuid companyId
+        +uuid distributorId
+        +uuid cityId
+        +CompanyDistributorStatus status
+        +timestamp assignedAt
+    }
+
+    class Product {
+        +uuid id
+        +uuid companyId
+        +string nameAr
+        +string nameEn
+        +string description
+        +decimal price
+        +string imageUrl
+        +uuid categoryId
+        +uuid drugGroupId
+        +ProductStatus status
+        +timestamp createdAt
+    }
+
+    class Order {
+        +uuid id
+        +string orderNumber
+        +uuid pharmacistId
+        +uuid companyId
+        +uuid distributorId
+        +uuid cityId
+        +OrderStatus status
+        +decimal totalAmount
+        +PaymentMethod paymentMethod
+        +string deliveryAddress
+        +string notes
+        +string rejectionReason
+        +timestamp approvedAt
+        +timestamp deliveredAt
+        +timestamp createdAt
+        +timestamp updatedAt
+    }
+
+    class OrderItem {
+        +uuid id
+        +uuid orderId
+        +uuid productId
+        +string productName
+        +int quantity
+        +decimal unitPrice
+        +uuid promotionProductId
+        +decimal discountAmount
+        +decimal subtotal
+    }
+
+    class SampleRequest {
+        +uuid id
+        +uuid doctorId
+        +uuid productId
+        +uuid companyId
+        +uuid representativeId
+        +SampleRequestStatus status
+        +int quantity
+        +string deliveryAddress
+        +string rejectionReason
+        +timestamp approvedAt
+        +timestamp deliveredAt
+        +timestamp createdAt
+        +timestamp updatedAt
+    }
+
+    class SampleQuota {
+        +uuid id
+        +uuid companyId
+        +uuid productId
+        +int maxPerDoctor
+        +int cooldownDays
+        +boolean isActive
+        +timestamp createdAt
+    }
+
+    class Promotion {
+        +uuid id
+        +uuid companyId
+        +uuid distributorId
+        +uuid parentPromotionId
+        +string title
+        +string description
+        +PromotionType type
+        +PromotionLevel level
+        +PromotionTargetType targetType
+        +timestamp startsAt
+        +timestamp endsAt
+        +string imageUrl
+        +boolean isActive
+        +timestamp createdAt
+    }
+
+    class PromotionProduct {
+        +uuid id
+        +uuid promotionId
+        +uuid productId
+        +decimal discountPercent
+    }
+
+    class PromotionBuyXGetY {
+        +uuid id
+        +uuid promotionId
+        +uuid buyProductId
+        +int buyQuantity
+        +uuid freeProductId
+        +int freeQuantity
+    }
+
+    class DistributorInventory {
+        +uuid id
+        +uuid distributorId
+        +uuid productId
+        +int quantityAvailable
+        +int lowStockThreshold
+        +timestamp lastUpdated
+    }
+
+    class InventoryMovement {
+        +uuid id
+        +uuid distributorId
+        +uuid productId
+        +InventoryMovementType type
+        +int quantity
+        +uuid referenceId
+        +uuid createdBy
+        +timestamp createdAt
+    }
+
+    class Notification {
+        +uuid id
+        +uuid userId
+        +string type
+        +string title
+        +string body
+        +uuid relatedId
+        +NotificationRelatedType relatedType
+        +timestamp readAt
+        +timestamp createdAt
+    }
+
+    class Message {
+        +uuid id
+        +uuid conversationId
+        +uuid parentMessageId
+        +uuid senderId
+        +uuid receiverId
+        +uuid relatedProductId
+        +string body
+        +string attachmentUrl
+        +timestamp readAt
+        +timestamp createdAt
+    }
+
+    class AuditLog {
+        +uuid id
+        +uuid userId
+        +string action
+        +string entityType
+        +uuid entityId
+        +jsonb oldData
+        +jsonb newData
+        +string ipAddress
+        +string userAgent
+        +timestamp createdAt
+    }
+
+    %% Relationships
+    User "1" -- "1" CompanyProfile : has
+    User "1" -- "1" DistributorProfile : has
+    User "1" -- "1" PharmacistProfile : has
+    User "1" -- "1" DoctorProfile : has
+    User "1" -- "1" RepresentativeProfile : has
+    User "1" -- "1" City : located_in
+
+    CompanyProfile "1" -- "*" CompanyDistributor : has
+    DistributorProfile "1" -- "*" CompanyDistributor : has
+    City "1" -- "*" CompanyDistributor : serves
+
+    CompanyProfile "1" -- "*" Product : produces
+    Product "1" -- "*" OrderItem : included_in
+    Product "1" -- "*" SampleRequest : requested_in
+    Product "1" -- "*" SampleQuota : has_quota_for
+    Product "1" -- "*" PromotionProduct : in_promotion
+    Product "1" -- "*" PromotionBuyXGetY : buy_product
+    Product "1" -- "*" PromotionBuyXGetY : free_product
+    Product "1" -- "*" DistributorInventory : in_inventory
+
+    Order "1" -- "*" OrderItem : contains
+    PharmacistProfile "1" -- "*" Order : creates
+    DistributorProfile "1" -- "*" Order : handles
+    CompanyProfile "1" -- "*" Order : receives
+
+    DoctorProfile "1" -- "*" SampleRequest : creates
+    RepresentativeProfile "1" -- "*" SampleRequest : delivers
+    CompanyProfile "1" -- "*" SampleRequest : approves
+
+    Promotion "1" -- "*" PromotionProduct : has_discounts
+    Promotion "1" -- "1" PromotionBuyXGetY : has_buyxgety
+    Promotion "1" -- "*" Promotion : child_of
+
+    DistributorProfile "1" -- "*" DistributorInventory : manages
+    DistributorProfile "1" -- "*" InventoryMovement : tracks
+
+    User "1" -- "*" Notification : receives
+    User "1" -- "*" Message : sends
+    User "1" -- "*" Message : receives
+    User "1" -- "*" AuditLog : creates
+
+    %% Enumerations
+    class UserRole {
+        <<enumeration>>
+        admin
+        company
+        distributor
+        pharmacist
+        doctor
+        representative
+    }
+
+    class OrderStatus {
+        <<enumeration>>
+        pending
+        approved
+        in_delivery
+        delivered
+        rejected
+        cancelled
+    }
+
+    class SampleRequestStatus {
+        <<enumeration>>
+        pending
+        approved
+        delivered
+        rejected
+    }
+
+    class PromotionType {
+        <<enumeration>>
+        percentage
+        buyXgetY
+    }
+
+    class PromotionLevel {
+        <<enumeration>>
+        distributor
+        pharmacist
+    }
+
+    class InventoryMovementType {
+        <<enumeration>>
+        in
+        out
+        adjustment
+    }
+        </div>
+    </div>
+
+    <div class="note">
+        <strong>Usage Instructions:</strong>
+        <ul>
+            <li>Save this HTML file and open it in any modern web browser</li>
+            <li>The diagrams will render automatically using Mermaid.js</li>
+            <li>For Mermaid Live Editor: Copy only the Mermaid code (without Markdown) from the .mmd files</li>
+            <li>Individual Mermaid files are available as: order-sequence-diagram.mmd, sample-request-sequence-diagram.mmd, activity-diagram.mmd, class-diagram.mmd</li>
+        </ul>
+    </div>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            },
+            sequence: {
+                useMaxWidth: true,
+                showSequenceNumbers: false
+            },
+            class: {
+                useMaxWidth: true
+            }
+        });
+    </script>
+</body>
+</html>
