@@ -1,6 +1,11 @@
-import { IsString, IsOptional, IsBoolean, IsUUID, Length, IsArray } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsUUID, Length, IsArray, MaxLength } from 'class-validator';
 
 export class CreateDrugGroupDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(20)
+  code?: string;
+
   @IsString()
   @Length(1, 200)
   nameAr!: string;

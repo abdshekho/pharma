@@ -57,7 +57,10 @@ export class DrugGroupsService {
   }
 
   async create(dto: CreateDrugGroupDto) {
-    const existing = await this.prisma.drugGroup.findUnique({ where: { nameAr: dto.nameAr } });
+    const existing = await this.prisma.drugGroup.findFirst({ where: { nameAr: dto.nameAr } });
+
+    console.log('🚀 ~ drug-groups.service.ts ~ DrugGroupsService ~ create ~ dto.nameAr:', dto.nameAr);
+
     if (existing) throw new ConflictException('DrugGroup with this name already exists');
 
     const { categoryIds, ...data } = dto;

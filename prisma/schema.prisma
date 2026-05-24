@@ -42,6 +42,7 @@ model Specialization {
 model Category {
   id       String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   parentId String?   @map("parent_id") @db.Uuid
+  code     String?   @unique @db.VarChar(20)
   nameAr   String    @map("name_ar") @db.VarChar(100)
   nameEn   String?   @map("name_en") @db.VarChar(100)
   icon     String?   @db.VarChar(255)
@@ -211,7 +212,8 @@ model CompanyDistributor {
 
 model DrugGroup {
   id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  nameAr      String   @unique @map("name_ar") @db.VarChar(200)
+  code        String?  @unique @db.VarChar(20)
+  nameAr      String   @map("name_ar") @db.VarChar(200)
   nameEn      String?  @map("name_en") @db.VarChar(200)
   description String?  @db.Text
   isActive    Boolean  @default(true) @map("is_active")

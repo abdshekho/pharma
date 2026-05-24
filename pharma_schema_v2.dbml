@@ -241,7 +241,7 @@ Table drug_group_categories {
 
 // dosage_form   → شكل الدواء
 // pack_size     → عدد الوحدات (20 tablet - 100 ml)
-// pack_unit     → نوع الوحدة  (ml - tablet)
+// pack_unit     → الواحدة  (ml - tablet)
 // package_type  → نوع العبوة  (علبة - زجاجة)
 
 Table products {

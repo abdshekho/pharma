@@ -1,23 +1,27 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as fs from 'fs';
-import * as path from 'path';
-import { ImportAtcDto } from './dto/import-atc.dto';
-
+import * as XLSX from 'xlsx';
 interface AtcRecord {
   'ATC code_L1': string;
+  'name_L1': string;
+  'namear_L1': string;
   'ATC code_L2': string;
+  'name_L2': string;
+  'namear_L2': string;
   'ATC code_L3': string;
   'name_L3': string;
+  'namear_L3': string;
   'ATC code_L4': string;
   'name_L4': string;
+  'namear_L4': string;
   'ATC code_L5': string;
   'Name_L5': string;
+  'Namear_L5': string;
   'DDD_L5': string;
   'U_L5': string;
   'Adm.R_L5': string;
   'Note_L5': string;
-  'href_L5': string;
   'flag_DDD': string;
 }
 
@@ -36,47 +40,42 @@ export class AtcImportService {
 
       this.logger.log(`Starting ATC import from: ${filePath}`);
       
-      // Read the file as text
-      const fileContent = fs.readFileSync(filePath, 'utf-8');
+      // Read Excel file
+      const workbook = XLSX.readFile(filePath);
       
-      // Try different delimiters: tab, comma, semicolon
-      const lines = fileContent.split(/\r?\n/).filter(line => line.trim());
+      // Get first sheet
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
       
-      if (lines.length < 2) {
+      // Convert to JSON with headers
+      const data = XLSX.utils.sheet_to_json(worksheet);
+      
+      if (data.length === 0) {
         throw new BadRequestException('File is empty or has no data');
       }
 
-      // Detect delimiter
-      const firstLine = lines[0];
-      let delimiter = '\t'; // default to tab
-      
-      if (firstLine.includes('\t')) {
-        delimiter = '\t';
-      } else if (firstLine.includes(',')) {
-        delimiter = ',';
-      } else if (firstLine.includes(';')) {
-        delimiter = ';';
-      }
-
-      this.logger.log(`Detected delimiter: ${delimiter === '\t' ? 'tab' : delimiter}`);
-
-      // Parse header
-      const headers = firstLine.split(delimiter).map(h => h.trim());
-      this.logger.log(`Found ${headers.length} headers`);
+      this.logger.log(`Found ${data.length} records in Excel file`);
 
       // Parse data rows
       const records: AtcRecord[] = [];
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        if (!line.trim()) continue;
-        
-        // Simple CSV parsing (doesn't handle quoted fields with delimiters)
-        const values = line.split(delimiter).map(v => v.trim());
+      for (const row of data as any[]) {
         const record: any = {};
         
-        headers.forEach((header, index) => {
-          record[header] = values[index] || '';
+        // Map Excel row to AtcRecord
+        Object.keys(row).forEach(key => {
+          const value = row[key];
+          record[key] = value !== undefined && value !== null ? String(value).trim() : '';
         });
+        
+        // Debug: log Arabic fields from first record
+        if (records.length === 0) {
+          this.logger.log(`First record Arabic fields:`);
+          this.logger.log(`  namear_L1: "${record['namear_L1']}"`);
+          this.logger.log(`  namear_L2: "${record['namear_L2']}"`);
+          this.logger.log(`  namear_L3: "${record['namear_L3']}"`);
+          this.logger.log(`  namear_L4: "${record['namear_L4']}"`);
+          this.logger.log(`  Namear_L5: "${record['Namear_L5']}"`);
+        }
         
         records.push(record as AtcRecord);
       }
@@ -132,9 +131,10 @@ export class AtcImportService {
     // Create categories for L1 (Anatomical Main Group)
     this.logger.log(`Creating ${stats.levels.l1.size} L1 categories`);
     for (const atcCode of stats.levels.l1) {
-      const categoryName = this.getLevel1Name(atcCode);
-      this.logger.log(`Creating L1 category: ${atcCode} -> ${categoryName}`);
-      const category = await this.findOrCreateCategory(categoryName, null);
+      const categoryNames = this.getLevel1Name(atcCode, records);
+      const categoryCode = atcCode; // L1 code only
+      this.logger.log(`Creating L1 category: ${categoryCode} -> Arabic: ${categoryNames.arabic}, English: ${categoryNames.english}`);
+      const category = await this.findOrCreateCategory(categoryCode, categoryNames.arabic, categoryNames.english, null);
       categoryMap.set(atcCode, category.id);
       stats.categoriesCreated++;
       this.logger.log(`Created category with ID: ${category.id}`);
@@ -144,8 +144,9 @@ export class AtcImportService {
     for (const atcCode of stats.levels.l2) {
       const parentCode = atcCode.substring(0, 1); // Get L1 code
       const parentId = categoryMap.get(parentCode);
-      const categoryName = this.getLevel2Name(atcCode);
-      const category = await this.findOrCreateCategory(categoryName, parentId);
+      const categoryNames = this.getLevel2Name(atcCode, records);
+      const categoryCode = atcCode; // L2 code only
+      const category = await this.findOrCreateCategory(categoryCode, categoryNames.arabic, categoryNames.english, parentId);
       categoryMap.set(atcCode, category.id);
       stats.categoriesCreated++;
     }
@@ -154,37 +155,49 @@ export class AtcImportService {
     for (const atcCode of stats.levels.l3) {
       const parentCode = atcCode.substring(0, 3); // Get L2 code
       const parentId = categoryMap.get(parentCode);
-      const categoryName = this.getLevel3Name(atcCode, records);
-      const category = await this.findOrCreateCategory(categoryName, parentId);
+      const categoryNames = this.getLevel3Name(atcCode, records);
+      const categoryCode = atcCode; // L3 code only
+      const category = await this.findOrCreateCategory(categoryCode, categoryNames.arabic, categoryNames.english, parentId);
       categoryMap.set(atcCode, category.id);
       stats.categoriesCreated++;
     }
 
-    // Create drug groups from L4 (Chemical Subgroup) and L5 (Chemical Substance)
+    // Create categories for L4 (Chemical Subgroup)
+    for (const atcCode of stats.levels.l4) {
+      const parentCode = atcCode.substring(0, 4); // Get L3 code (A01A -> A01)
+      const parentId = categoryMap.get(parentCode);
+      const categoryNames = this.getLevel4Name(atcCode, records);
+      const categoryCode = atcCode; // L4 code only
+      const category = await this.findOrCreateCategory(categoryCode, categoryNames.arabic, categoryNames.english, parentId);
+      categoryMap.set(atcCode, category.id);
+      stats.categoriesCreated++;
+    }
+
+    // Create drug groups from L5 (Chemical Substance)
     this.logger.log(`Creating drug groups from ${records.length} records`);
     for (const record of records) {
-      if (record['ATC code_L4'] && record['name_L4']) {
-        // Use L4 as drug group - truncate name to fit in 200 characters
-        const rawName = `${record['ATC code_L4']} - ${record['name_L4']}`;
-        const drugGroupName = rawName.length > 200 ? rawName.substring(0, 197) + '...' : rawName;
+      if (record['ATC code_L5'] && record['Name_L5']) {
+        // Use L5 as drug group
+        const drugGroupCode = record['ATC code_L5']; // L5 code only
+        const drugGroupNames = this.getDrugGroupName(record);
         const description = this.buildDescription(record);
         
-        this.logger.log(`Creating drug group: ${drugGroupName}`);
-        const drugGroup = await this.findOrCreateDrugGroup(drugGroupName, description);
+        this.logger.log(`Creating drug group: ${drugGroupCode} -> Arabic: ${drugGroupNames.arabic}, English: ${drugGroupNames.english}`);
+        const drugGroup = await this.findOrCreateDrugGroup(drugGroupCode, drugGroupNames.arabic, drugGroupNames.english, description);
         stats.drugGroupsCreated++;
         this.logger.log(`Created drug group with ID: ${drugGroup.id}`);
 
-        // Link to L3 category
-        const categoryId = categoryMap.get(record['ATC code_L3']);
+        // Link to L4 category
+        const categoryId = categoryMap.get(record['ATC code_L4']);
         if (categoryId) {
           this.logger.log(`Linking drug group ${drugGroup.id} to category ${categoryId}`);
           await this.linkDrugGroupToCategory(drugGroup.id, categoryId);
           stats.drugGroupCategoriesLinked++;
         } else {
-          this.logger.warn(`No category found for L3 code: ${record['ATC code_L3']}`);
+          this.logger.warn(`No category found for L4 code: ${record['ATC code_L4']}`);
         }
       } else {
-        this.logger.warn(`Record missing L4 code or name: ${JSON.stringify(record)}`);
+        this.logger.warn(`Record missing L5 code or name: ${JSON.stringify(record)}`);
       }
     }
 
@@ -204,49 +217,127 @@ export class AtcImportService {
     }
   }
 
-  private getLevel1Name(atcCode: string): string {
-    // Map ATC Level 1 codes to names
-    const level1Names: Record<string, string> = {
-      'A': 'الجهاز الهضمي والتمثيل الغذائي',
-      'B': 'الدم وأعضاء تكوين الدم',
-      'C': 'الجهاز القلبي الوعائي',
-      'D': 'مستحضرات الجلد',
-      'G': 'الجهاز البولي التناسلي والهرمونات الجنسية',
-      'H': 'مستحضرات هرمونية جهازية، باستثناء الهرمونات الجنسية والأنسولين',
-      'J': 'مضادات العدوى للاستخدام الجهازي',
-      'L': 'العوامل المضادة للأورام والمعدلة للمناعة',
-      'M': 'الجهاز العضلي الهيكلي',
-      'N': 'الجهاز العصبي',
-      'P': 'منتجات مضادة للطفيليات ومبيدات حشرية وطاردات',
-      'R': 'الجهاز التنفسي',
-      'S': 'الأعضاء الحسية',
-      'V': 'متنوع'
-    };
+  private getLevel1Name(atcCode: string, records: AtcRecord[]): { arabic: string; english: string } {
+    // Find the record with this L1 code to get the name
+    const record = records.find(r => r['ATC code_L1'] === atcCode);
+    const arabicName = record ? this.cleanArabicName(record['namear_L1']) : '';
+    const englishName = record ? record['name_L1'] : '';
     
-    return level1Names[atcCode] || `المستوى الأول ATC: ${atcCode}`;
-  }
-
-  private getLevel2Name(atcCode: string): string {
+    // Use Arabic name if available and not empty, otherwise use English in Arabic field
+    const finalArabic = arabicName && arabicName.trim() ? arabicName : 
+                       englishName ? englishName : 
+                       `المستوى الأول: ${atcCode}`;
+    
+    const finalEnglish = englishName && englishName.trim() ? englishName : 
+                        arabicName && arabicName.trim() ? arabicName : 
+                        `Level 1: ${atcCode}`;
+    
     // Truncate to fit in 100 characters
-    const name = `المستوى الثاني: ${atcCode}`;
-    return name.length > 100 ? name.substring(0, 97) + '...' : name;
+    return {
+      arabic: finalArabic.length > 100 ? finalArabic.substring(0, 97) + '...' : finalArabic.trim(),
+      english: finalEnglish.length > 100 ? finalEnglish.substring(0, 97) + '...' : finalEnglish.trim()
+    };
   }
 
-  private getLevel3Name(atcCode: string, records: AtcRecord[]): string {
+  private getLevel2Name(atcCode: string, records: AtcRecord[]): { arabic: string; english: string } {
+    // Find the record with this L2 code to get the name
+    const record = records.find(r => r['ATC code_L2'] === atcCode);
+    const arabicName = record ? this.cleanArabicName(record['namear_L2']) : '';
+    const englishName = record ? record['name_L2'] : '';
+    
+    // Use Arabic name if available and not empty, otherwise use English in Arabic field
+    const finalArabic = arabicName && arabicName.trim() ? arabicName : 
+                       englishName ? englishName : 
+                       `المستوى الثاني: ${atcCode}`;
+    
+    const finalEnglish = englishName && englishName.trim() ? englishName : 
+                        arabicName && arabicName.trim() ? arabicName : 
+                        `Level 2: ${atcCode}`;
+    
+    // Truncate to fit in 100 characters
+    return {
+      arabic: finalArabic.length > 100 ? finalArabic.substring(0, 97) + '...' : finalArabic.trim(),
+      english: finalEnglish.length > 100 ? finalEnglish.substring(0, 97) + '...' : finalEnglish.trim()
+    };
+  }
+
+  private getLevel3Name(atcCode: string, records: AtcRecord[]): { arabic: string; english: string } {
     // Find the record with this L3 code to get the name
     const record = records.find(r => r['ATC code_L3'] === atcCode);
-    const name = record ? record['name_L3'] : `المستوى الثالث: ${atcCode}`;
+    const arabicName = record ? this.cleanArabicName(record['namear_L3']) : '';
+    const englishName = record ? record['name_L3'] : '';
+    
+    // Use Arabic name if available and not empty, otherwise use English in Arabic field
+    const finalArabic = arabicName && arabicName.trim() ? arabicName : 
+                       englishName ? englishName : 
+                       `المستوى الثالث: ${atcCode}`;
+    
+    const finalEnglish = englishName && englishName.trim() ? englishName : 
+                        arabicName && arabicName.trim() ? arabicName : 
+                        `Level 3: ${atcCode}`;
     
     // Truncate to fit in 100 characters
-    return name.length > 100 ? name.substring(0, 97) + '...' : name;
+    return {
+      arabic: finalArabic.length > 100 ? finalArabic.substring(0, 97) + '...' : finalArabic.trim(),
+      english: finalEnglish.length > 100 ? finalEnglish.substring(0, 97) + '...' : finalEnglish.trim()
+    };
+  }
+
+  private getLevel4Name(atcCode: string, records: AtcRecord[]): { arabic: string; english: string } {
+    // Find the record with this L4 code to get the name
+    const record = records.find(r => r['ATC code_L4'] === atcCode);
+    const arabicName = record ? this.cleanArabicName(record['namear_L4']) : '';
+    const englishName = record ? record['name_L4'] : '';
+    
+    // Use Arabic name if available and not empty, otherwise use English in Arabic field
+    const finalArabic = arabicName && arabicName.trim() ? arabicName : 
+                       englishName ? englishName : 
+                       `المستوى الرابع: ${atcCode}`;
+    
+    const finalEnglish = englishName && englishName.trim() ? englishName : 
+                        arabicName && arabicName.trim() ? arabicName : 
+                        `Level 4: ${atcCode}`;
+    
+    // Truncate to fit in 100 characters
+    return {
+      arabic: finalArabic.length > 100 ? finalArabic.substring(0, 97) + '...' : finalArabic.trim(),
+      english: finalEnglish.length > 100 ? finalEnglish.substring(0, 97) + '...' : finalEnglish.trim()
+    };
+  }
+
+  private getDrugGroupName(record: AtcRecord): { arabic: string; english: string } {
+    // Use L5 name for drug group
+    const arabicName = this.cleanArabicName(record['Namear_L5']);
+    const englishName = record['Name_L5'];
+    
+    // Use Arabic name if available and not empty, otherwise use English in Arabic field
+    const finalArabic = arabicName && arabicName.trim() ? arabicName : 
+                       englishName ? englishName : 
+                       `المادة الفعالة: ${record['ATC code_L5']}`;
+    
+    const finalEnglish = englishName && englishName.trim() ? englishName : 
+                        arabicName && arabicName.trim() ? arabicName : 
+                        `Active Substance: ${record['ATC code_L5']}`;
+    
+    // Truncate to fit in 200 characters
+    return {
+      arabic: finalArabic.length > 200 ? finalArabic.substring(0, 197) + '...' : finalArabic.trim(),
+      english: finalEnglish.length > 200 ? finalEnglish.substring(0, 197) + '...' : finalEnglish.trim()
+    };
+  }
+
+  private cleanArabicName(name: string): string {
+    if (!name) return '';
+    // Remove extra spaces and clean the Arabic text
+    return name.replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
   }
 
   private buildDescription(record: AtcRecord): string {
     const parts: string[] = [];
     
-    if (record['ATC code_L5'] && record['Name_L5']) {
-      parts.push(`المادة الكيميائية: ${record['Name_L5']} (${record['ATC code_L5']})`);
-    }
+    // if (record['ATC code_L5'] && record['Name_L5']) {
+    //   parts.push(`المادة الكيميائية: ${record['Name_L5']} (${record['ATC code_L5']})`);
+    // }
     
     if (record['DDD_L5']) {
       parts.push(`الجرعة اليومية المحددة: ${record['DDD_L5']} ${record['U_L5'] || ''}`);
@@ -260,19 +351,19 @@ export class AtcImportService {
       parts.push(`ملاحظة: ${record['Note_L5']}`);
     }
     
-    if (record['href_L5']) {
-      parts.push(`المرجع: ${record['href_L5']}`);
-    }
+    // if (record['href_L5']) {
+    //   parts.push(`المرجع: ${record['href_L5']}`);
+    // }
     
     return parts.join('\n');
   }
 
-  private async findOrCreateCategory(name: string, parentId: string | null | undefined): Promise<any> {
-    this.logger.debug(`Looking for category with nameAr: ${name}`);
+  private async findOrCreateCategory(code: string, nameAr: string, nameEn: string, parentId: string | null | undefined): Promise<any> {
+    this.logger.debug(`Looking for category with code: ${code}`);
     
-    // Try to find existing category
+    // Try to find existing category by code
     const existing = await this.prisma.category.findFirst({
-      where: { nameAr: name }
+      where: { code }
     });
 
     if (existing) {
@@ -280,25 +371,26 @@ export class AtcImportService {
       return existing;
     }
 
-    this.logger.debug(`Creating new category: ${name} with parentId: ${parentId || 'null'}`);
+    this.logger.debug(`Creating new category: ${code} -> Arabic: ${nameAr}, English: ${nameEn} with parentId: ${parentId || 'null'}`);
     
     // Create new category
     return this.prisma.category.create({
       data: {
-        nameAr: name,
-        nameEn: name,
+        code,
+        nameAr,
+        nameEn,
         parentId: parentId || null,
         isActive: true
       }
     });
   }
 
-  private async findOrCreateDrugGroup(name: string, description: string): Promise<any> {
-    this.logger.debug(`Looking for drug group with nameAr: ${name}`);
+  private async findOrCreateDrugGroup(code: string, nameAr: string, nameEn: string, description: string): Promise<any> {
+    this.logger.debug(`Looking for drug group with code: ${code}`);
     
-    // Try to find existing drug group
+    // Try to find existing drug group by code
     const existing = await this.prisma.drugGroup.findFirst({
-      where: { nameAr: name }
+      where: { code }
     });
 
     if (existing) {
@@ -306,13 +398,14 @@ export class AtcImportService {
       return existing;
     }
 
-    this.logger.debug(`Creating new drug group: ${name}`);
+    this.logger.debug(`Creating new drug group: ${code} -> Arabic: ${nameAr}, English: ${nameEn}`);
     
     // Create new drug group
     return this.prisma.drugGroup.create({
       data: {
-        nameAr: name,
-        nameEn: name,
+        code,
+        nameAr,
+        nameEn,
         description: description,
         isActive: true
       }

@@ -56,7 +56,7 @@ export class DrugGroupsController {
     }
 
     // Save uploaded file temporarily
-    const tempPath = path.join(__dirname, '../../..', 'temp-atc-import.csv');
+    const tempPath = path.join(__dirname, '../../..', 'temp-atc-import.xlsx');
     fs.writeFileSync(tempPath, file.buffer);
 
     try {
@@ -78,8 +78,7 @@ export class DrugGroupsController {
   @Post('import/atc/local')
   @Roles(UserRole.admin)
   async importAtcLocal() {
-    // const filePath = path.join(__dirname, '../../..', 'test-atc-sample.csv');
-    const filePath = path.join(__dirname, '../../..', 'ATC_DDD_Index.csv');
+    const filePath = path.join(__dirname, '../../..', 'test.xlsx');
     return this.atcImportService.importFromExcel(filePath);
   }
 }
