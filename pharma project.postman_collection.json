@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "14a3c0f6-801d-44cd-a738-e89ae1c43c1a",
+    "_postman_id": "e54a8d47-98d3-4328-835b-113f4ecd6185",
     "name": "pharma project",
     "description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Scripts\" tab**\n\nAdding tests to your requests can help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/fa30ea0a-373d-4545-a668-e7b283cca343/aW1hZ2UucG5n\" alt=\"\" height=\"1530\" width=\"2162\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n    \n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -801,6 +801,85 @@
                 "verify"
               ]
             }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Inactive Users (Admin only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Successful GET request\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200]);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/inactive?role=distributor",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "inactive"
+              ],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "distributor"
+                }
+              ]
+            },
+            "description": "Get all users with status 'pending' (غير مفعلة). يمكن فلترة حسب الـ role باستخدام query parameter مثل ?role=distributor"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Inactive Users without filter (Admin only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/inactive",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "inactive"
+              ]
+            },
+            "description": "Get all users with status 'pending' (غير مفعلة) بدون فلترة"
           },
           "response": []
         },
@@ -1765,6 +1844,193 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "profiles/representative",
+          "item": [
+            {
+              "name": "Create Representative Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"companyId\": \"{{company_profile_id}}\",\n  \"cityId\": \"{{city_id}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/profiles/representative",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "representative"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get My Representative Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/representative/me",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "representative",
+                    "me"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Representative Profiles (Admin)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/representative",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "representative"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Representative Profile by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/representative/{{representative_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "representative",
+                    "{{representative_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Verify Representative (Admin)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/representative/{{representative_id}}/verify",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "representative",
+                    "{{representative_id}}",
+                    "verify"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Representative Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/representative/{{representative_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "representative",
+                    "{{representative_id}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
@@ -2654,7 +2920,7 @@
               },
               "status": "Created",
               "code": 201,
-              "_postman_previewlanguage": null,
+              "_postman_previewlanguage": "Text",
               "header": [
                 {
                   "key": "X-Powered-By",
@@ -2767,110 +3033,281 @@
         {
           "name": "Create Order (Pharmacist)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"items\": [\n    {\n      \"productId\": \"{{product_id}}\",\n      \"quantity\": 10,\n      \"promotionProductId\": null\n    }\n  ],\n  \"paymentMethod\": \"cod\",\n  \"deliveryAddress\": \"دمشق - شارع الثورة\",\n  \"notes\": \"يرجى التوصيل صباحاً\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/orders", "host": ["{{base_url}}"], "path": ["orders"] }
+            "url": {
+              "raw": "{{base_url}}/orders",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Get All Orders",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
-            "url": { "raw": "{{base_url}}/orders", "host": ["{{base_url}}"], "path": ["orders"] }
+            "url": {
+              "raw": "{{base_url}}/orders",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Get Order by ID",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
-            "url": { "raw": "{{base_url}}/orders/{{order_id}}", "host": ["{{base_url}}"], "path": ["orders", "{{order_id}}"] }
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Approve Order (Distributor)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"approved\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/orders/{{order_id}}/status", "host": ["{{base_url}}"], "path": ["orders", "{{order_id}}", "status"] }
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "status"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Reject Order (Distributor)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"rejected\",\n  \"rejectionReason\": \"المنتج غير متوفر حالياً\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/orders/{{order_id}}/status", "host": ["{{base_url}}"], "path": ["orders", "{{order_id}}", "status"] }
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "status"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Mark In Delivery (Distributor)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"in_delivery\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/orders/{{order_id}}/status", "host": ["{{base_url}}"], "path": ["orders", "{{order_id}}", "status"] }
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "status"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Mark Delivered (Distributor)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"delivered\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/orders/{{order_id}}/status", "host": ["{{base_url}}"], "path": ["orders", "{{order_id}}", "status"] }
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "status"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Cancel Order (Pharmacist)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"cancelled\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/orders/{{order_id}}/status", "host": ["{{base_url}}"], "path": ["orders", "{{order_id}}", "status"] }
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "status"
+              ]
+            }
           },
           "response": []
         }
@@ -2882,63 +3319,153 @@
         {
           "name": "Create Promotion - Percentage (Company)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"title\": \"عرض الربيع\",\n  \"description\": \"خصم 10% على أموكسيل\",\n  \"type\": \"percentage\",\n  \"level\": \"pharmacist\",\n  \"targetType\": \"pharmacists\",\n  \"startsAt\": \"2025-04-01T00:00:00Z\",\n  \"endsAt\": \"2025-04-30T23:59:59Z\",\n  \"isActive\": true,\n  \"products\": [\n    { \"productId\": \"{{product_id}}\", \"discountPercent\": 10 }\n  ]\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/promotions", "host": ["{{base_url}}"], "path": ["promotions"] }
+            "url": {
+              "raw": "{{base_url}}/promotions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "promotions"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Create Promotion - BuyXGetY (Company)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"title\": \"اشتري 10 خذ 3 مجاناً\",\n  \"type\": \"buyXgetY\",\n  \"level\": \"distributor\",\n  \"targetType\": \"all\",\n  \"startsAt\": \"2025-04-01T00:00:00Z\",\n  \"endsAt\": \"2025-06-30T23:59:59Z\",\n  \"isActive\": true,\n  \"buyXgetY\": {\n    \"buyProductId\": \"{{product_id}}\",\n    \"buyQuantity\": 10,\n    \"freeProductId\": \"{{product_id}}\",\n    \"freeQuantity\": 3\n  }\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/promotions", "host": ["{{base_url}}"], "path": ["promotions"] }
+            "url": {
+              "raw": "{{base_url}}/promotions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "promotions"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Create Promotion - Distributor variant",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"title\": \"عرض الموزع - اشتري 12 خذ 2\",\n  \"type\": \"buyXgetY\",\n  \"level\": \"pharmacist\",\n  \"targetType\": \"pharmacists\",\n  \"startsAt\": \"2025-04-01T00:00:00Z\",\n  \"endsAt\": \"2025-06-30T23:59:59Z\",\n  \"isActive\": true,\n  \"parentPromotionId\": \"{{promotion_id}}\",\n  \"buyXgetY\": {\n    \"buyProductId\": \"{{product_id}}\",\n    \"buyQuantity\": 12,\n    \"freeProductId\": \"{{product_id}}\",\n    \"freeQuantity\": 2\n  }\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/promotions", "host": ["{{base_url}}"], "path": ["promotions"] }
+            "url": {
+              "raw": "{{base_url}}/promotions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "promotions"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Get All Promotions",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/promotions?level=pharmacist&type=buyXgetY",
-              "host": ["{{base_url}}"],
-              "path": ["promotions"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "promotions"
+              ],
               "query": [
-                { "key": "level", "value": "pharmacist" },
-                { "key": "type", "value": "buyXgetY" },
-                { "key": "companyId", "value": "", "disabled": true },
-                { "key": "distributorId", "value": "", "disabled": true }
+                {
+                  "key": "level",
+                  "value": "pharmacist"
+                },
+                {
+                  "key": "type",
+                  "value": "buyXgetY"
+                },
+                {
+                  "key": "companyId",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "distributorId",
+                  "value": "",
+                  "disabled": true
+                }
               ]
             }
           },
@@ -2947,20 +3474,57 @@
         {
           "name": "Get Promotion by ID",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
-            "url": { "raw": "{{base_url}}/promotions/{{promotion_id}}", "host": ["{{base_url}}"], "path": ["promotions", "{{promotion_id}}"] }
+            "url": {
+              "raw": "{{base_url}}/promotions/{{promotion_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "promotions",
+                "{{promotion_id}}"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Toggle Active Promotion",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
             "header": [],
-            "url": { "raw": "{{base_url}}/promotions/{{promotion_id}}/toggle-active", "host": ["{{base_url}}"], "path": ["promotions", "{{promotion_id}}", "toggle-active"] }
+            "url": {
+              "raw": "{{base_url}}/promotions/{{promotion_id}}/toggle-active",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "promotions",
+                "{{promotion_id}}",
+                "toggle-active"
+              ]
+            }
           },
           "response": []
         }
@@ -2972,125 +3536,136 @@
         {
           "name": "Add Stock (Distributor)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"productId\": \"{{product_id}}\",\n  \"companyId\": \"{{company_profile_id}}\",\n  \"quantity\": 100,\n  \"lowStockThreshold\": 15\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/distributor-inventory/add", "host": ["{{base_url}}"], "path": ["distributor-inventory", "add"] }
+            "url": {
+              "raw": "{{base_url}}/distributor-inventory/add",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "distributor-inventory",
+                "add"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Adjust Stock (Distributor)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"productId\": \"{{product_id}}\",\n  \"quantity\": -5,\n  \"reason\": \"تلف في المخزن\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/distributor-inventory/adjust", "host": ["{{base_url}}"], "path": ["distributor-inventory", "adjust"] }
+            "url": {
+              "raw": "{{base_url}}/distributor-inventory/adjust",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "distributor-inventory",
+                "adjust"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Get My Inventory (Distributor)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
-            "url": { "raw": "{{base_url}}/distributor-inventory", "host": ["{{base_url}}"], "path": ["distributor-inventory"] }
+            "url": {
+              "raw": "{{base_url}}/distributor-inventory",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "distributor-inventory"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Get Inventory Movements (Distributor)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{base_url}}/distributor-inventory/movements",
-              "host": ["{{base_url}}"],
-              "path": ["distributor-inventory", "movements"],
-              "query": [{ "key": "productId", "value": "", "disabled": true }]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "distributor-inventory",
+                "movements"
+              ],
+              "query": [
+                {
+                  "key": "productId",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
             }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "profiles/representative",
-      "item": [
-        {
-          "name": "Create Representative Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"companyId\": \"{{company_profile_id}}\",\n  \"cityId\": \"{{city_id}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": { "raw": "{{base_url}}/profiles/representative", "host": ["{{base_url}}"], "path": ["profiles", "representative"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get My Representative Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/representative/me", "host": ["{{base_url}}"], "path": ["profiles", "representative", "me"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get All Representative Profiles (Admin)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/representative", "host": ["{{base_url}}"], "path": ["profiles", "representative"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Representative Profile by ID",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/representative/{{representative_id}}", "host": ["{{base_url}}"], "path": ["profiles", "representative", "{{representative_id}}"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Verify Representative (Admin)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "PATCH",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/representative/{{representative_id}}/verify", "host": ["{{base_url}}"], "path": ["profiles", "representative", "{{representative_id}}", "verify"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Representative Profile",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "DELETE",
-            "header": [],
-            "url": { "raw": "{{base_url}}/profiles/representative/{{representative_id}}", "host": ["{{base_url}}"], "path": ["profiles", "representative", "{{representative_id}}"] }
           },
           "response": []
         }
@@ -3102,205 +3677,243 @@
         {
           "name": "Create Sample Request (Doctor)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"productId\": \"{{product_id}}\",\n  \"quantity\": 2,\n  \"deliveryAddress\": \"دمشق - مشفى الشفاء\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/sample-requests", "host": ["{{base_url}}"], "path": ["sample-requests"] }
+            "url": {
+              "raw": "{{base_url}}/sample-requests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sample-requests"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Get All Sample Requests",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
-            "url": { "raw": "{{base_url}}/sample-requests", "host": ["{{base_url}}"], "path": ["sample-requests"] }
+            "url": {
+              "raw": "{{base_url}}/sample-requests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sample-requests"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Get Sample Request by ID",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
-            "url": { "raw": "{{base_url}}/sample-requests/{{sample_request_id}}", "host": ["{{base_url}}"], "path": ["sample-requests", "{{sample_request_id}}"] }
+            "url": {
+              "raw": "{{base_url}}/sample-requests/{{sample_request_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sample-requests",
+                "{{sample_request_id}}"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Approve Sample Request (Company)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"approved\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/status", "host": ["{{base_url}}"], "path": ["sample-requests", "{{sample_request_id}}", "status"] }
+            "url": {
+              "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sample-requests",
+                "{{sample_request_id}}",
+                "status"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Reject Sample Request (Company)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"rejected\",\n  \"rejectionReason\": \"تجاوزت الحد المسموح لهذا الشهر\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/status", "host": ["{{base_url}}"], "path": ["sample-requests", "{{sample_request_id}}", "status"] }
+            "url": {
+              "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sample-requests",
+                "{{sample_request_id}}",
+                "status"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Mark Delivered (Representative)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"delivered\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/status", "host": ["{{base_url}}"], "path": ["sample-requests", "{{sample_request_id}}", "status"] }
+            "url": {
+              "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sample-requests",
+                "{{sample_request_id}}",
+                "status"
+              ]
+            }
           },
           "response": []
         },
         {
           "name": "Cancel Sample Request (Doctor)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
             "header": [],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"status\": \"rejected\"\n}",
-              "options": { "raw": { "language": "json" } }
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
-            "url": { "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/status", "host": ["{{base_url}}"], "path": ["sample-requests", "{{sample_request_id}}", "status"] }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "company-distributors",
-      "item": [
-        {
-          "name": "Assign Distributor to City (Company)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"distributorId\": \"{{distributor_profile_id}}\",\n  \"cityId\": \"{{city_id}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": { "raw": "{{base_url}}/company-distributors", "host": ["{{base_url}}"], "path": ["company-distributors"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get Company Distributors",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/company-distributors", "host": ["{{base_url}}"], "path": ["company-distributors"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Update Distributor Status (Company)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "PATCH",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"inactive\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": { "raw": "{{base_url}}/company-distributors/{{company_distributor_id}}/status", "host": ["{{base_url}}"], "path": ["company-distributors", "{{company_distributor_id}}", "status"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Remove Distributor (Company)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "DELETE",
-            "header": [],
-            "url": { "raw": "{{base_url}}/company-distributors/{{company_distributor_id}}", "host": ["{{base_url}}"], "path": ["company-distributors", "{{company_distributor_id}}"] }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "sample-quotas",
-      "item": [
-        {
-          "name": "Create Sample Quota (Company)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"productId\": \"{{product_id}}\",\n  \"maxPerDoctor\": 2,\n  \"cooldownDays\": 30,\n  \"isActive\": true\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": { "raw": "{{base_url}}/sample-quotas", "host": ["{{base_url}}"], "path": ["sample-quotas"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Get All Sample Quotas (Company)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{base_url}}/sample-quotas", "host": ["{{base_url}}"], "path": ["sample-quotas"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Update Sample Quota (Company)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "PATCH",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"maxPerDoctor\": 3,\n  \"cooldownDays\": 15,\n  \"isActive\": true\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": { "raw": "{{base_url}}/sample-quotas/{{sample_quota_id}}", "host": ["{{base_url}}"], "path": ["sample-quotas", "{{sample_quota_id}}"] }
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Sample Quota (Company)",
-          "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
-            "method": "DELETE",
-            "header": [],
-            "url": { "raw": "{{base_url}}/sample-quotas/{{sample_quota_id}}", "host": ["{{base_url}}"], "path": ["sample-quotas", "{{sample_quota_id}}"] }
+            "url": {
+              "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sample-requests",
+                "{{sample_request_id}}",
+                "status"
+              ]
+            }
           },
           "response": []
         }
@@ -3325,7 +3938,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/products?fields=id,nameAr,nameEn,price,status,dosageForm,strength,drugGroups",
+              "raw": "{{base_url}}/products?fields=id,nameAr,nameEn,price,status,dosageForm,strength,drugGroups&limit=10&companyId=3293e899-88da-4e5e-951b-0b70aace9724&dosageForm=capsule&&search=amo",
               "host": [
                 "{{base_url}}"
               ],
@@ -3338,9 +3951,24 @@
                   "value": "id,nameAr,nameEn,price,status,dosageForm,strength,drugGroups"
                 },
                 {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
                   "key": "companyId",
-                  "value": "",
-                  "disabled": true
+                  "value": "3293e899-88da-4e5e-951b-0b70aace9724"
+                },
+                {
+                  "key": "dosageForm",
+                  "value": "capsule"
+                },
+                {
+                  "key": null,
+                  "value": null
+                },
+                {
+                  "key": "search",
+                  "value": "amo"
                 }
               ]
             }
@@ -3382,7 +4010,36 @@
           "response": []
         },
         {
-          "name": "Create product (Company only)",
+          "name": "Get product by id Copy",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/products/barcode/48510653",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products",
+                "barcode",
+                "48510653"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create product - Old format (Company only)",
           "request": {
             "auth": {
               "type": "bearer",
@@ -3418,7 +4075,44 @@
           "response": []
         },
         {
-          "name": "Update product (Company only)",
+          "name": "Create product with multiple prices (Company only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nameAr\": \"أموكسيل 500\",\n  \"nameEn\": \"Amoxil 500\",\n  \"dosageForm\": \"capsule\",\n  \"strength\": \"500mg\",\n  \"packSize\": 20,\n  \"packUnit\": \"capsule\",\n  \"packageType\": \"box\",\n  \"price\": \"5.50\",\n  \"companyToDistributorPrice\": \"5.50\",\n  \"distributorToPharmacistPrice\": \"6.05\",\n  \"pharmacistToConsumerPrice\": \"6.60\",\n  \"drugGroupIds\": [\"a43e9bef-f46d-4883-a265-bc58c5f9e248\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/products",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "products"
+              ]
+            },
+            "description": "Create product with new pricing structure: company→distributor, distributor→pharmacist, pharmacist→consumer"
+          },
+          "response": []
+        },
+        {
+          "name": "Update product with multiple prices (Company only)",
           "request": {
             "auth": {
               "type": "bearer",
@@ -3434,7 +4128,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"price\": \"6.00\",\n  \"status\": \"active\",\n  \"drugGroupIds\": []\n}",
+              "raw": "{\n  \"price\": \"6.00\",\n  \"status\": \"active\",\n  \"companyToDistributorPrice\": \"6.00\",\n  \"distributorToPharmacistPrice\": \"6.60\",\n  \"pharmacistToConsumerPrice\": \"7.20\",\n  \"drugGroupIds\": []\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3450,7 +4144,8 @@
                 "products",
                 "{{product_id}}"
               ]
-            }
+            },
+            "description": "Update product with new pricing structure. يمكن تحديث أسعار محددة فقط"
           },
           "response": []
         },
@@ -3483,6 +4178,91 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "import drug_group file",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:3000/drug-groups/import/atc/excel",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "drug-groups",
+            "import",
+            "atc",
+            "excel"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "import drug_group upload file",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/form-data",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:3000/drug-groups/import/atc",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "drug-groups",
+            "import",
+            "atc"
+          ]
+        }
+      },
+      "response": []
     }
   ],
   "event": [
@@ -3522,15 +4302,48 @@
       "key": "drug_group_id",
       "value": ""
     },
-    { "key": "product_id", "value": "" },
-    { "key": "order_id", "value": "" },
-    { "key": "promotion_id", "value": "" },
-    { "key": "company_profile_id", "value": "" },
-    { "key": "representative_id", "value": "" },
-    { "key": "sample_request_id", "value": "" },
-    { "key": "city_id", "value": "" },
-    { "key": "distributor_profile_id", "value": "" },
-    { "key": "company_distributor_id", "value": "" },
-    { "key": "sample_quota_id", "value": "" }
+    {
+      "key": "product_id",
+      "value": ""
+    },
+    {
+      "key": "order_id",
+      "value": ""
+    },
+    {
+      "key": "promotion_id",
+      "value": ""
+    },
+    {
+      "key": "company_profile_id",
+      "value": ""
+    },
+    {
+      "key": "representative_id",
+      "value": ""
+    },
+    {
+      "key": "sample_request_id",
+      "value": ""
+    },
+    {
+      "key": "city_id",
+      "value": ""
+    },
+    {
+      "key": "test_distributor_id",
+      "value": "",
+      "description": "ID موزع للاختبار"
+    },
+    {
+      "key": "test_pharmacist_id",
+      "value": "",
+      "description": "ID صيدلي للاختبار"
+    },
+    {
+      "key": "test_admin_id",
+      "value": "",
+      "description": "ID مشرف للاختبار"
+    }
   ]
 }

@@ -101,6 +101,7 @@ model User {
   notifications               Notification[]
   auditLogs                   AuditLog[]
   inventoryMovementsCreated   InventoryMovement[]
+  productPricesCreated        ProductPrice[]        @relation("ProductPriceCreator")
 
   @@map("users")
 }
@@ -272,6 +273,12 @@ enum ProductStatus {
   inactive
 }
 
+enum PriceType {
+  company_to_distributor
+  distributor_to_pharmacist
+  pharmacist_to_consumer
+}
+
 model Product {
   id                String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   companyId         String        @map("company_id") @db.Uuid
@@ -302,8 +309,28 @@ model Product {
   messages             Message[]
   buyXgetYAsBuy        PromotionBuyXGetY[]  @relation("BuyProduct")
   buyXgetYAsFree       PromotionBuyXGetY[]  @relation("FreeProduct")
+  productPrices        ProductPrice[]
 
   @@map("products")
+}
+
+model ProductPrice {
+  id            String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  productId     String    @map("product_id") @db.Uuid
+  priceType     PriceType
+  price         Decimal   @db.Decimal(10, 2)
+  effectiveFrom DateTime  @default(now()) @map("effective_from")
+  effectiveTo   DateTime? @map("effective_to")
+  createdBy     String?   @map("created_by") @db.Uuid
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  product   Product @relation(fields: [productId], references: [id])
+  creator   User?   @relation("ProductPriceCreator", fields: [createdBy], references: [id])
+
+  @@index([productId])
+  @@index([priceType])
+  @@map("product_prices")
 }
 
 model ProductDrugGroup {

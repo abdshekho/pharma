@@ -20,13 +20,34 @@ export class ProductsController {
   }
 
   @Get()
-  findAll(@Query('fields') fields?: string, @Query('companyId') companyId?: string) {
-    return this.service.findAll(fields, companyId);
+  findAll(
+    @CurrentUser() user: any,
+    @Query('search') search?: string,
+    @Query('companyId') companyId?: string,
+    @Query('dosageForm') dosageForm?: string,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('fields') fields?: string,
+  ) {
+    return this.service.findAll({ 
+      search, 
+      companyId, 
+      dosageForm, 
+      page, 
+      limit, 
+      fields,
+      userRole: user?.role 
+    });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Query('fields') fields?: string) {
-    return this.service.findOne(id, fields);
+  findOne(@Param('id') id: string, @CurrentUser() user: any, @Query('fields') fields?: string) {
+    return this.service.findOne(id, fields, user?.role);
+  }
+
+  @Get('barcode/:barcode')
+  findByBarcode(@Param('barcode') barcode: string, @CurrentUser() user: any, @Query('fields') fields?: string) {
+    return this.service.findByBarcode(barcode, fields, user?.role);
   }
 
   @Patch(':id')

@@ -78,7 +78,8 @@ export class DrugGroupsController {
   @Post('import/atc/local')
   @Roles(UserRole.admin)
   async importAtcLocal() {
-    const filePath = path.join(__dirname, '../../..', 'test.xlsx');
+    const filePath = path.join(__dirname, '../..', 'test.xlsx');
+    // const filePath = path.join(__dirname, '../..', 'ATC_DDD_Index.xlsx');
     return this.atcImportService.importFromExcel(filePath);
   }
 }

@@ -180,10 +180,11 @@ export class AtcImportService {
         // Use L5 as drug group
         const drugGroupCode = record['ATC code_L5']; // L5 code only
         const drugGroupNames = this.getDrugGroupName(record);
-        const description = this.buildDescription(record);
+        // const description = this.buildDescription(record);
         
         this.logger.log(`Creating drug group: ${drugGroupCode} -> Arabic: ${drugGroupNames.arabic}, English: ${drugGroupNames.english}`);
-        const drugGroup = await this.findOrCreateDrugGroup(drugGroupCode, drugGroupNames.arabic, drugGroupNames.english, description);
+        // const drugGroup = await this.findOrCreateDrugGroup(drugGroupCode, drugGroupNames.arabic, drugGroupNames.english, description);
+        const drugGroup = await this.findOrCreateDrugGroup(drugGroupCode, drugGroupNames.arabic, drugGroupNames.english, '');
         stats.drugGroupsCreated++;
         this.logger.log(`Created drug group with ID: ${drugGroup.id}`);
 

@@ -25,6 +25,65 @@ export class UsersService {
     });
   }
 
+  async findAllInactive(role?: string) {
+    const where: any = {
+      status: UserStatus.pending,
+    };
+    
+    if (role) {
+      where.role = role;
+    }
+    
+    return this.prisma.user.findMany({
+      where,
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        status: true,
+        fullName: true,
+        phone: true,
+        avatarUrl: true,
+        createdAt: true,
+        city: {
+          select: {
+            id: true,
+            nameAr: true,
+            nameEn: true,
+          },
+        },
+        companyProfile: {
+          select: {
+            id: true,
+            companyName: true,
+            commercialRegNo: true,
+          },
+        },
+        doctorProfile: {
+          select: {
+            id: true,
+            licenseNumber: true,
+            hospitalName: true,
+          },
+        },
+        pharmacistProfile: {
+          select: {
+            id: true,
+            pharmacyName: true,
+            pharmacyLicenseNo: true,
+          },
+        },
+        distributorProfile: {
+          select: {
+            id: true,
+            companyName: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async findByEmail(email: string) {
     return this.prisma.user.findUnique({
       where: { email },

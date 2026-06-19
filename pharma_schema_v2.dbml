@@ -84,6 +84,12 @@ Enum payment_method {
   bank_transfer
 }
 
+Enum price_type {
+  company_to_distributor
+  distributor_to_pharmacist
+  pharmacist_to_consumer
+}
+
 Enum sample_request_status {
   pending
   approved
@@ -256,7 +262,6 @@ Table products {
   barcode            varchar(100)  [unique]
   strength           varchar(50)   [note: 'مثال: 500mg أو 250mg/5ml']
   usage_instructions text
-  price              decimal(10,2) [not null, note: 'CHECK price >= 0']
   status             product_status [not null, default: 'draft']
   image_url          varchar(500)
   brochure_url       varchar(500)  [note: 'PDF file']
@@ -296,6 +301,25 @@ Table company_distributors {
 
   indexes {
     (company_id, distributor_id, city_id) [unique]
+  }
+}
+
+// ===== PRODUCT PRICES =====
+
+Table product_prices {
+  id              uuid         [pk, default: `uuid_generate_v4()`]
+  product_id      uuid         [not null, ref: > products.id]
+  price_type      price_type   [not null]
+  price           decimal(10,2) [not null]
+  effective_from  timestamp    [not null, default: `now()`]
+  effective_to    timestamp
+  created_by      uuid         [ref: > users.id]
+  created_at      timestamp    [not null, default: `now()`]
+  updated_at      timestamp    [not null, default: `now()`]
+
+  indexes {
+    (product_id)
+    (price_type)
   }
 }
 

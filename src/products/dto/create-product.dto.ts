@@ -30,6 +30,7 @@ export class CreateProductDto {
 
   @IsOptional()
   @IsString()
+  @Length(1, 100)
   barcode?: string;
 
   @IsOptional()
@@ -55,4 +56,16 @@ export class CreateProductDto {
   @IsArray()
   @IsUUID('all', { each: true })
   drugGroupIds?: string[];
+
+  @IsOptional()
+  @IsDecimal()
+  companyToDistributorPrice?: string;
+
+  @IsOptional()
+  @IsDecimal()
+  distributorToPharmacistPrice?: string;
+
+  @IsOptional()
+  @IsDecimal()
+  pharmacistToConsumerPrice?: string;
 }
