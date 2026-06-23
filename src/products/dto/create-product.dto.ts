@@ -41,8 +41,8 @@ export class CreateProductDto {
   @IsString()
   usageInstructions?: string;
 
-  @IsDecimal()
-  price!: string;
+  // @IsDecimal()
+  // price!: string;
 
   @IsOptional()
   @IsString()

@@ -36,19 +36,19 @@ export class ProductsController {
       page, 
       limit, 
       fields,
-      userRole: user?.role 
+      userRole: user?.role
     });
   }
 
   @Get(':id')
   findOne(@Param('id') id: string, @CurrentUser() user: any, @Query('fields') fields?: string) {
-    return this.service.findOne(id, fields, user?.role);
+    return this.service.findOne(id, fields);
   }
 
-  @Get('barcode/:barcode')
-  findByBarcode(@Param('barcode') barcode: string, @CurrentUser() user: any, @Query('fields') fields?: string) {
-    return this.service.findByBarcode(barcode, fields, user?.role);
-  }
+  // @Get('barcode/:barcode')
+  // findByBarcode(@Param('barcode') barcode: string, @CurrentUser() user: any, @Query('fields') fields?: string) {
+  //   return this.service.findByBarcode(barcode, fields);
+  // }
 
   @Patch(':id')
   @Roles(UserRole.company, UserRole.admin)

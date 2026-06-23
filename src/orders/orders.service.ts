@@ -48,7 +48,8 @@ export class OrdersService {
     for (const item of items) {
       const product = await this.prisma.product.findUnique({
         where: { id: item.productId },
-        select: { id: true, companyId: true, price: true, nameAr: true, status: true },
+        // select: { id: true, companyId: true, price: true, nameAr: true, status: true },
+        select: { id: true, companyId: true, nameAr: true, status: true },
       });
       if (!product) throw new NotFoundException(`Product ${item.productId} not found`);
       if (product.status !== 'active') throw new BadRequestException(`Product ${product.nameAr} is not active`);

@@ -101,7 +101,6 @@ model User {
   notifications               Notification[]
   auditLogs                   AuditLog[]
   inventoryMovementsCreated   InventoryMovement[]
-  productPricesCreated        ProductPrice[]        @relation("ProductPriceCreator")
 
   @@map("users")
 }
@@ -291,7 +290,9 @@ model Product {
   barcode           String?       @unique @db.VarChar(100)
   strength          String?       @db.VarChar(50)
   usageInstructions String?       @map("usage_instructions") @db.Text
-  price             Decimal       @db.Decimal(10, 2)
+  companyToDistributorPrice             PriceType
+  distributorToPharmacistPrice             Decimal       @db.Decimal(10, 2)
+  pharmacistToConsumerPrice             Decimal       @db.Decimal(10, 2)
   status            ProductStatus @default(draft)
   imageUrl          String?       @map("image_url") @db.VarChar(500)
   brochureUrl       String?       @map("brochure_url") @db.VarChar(500)
@@ -309,28 +310,8 @@ model Product {
   messages             Message[]
   buyXgetYAsBuy        PromotionBuyXGetY[]  @relation("BuyProduct")
   buyXgetYAsFree       PromotionBuyXGetY[]  @relation("FreeProduct")
-  productPrices        ProductPrice[]
 
   @@map("products")
-}
-
-model ProductPrice {
-  id            String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  productId     String    @map("product_id") @db.Uuid
-  priceType     PriceType
-  price         Decimal   @db.Decimal(10, 2)
-  effectiveFrom DateTime  @default(now()) @map("effective_from")
-  effectiveTo   DateTime? @map("effective_to")
-  createdBy     String?   @map("created_by") @db.Uuid
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-
-  product   Product @relation(fields: [productId], references: [id])
-  creator   User?   @relation("ProductPriceCreator", fields: [createdBy], references: [id])
-
-  @@index([productId])
-  @@index([priceType])
-  @@map("product_prices")
 }
 
 model ProductDrugGroup {
