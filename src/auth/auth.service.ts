@@ -14,6 +14,48 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  private async getProfileId(userId: string, role: UserRole) {
+    switch (role) {
+      case UserRole.company: {
+        const profile = await this.prisma.companyProfile.findUnique({
+          where: { userId },
+          select: { id: true },
+        });
+        return profile?.id ?? null;
+      }
+      case UserRole.doctor: {
+        const profile = await this.prisma.doctorProfile.findUnique({
+          where: { userId },
+          select: { id: true },
+        });
+        return profile?.id ?? null;
+      }
+      case UserRole.pharmacist: {
+        const profile = await this.prisma.pharmacistProfile.findUnique({
+          where: { userId },
+          select: { id: true },
+        });
+        return profile?.id ?? null;
+      }
+      case UserRole.distributor: {
+        const profile = await this.prisma.distributorProfile.findUnique({
+          where: { userId },
+          select: { id: true },
+        });
+        return profile?.id ?? null;
+      }
+      case UserRole.representative: {
+        const profile = await this.prisma.representativeProfile.findUnique({
+          where: { userId },
+          select: { id: true },
+        });
+        return profile?.id ?? null;
+      }
+      default:
+        return null;
+    }
+  }
+
   async registerAdmin(registerDto: RegisterDto) {
     return this.createUserFromAdmin(registerDto);
   }
@@ -161,6 +203,7 @@ export class AuthService {
       data: { lastLoginAt: new Date() },
     });
 
+    const profileId = await this.getProfileId(user.id, user.role);
     const payload = { email: user.email, sub: user.id, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
@@ -170,6 +213,7 @@ export class AuthService {
         role: user.role,
         status: user.status,
         fullName: user.fullName,
+        profileId,
       },
     };
   }
