@@ -5,7 +5,7 @@ import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { UserRole } from '@prisma/client';
+import { UserRole, UserStatus } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +15,7 @@ export class AuthService {
   ) {}
 
   async registerAdmin(registerDto: RegisterDto) {
-    return this.createUser(registerDto);
+    return this.createUserFromAdmin(registerDto);
   }
 
   async register(registerDto: RegisterDto) {
@@ -25,6 +25,65 @@ export class AuthService {
     return this.createUser(registerDto);
   }
 
+    private async createUserFromAdmin(registerDto: RegisterDto) {
+
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: registerDto.email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('User already exists');
+    }
+
+    if (registerDto.cityId) {
+      const cityExists = await this.prisma.city.findUnique({
+        where: { id: registerDto.cityId },
+      });
+      if (!cityExists) {
+        throw new ConflictException('Invalid city ID');
+      }
+    }
+
+    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+
+    const userData = {
+      email: registerDto.email,
+      passwordHash: hashedPassword,
+      role: registerDto.role,
+      fullName: registerDto.fullName,
+      status: 'active'as UserStatus,
+      phone: registerDto.phone || null,
+      cityId: registerDto.cityId || null,
+    };
+
+    console.log('User data to create:', JSON.stringify(userData, null, 2));
+
+    let user;
+    try {
+      user = await this.prisma.user.create({
+        data: userData,
+        select: {
+          id: true,
+          email: true,
+          role: true,
+          status: true,
+          fullName: true,
+        },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
+        const field = (error.meta?.target as string[])?.includes('phone') ? 'Phone number' : 'Email';
+        throw new ConflictException(`${field} is already in use`);
+      }
+      throw error;
+    }
+
+    const payload = { email: user.email, sub: user.id, role: user.role };
+    return {
+      access_token: this.jwtService.sign(payload),
+      user,
+    };
+  }
   private async createUser(registerDto: RegisterDto) {
 
     const existingUser = await this.prisma.user.findUnique({

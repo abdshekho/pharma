@@ -3,7 +3,7 @@ import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 export class CreateDoctorProfileDto {
   @IsString()
   @IsNotEmpty()
-  licenseNumber: string;
+  licenseNumber: string ='';
 
   @IsUUID()
   @IsOptional()
@@ -15,5 +15,5 @@ export class CreateDoctorProfileDto {
 
   @IsString()
   @IsNotEmpty()
-  licenseDocUrl: string;
+  licenseDocUrl: string ='';
 }

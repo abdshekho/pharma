@@ -11,6 +11,8 @@ export class DoctorProfileService {
   async create(userId: string, dto: CreateDoctorProfileDto) {
     const existing = await this.prisma.doctorProfile.findUnique({ where: { userId } });
     if (existing) throw new ConflictException('Doctor profile already exists');
+    const licenseNumber = await this.prisma.doctorProfile.findUnique({ where: { licenseNumber: dto.licenseNumber } });
+    if (licenseNumber) throw new ConflictException('licenseNumber already exists');
 
     return this.prisma.doctorProfile.create({ data: { userId, ...dto } });
   }
