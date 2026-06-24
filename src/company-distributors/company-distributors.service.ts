@@ -5,7 +5,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateCompanyDistributorDto, UpdateCompanyDistributorDto } from './dto/company-distributor.dto';
+import { CreateCompanyDistributorDto, CreateRequestCompanyDistributorDto,UpdateCompanyDistributorDto } from './dto/company-distributor.dto';
 import { UserRole } from '@prisma/client';
 
 @Injectable()
@@ -18,12 +18,13 @@ export class CompanyDistributorsService {
     return p.id;
   }
 
-  async create(userId: string, dto: CreateCompanyDistributorDto) {
-    const companyId = await this.resolveCompanyId(userId);
+  async createRequesteFromDistributor(userId: string, dto: CreateRequestCompanyDistributorDto) {
+    const companyId = await this.resolveCompanyId(dto.companyProfileId);
+    
 
     // تحقق إن الموزع موجود
     const distributor = await this.prisma.distributorProfile.findUnique({
-      where: { id: dto.distributorId },
+      where: { userId: userId },
       select: { id: true },
     });
     if (!distributor) throw new NotFoundException('Distributor not found');
@@ -33,12 +34,39 @@ export class CompanyDistributorsService {
     if (!city) throw new NotFoundException('City not found');
 
     const existing = await this.prisma.companyDistributor.findUnique({
-      where: { companyId_distributorId_cityId: { companyId, distributorId: dto.distributorId, cityId: dto.cityId } },
+      where: { companyId_distributorId_cityId: { companyId, distributorId: dto.distributorProfileId, cityId: dto.cityId } },
     });
     if (existing) throw new ConflictException('Distributor already assigned to this city');
 
     return this.prisma.companyDistributor.create({
-      data: { companyId, distributorId: dto.distributorId, cityId: dto.cityId },
+      data: { companyId, distributorId: dto.distributorProfileId, cityId: dto.cityId ,status:'inactive'},
+      include: {
+        distributor: { select: { companyName: true, user: { select: { fullName: true, email: true } } } },
+        city: { select: { nameAr: true } },
+      },
+    });
+  }
+  async create(userId: string, dto: CreateCompanyDistributorDto) {
+    const companyId = await this.resolveCompanyId(userId);
+
+    // تحقق إن الموزع موجود
+    const distributor = await this.prisma.distributorProfile.findUnique({
+      where: { id: dto.distributorProfileId },
+      select: { id: true },
+    });
+    if (!distributor) throw new NotFoundException('Distributor not found');
+
+    // تحقق إن المدينة موجودة
+    const city = await this.prisma.city.findUnique({ where: { id: dto.cityId }, select: { id: true } });
+    if (!city) throw new NotFoundException('City not found');
+
+    const existing = await this.prisma.companyDistributor.findUnique({
+      where: { companyId_distributorId_cityId: { companyId, distributorId: dto.distributorProfileId, cityId: dto.cityId } },
+    });
+    if (existing) throw new ConflictException('Distributor already assigned to this city');
+
+    return this.prisma.companyDistributor.create({
+      data: { companyId, distributorId: dto.distributorProfileId, cityId: dto.cityId },
       include: {
         distributor: { select: { companyName: true, user: { select: { fullName: true, email: true } } } },
         city: { select: { nameAr: true } },
@@ -46,6 +74,16 @@ export class CompanyDistributorsService {
     });
   }
 
+  async findInActiveDistributer(userId: string) {
+    const companyId = await this.resolveCompanyId(userId);
+    return this.prisma.companyDistributor.findMany({
+      where: { status: 'inactive',companyId },
+      include:{
+        distributor: {  select : {user: { select: { fullName: true, email: true } } } },
+        city: { select: { nameAr: true } },
+      }
+    });
+  }
   async findAll(userId: string, role: UserRole) {
     const where: any = {};
 
@@ -62,7 +100,7 @@ export class CompanyDistributorsService {
       where,
       include: {
         company: { select: { companyName: true } },
-        distributor: { select: { companyName: true, user: { select: { fullName: true, email: true } } } },
+        distributor: { select: {  user: { select: { fullName: true, email: true } } } },
         city: { select: { nameAr: true } },
       },
       orderBy: { assignedAt: 'desc' },
@@ -80,7 +118,7 @@ export class CompanyDistributorsService {
       where: { id },
       data: { status: dto.status },
       include: {
-        distributor: { select: { companyName: true } },
+        // distributor: {  select : {user: { select: { fullName: true, email: true } } } },
         city: { select: { nameAr: true } },
       },
     });

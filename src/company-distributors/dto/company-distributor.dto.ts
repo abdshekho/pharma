@@ -3,13 +3,22 @@ import { CompanyDistributorStatus } from '@prisma/client';
 
 export class CreateCompanyDistributorDto {
   @IsUUID()
-  distributorId: string;
+  distributorProfileId: string = '';
 
   @IsUUID()
-  cityId: string;
+  cityId: string = '';
+}
+
+export class CreateRequestCompanyDistributorDto {
+  @IsUUID()
+  distributorProfileId: string = '';
+  @IsUUID()
+  companyProfileId: string = '';
+  @IsUUID()
+  cityId: string = '';
 }
 
 export class UpdateCompanyDistributorDto {
   @IsEnum(CompanyDistributorStatus)
-  status: CompanyDistributorStatus;
+  status: CompanyDistributorStatus = CompanyDistributorStatus.active;
 }

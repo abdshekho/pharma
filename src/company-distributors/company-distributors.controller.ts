@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
 import { CompanyDistributorsService } from './company-distributors.service';
-import { CreateCompanyDistributorDto, UpdateCompanyDistributorDto } from './dto/company-distributor.dto';
+import { CreateCompanyDistributorDto,CreateRequestCompanyDistributorDto, UpdateCompanyDistributorDto } from './dto/company-distributor.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -10,12 +10,20 @@ import { UserRole } from '@prisma/client';
 @Controller('company-distributors')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class CompanyDistributorsController {
+  
   constructor(private readonly service: CompanyDistributorsService) {}
 
   @Post()
   @Roles(UserRole.company)
+
   create(@Body() dto: CreateCompanyDistributorDto, @CurrentUser() user: any) {
     return this.service.create(user.id, dto);
+  }
+
+  @Post('request')
+  @Roles(UserRole.distributor)
+  createFromDistributor(@Body() dto: CreateRequestCompanyDistributorDto, @CurrentUser() user: any) {
+    return this.service.createRequesteFromDistributor(user.id, dto);
   }
 
   @Get()
@@ -23,9 +31,14 @@ export class CompanyDistributorsController {
   findAll(@CurrentUser() user: any) {
     return this.service.findAll(user.id, user.role);
   }
+  @Get('inactive')
+  @Roles(UserRole.company)
+  findInActiveDistributer(@CurrentUser() user: any) {
+    return this.service.findInActiveDistributer(user.id);
+  }
 
   @Patch(':id/status')
-  @Roles(UserRole.company, UserRole.admin)
+  @Roles(UserRole.company)
   updateStatus(@Param('id') id: string, @Body() dto: UpdateCompanyDistributorDto, @CurrentUser() user: any) {
     return this.service.updateStatus(id, user.id, dto);
   }
