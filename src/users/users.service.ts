@@ -25,18 +25,29 @@ export class UsersService {
     });
   }
 
-  async findAllInactive(role?: string) {
-    const where: any = {
-      status: UserStatus.pending,
-    };
-    
-    if (role) {
-      where.role = role;
+async findAllInactive(role?: string) {
+  const where: any = {
+    status: UserStatus.pending,
+  };
+  
+  if (role) {
+    where.role = role;
+    const profileField = this.getProfileField(role);
+    if (profileField) {
+      where[profileField] = { isNot: null };
     }
-    
-    return this.prisma.user.findMany({
-      where,
-      select: {
+  } else {
+    where.OR = [
+      { companyProfile: { isNot: null } },
+      { doctorProfile: { isNot: null } },
+      { pharmacistProfile: { isNot: null } },
+      { distributorProfile: { isNot: null } },
+    ];
+  }
+
+  return this.prisma.user.findMany({
+    where,
+    select: {
         id: true,
         email: true,
         role: true,
@@ -51,6 +62,7 @@ export class UsersService {
             nameAr: true,
             nameEn: true,
           },
+          
         },
         companyProfile: {
           select: {
@@ -80,9 +92,20 @@ export class UsersService {
           },
         },
       },
-      orderBy: { createdAt: 'desc' },
-    });
-  }
+
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
+private getProfileField(role: string): string {
+  const profileMap = {
+    [UserRole.company]: 'companyProfile',
+    [UserRole.doctor]: 'doctorProfile',
+    [UserRole.pharmacist]: 'pharmacistProfile',
+    [UserRole.distributor]: 'distributorProfile',
+  };
+  return profileMap[role] || '';
+}
 
   async findByEmail(email: string) {
     return this.prisma.user.findUnique({

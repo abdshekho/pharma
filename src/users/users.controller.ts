@@ -15,6 +15,7 @@ export class UsersController {
 
   @Get('inactive')
   @Roles(UserRole.admin)
+
   findAllInactive(@Query('role') role?: string) {
     return this.usersService.findAllInactive(role);
   }

@@ -11,6 +11,8 @@ export class PharmacistProfileService {
   async create(userId: string, dto: CreatePharmacistProfileDto) {
     const existing = await this.prisma.pharmacistProfile.findUnique({ where: { userId } });
     if (existing) throw new ConflictException('Pharmacist profile already exists');
+    const pharmacyLicenseNo = await this.prisma.pharmacistProfile.findUnique({ where: { pharmacyLicenseNo: dto.pharmacyLicenseNo } });
+    if(pharmacyLicenseNo) throw new ConflictException('pharmacyLicenseNo already exists');
 
     return this.prisma.pharmacistProfile.create({ data: { userId, ...dto } });
   }
