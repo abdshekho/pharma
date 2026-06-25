@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "e54a8d47-98d3-4328-835b-113f4ecd6185",
+    "_postman_id": "3084cf8e-e83e-41b7-91d0-0a151a325d4b",
     "name": "pharma project",
     "description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Scripts\" tab**\n\nAdding tests to your requests can help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/fa30ea0a-373d-4545-a668-e7b283cca343/aW1hZ2UucG5n\" alt=\"\" height=\"1530\" width=\"2162\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n    \n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -151,7 +151,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"email\": \"Admin@example.com\",\r\n  \"password\": \"password123\"\r\n}",
+              "raw": "{\r\n  \"email\": \"admin@example.com\",\r\n  \"password\": \"password123\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -281,7 +281,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"company@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"company\",\n  \"fullName\": \"test company\",\n  \"phone\": \"+963123456780\",\n  \"cityId\": \"edd9340a-4ecb-4873-9b53-a0b790555419\"\n}",
+              "raw": "{\n  \"email\": \"pharmacist5@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"pharmacist\",\n  \"fullName\": \"pharmacist3 fullName\",\n  \"phone\": \"+963923417582\",\n  \"cityId\": \"6853170e-3f0e-44e2-9c5c-21966190e698\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -411,7 +411,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"Admin2@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"admin\",\n  \"fullName\": \"super Admin\",\n  \"phone\": \"+9631234567812\",\n  \"cityId\": \"edd9340a-4ecb-4873-9b53-a0b790555419\"\n}",
+              "raw": "{\n  \"email\": \"testAdmin@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"admin\",\n  \"fullName\": \"test doctor5\",\n  \"phone\": \"+96312345678143\",\n  \"cityId\": \"6853170e-3f0e-44e2-9c5c-21966190e698\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -430,79 +430,7 @@
             },
             "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
           },
-          "response": [
-            {
-              "name": "Create Admin",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Authorization",
-                    "value": "Bearer {{access_token}}",
-                    "type": "text"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"email\": \"Admin2@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"admin\",\n  \"fullName\": \"super Admin\",\n  \"phone\": \"+963123456780\",\n  \"cityId\": \"edd9340a-4ecb-4873-9b53-a0b790555419\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{base_url}}/auth/register-admin",
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "register-admin"
-                  ]
-                }
-              },
-              "status": "Created",
-              "code": 201,
-              "_postman_previewlanguage": "Text",
-              "header": [
-                {
-                  "key": "X-Powered-By",
-                  "value": "Express"
-                },
-                {
-                  "key": "Access-Control-Allow-Origin",
-                  "value": "*"
-                },
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                },
-                {
-                  "key": "Content-Length",
-                  "value": "407"
-                },
-                {
-                  "key": "ETag",
-                  "value": "W/\"197-VzhS82Wmod6lK+4pLKFGgPmaxRI\""
-                },
-                {
-                  "key": "Date",
-                  "value": "Sat, 14 Mar 2026 16:31:47 GMT"
-                },
-                {
-                  "key": "Connection",
-                  "value": "keep-alive"
-                },
-                {
-                  "key": "Keep-Alive",
-                  "value": "timeout=5"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IkFkbWluMkBleGFtcGxlLmNvbSIsInN1YiI6ImVlNmVmMTU1LWI5ZjAtNDliMC1hNzk3LTFlYzc4MDAwMTQ2MCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3MzUwNTkwNywiZXhwIjoxNzczNTkyMzA3fQ.vyhd-YoWycSlnlBeZmrDzdEDQ4JWYRAgDz5VGg87bVE\",\n    \"user\": {\n        \"id\": \"ee6ef155-b9f0-49b0-a797-1ec780001460\",\n        \"email\": \"Admin2@example.com\",\n        \"role\": \"admin\",\n        \"status\": \"pending\",\n        \"fullName\": \"super Admin\"\n    }\n}"
-            }
-          ]
+          "response": []
         }
       ]
     },
@@ -791,13 +719,13 @@
               "raw": ""
             },
             "url": {
-              "raw": "{{base_url}}/users/1f3d025f-ae3d-4ecb-9b8b-964e16abf3f6/verify",
+              "raw": "{{base_url}}/users/2f5024a3-fe3c-4c4b-a1d7-f1343e7918f9/verify",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "users",
-                "1f3d025f-ae3d-4ecb-9b8b-964e16abf3f6",
+                "2f5024a3-fe3c-4c4b-a1d7-f1343e7918f9",
                 "verify"
               ]
             }
@@ -835,19 +763,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/users/inactive?role=distributor",
+              "raw": "{{base_url}}/users/inactive",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "users",
                 "inactive"
-              ],
-              "query": [
-                {
-                  "key": "role",
-                  "value": "distributor"
-                }
               ]
             },
             "description": "Get all users with status 'pending' (غير مفعلة). يمكن فلترة حسب الـ role باستخدام query parameter مثل ?role=distributor"
@@ -1280,7 +1202,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"licenseNumber\": \"LIC-12345\",\n  \"hospitalName\": \"مشفى الشفاء\",\n  \"licenseDocUrl\": \"https://docs.example.com/license.pdf\",\n  \"specializationId\": null\n}",
+                  "raw": "{\n  \"licenseNumber\": \"LIC-14345\",\n  \"hospitalName\": \"مشفى الشفاء\",\n  \"licenseDocUrl\": \"https://docs.example.com/license.pdf\",\n  \"specializationId\": null\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2053,18 +1975,12 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/cities?isActive=true",
+              "raw": "{{base_url}}/cities",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "cities"
-              ],
-              "query": [
-                {
-                  "key": "isActive",
-                  "value": "true"
-                }
               ]
             }
           },
@@ -2418,6 +2334,176 @@
       ]
     },
     {
+      "name": "areas",
+      "item": [
+        {
+          "name": "get areas by cities",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/cities/6853170e-3f0e-44e2-9c5c-21966190e698/areas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cities",
+                "6853170e-3f0e-44e2-9c5c-21966190e698",
+                "areas"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "add area (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    //id in URL is cityId\r\n    \"nameEn\":\"Artoz\",\r\n    \"nameAr\":\"عرطوز\",\r\n    \"isActive\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/cities/6853170e-3f0e-44e2-9c5c-21966190e698/areas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cities",
+                "6853170e-3f0e-44e2-9c5c-21966190e698",
+                "areas"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update area (Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    ///cities/:cityId/areas/:areaId\r\n    \"nameAr\": \"المزة2\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/cities/6853170e-3f0e-44e2-9c5c-21966190e698/areas/52862f61-fa20-4b70-9918-fefb0ed09355",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cities",
+                "6853170e-3f0e-44e2-9c5c-21966190e698",
+                "areas",
+                "52862f61-fa20-4b70-9918-fefb0ed09355"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update area (Admin) Copy",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/cities/6853170e-3f0e-44e2-9c5c-21966190e698/areas/52862f61-fa20-4b70-9918-fefb0ed09355",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cities",
+                "6853170e-3f0e-44e2-9c5c-21966190e698",
+                "areas",
+                "52862f61-fa20-4b70-9918-fefb0ed09355"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get area by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/cities/6853170e-3f0e-44e2-9c5c-21966190e698/areas/{{areaID}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cities",
+                "6853170e-3f0e-44e2-9c5c-21966190e698",
+                "areas",
+                "{{areaID}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "categories",
       "item": [
         {
@@ -2520,7 +2606,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"nameEn\":\"en sub subcategory\",\r\n    \"parentId\": \"63d21265-ecf2-4f10-a21d-aa73f536bbd2\",\r\n    \"nameAr\":\"شحوم ثلاثية\",\r\n    \"icon\":\"HMS\",\r\n    \"isActive\": true\r\n}",
+              "raw": "{\r\n    \"nameEn\":\"en sub subcategory\",\r\n    \"parentId\": null,\r\n    \"nameAr\":\"شحوم ثلاثية\",\r\n    \"icon\":\"HMS\",\r\n    \"isActive\": true\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2841,13 +2927,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/drug-groups/{{drug_group_id}}?fields=id,nameAr,categories,products",
+              "raw": "{{base_url}}/drug-groups/555e4929-1e76-4574-939e-ed5b2b8b59ca?fields=id,nameAr,categories,products",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "drug-groups",
-                "{{drug_group_id}}"
+                "555e4929-1e76-4574-939e-ed5b2b8b59ca"
               ],
               "query": [
                 {
@@ -3938,7 +4024,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/products?fields=id,nameAr,nameEn,price,status,dosageForm,strength,drugGroups&limit=10&companyId=3293e899-88da-4e5e-951b-0b70aace9724&dosageForm=capsule&&search=amo",
+              "raw": "{{base_url}}/products?companyId=3293e899-88da-4e5e-951b-0b70aace9724&dosageForm=capsule&&search=amo",
               "host": [
                 "{{base_url}}"
               ],
@@ -3946,14 +4032,6 @@
                 "products"
               ],
               "query": [
-                {
-                  "key": "fields",
-                  "value": "id,nameAr,nameEn,price,status,dosageForm,strength,drugGroups"
-                },
-                {
-                  "key": "limit",
-                  "value": "10"
-                },
                 {
                   "key": "companyId",
                   "value": "3293e899-88da-4e5e-951b-0b70aace9724"
@@ -4091,7 +4169,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nameAr\": \"أموكسيل 500\",\n  \"nameEn\": \"Amoxil 500\",\n  \"dosageForm\": \"capsule\",\n  \"strength\": \"500mg\",\n  \"packSize\": 20,\n  \"packUnit\": \"capsule\",\n  \"packageType\": \"box\",\n  \"price\": \"5.50\",\n  \"companyToDistributorPrice\": \"5.50\",\n  \"distributorToPharmacistPrice\": \"6.05\",\n  \"pharmacistToConsumerPrice\": \"6.60\",\n  \"drugGroupIds\": [\"a43e9bef-f46d-4883-a265-bc58c5f9e248\"]\n}",
+              "raw": "{\n  \"nameAr\": \"أموكسيل 500\",\n  \"nameEn\": \"Amoxil 500\",\n  \"dosageForm\": \"capsule\",\n  \"strength\": \"500mg\",\n  \"packSize\": 20,\n  \"packUnit\": \"capsule\",\n  \"packageType\": \"box\",\n  \"companyToDistributorPrice\": \"5.50\",\n  \"distributorToPharmacistPrice\": \"6.05\",\n  \"pharmacistToConsumerPrice\": \"6.60\",\n  \"drugGroupIds\": [\"6c57e8ba-835c-4748-a759-9aaed2b8574f\",\"9b8c4766-4e9f-4b7c-9c2a-c5634b833451\"]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4180,6 +4258,362 @@
       ]
     },
     {
+      "name": "company_distributor",
+      "item": [
+        {
+          "name": "get my distributors (company)",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/company-distributors",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "company-distributors"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get my inactive distributors(company)",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/company-distributors/inactive",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "company-distributors",
+                "inactive"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "add distributor (company)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"distributorId\": \"3479c7c1-cfb9-4aa8-a806-8203fe9933c0\",\r\n  \"cityId\": \"6853170e-3f0e-44e2-9c5c-21966190e698\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/company-distributors",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "company-distributors"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "req join distributor (distributor)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    //note: use profile_id not user_id\r\n  \"distributorProfileId\": \"f091df56-13e1-442d-8e55-43176261e38c\",\r\n  \"companyProfileId\": \"e8da85d8-3de3-4984-8894-bd45d2510a05\",\r\n  \"cityId\": \"6853170e-3f0e-44e2-9c5c-21966190e698\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/company-distributors/request",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "company-distributors",
+                "request"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update distributor status (company)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    //note:the id in url is id of linke between  companyId and distributorId\r\n    //note status ['active','inactive']\r\n    \"status\":\"inactive\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/company-distributors/394127d1-56b1-4fc7-8615-c99f2c6bd548/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "company-distributors",
+                "394127d1-56b1-4fc7-8615-c99f2c6bd548",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete distributor from company (Company and Admin)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/company-distributors/394127d1-56b1-4fc7-8615-c99f2c6bd548",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "company-distributors",
+                "394127d1-56b1-4fc7-8615-c99f2c6bd548"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "distributor coverage-schedule",
+      "item": [
+        {
+          "name": "get my coverage-schedule (distributer)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/profiles/distributor/me/coverage-schedule",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles",
+                "distributor",
+                "me",
+                "coverage-schedule"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get distributor coverage-schedule (all)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/profiles/distributor/me/coverage-schedule",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles",
+                "distributor",
+                "me",
+                "coverage-schedule"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update my coverage-schedule (distributer)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"days\": [\r\n    {\r\n      \"dayOfWeek\": \"sunday\",\r\n      //\"areaIds\": [\"areaId\", \"areaId\"]\r\n      \"areaIds\": [\"2fcc3578-a374-4558-88f3-9f819a684f2b\", \"8635cdae-353d-4e19-8e73-51cea0412e44\"]\r\n    },\r\n    {\r\n      \"dayOfWeek\": \"monday\",\r\n      \"areaIds\": [\"dc398b08-0d6e-4133-831a-348e1ea6fc6e\", \"5000bc88-2484-48ab-89cb-8c0765f20c60\"]\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/profiles/distributor/me/coverage-schedule",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles",
+                "distributor",
+                "me",
+                "coverage-schedule"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "update coverage-schedule (Admin ,distributer)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"days\": [\r\n    {\r\n      \"dayOfWeek\": \"sunday\",\r\n      //\"areaIds\": [\"areaId\", \"areaId\"]\r\n      \"areaIds\": [\"2fcc3578-a374-4558-88f3-9f819a684f2b\", \"8635cdae-353d-4e19-8e73-51cea0412e44\"]\r\n    },\r\n    {\r\n      \"dayOfWeek\": \"monday\",\r\n      \"areaIds\": [\"dc398b08-0d6e-4133-831a-348e1ea6fc6e\", \"5000bc88-2484-48ab-89cb-8c0765f20c60\"]\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/profiles/distributor/3479c7c1-cfb9-4aa8-a806-8203fe9933c0/coverage-schedule",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles",
+                "distributor",
+                "3479c7c1-cfb9-4aa8-a806-8203fe9933c0",
+                "coverage-schedule"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "import drug_group file",
       "request": {
         "auth": {
@@ -4204,7 +4638,7 @@
           }
         },
         "url": {
-          "raw": "localhost:3000/drug-groups/import/atc/excel",
+          "raw": "localhost:3000/drug-groups/import/atc/local",
           "host": [
             "localhost"
           ],
@@ -4213,7 +4647,7 @@
             "drug-groups",
             "import",
             "atc",
-            "excel"
+            "local"
           ]
         }
       },

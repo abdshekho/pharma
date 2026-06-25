@@ -2,6 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nes
 import { DistributorProfileService } from './distributor-profile.service';
 import { CreateDistributorProfileDto } from './dto/create-distributor-profile.dto';
 import { UpdateDistributorProfileDto } from './dto/update-distributor-profile.dto';
+import { SetCoverageScheduleDto } from './dto/set-coverage-schedule.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
@@ -31,10 +32,36 @@ export class DistributorProfileController {
     return this.service.findByUser(user.id);
   }
 
+  @Get('me/coverage-schedule')
+  @Roles(UserRole.distributor)
+  async findMyCoverageSchedule(@CurrentUser() user: any) {
+    const profile = await this.service.findByUser(user.id);
+    return this.service.findCoverageSchedule(profile.id, user.id, user.role);
+  }
+
+  @Put('me/coverage-schedule')
+  @Roles(UserRole.distributor)
+  async setMyCoverageSchedule(@CurrentUser() user: any, @Body() dto: SetCoverageScheduleDto) {
+    const profile = await this.service.findByUser(user.id);
+    return this.service.setCoverageSchedule(profile.id, user.id, user.role, dto);
+  }
+
   @Get(':id')
   @Roles(UserRole.admin)
   findOne(@Param('id') id: string) {
     return this.service.findOne(id);
+  }
+
+  @Get(':id/coverage-schedule')
+  @Roles(UserRole.distributor, UserRole.admin)
+  findCoverageSchedule(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.service.findCoverageSchedule(id, user.id, user.role);
+  }
+
+  @Put(':id/coverage-schedule')
+  @Roles(UserRole.distributor, UserRole.admin)
+  setCoverageSchedule(@Param('id') id: string, @CurrentUser() user: any, @Body() dto: SetCoverageScheduleDto) {
+    return this.service.setCoverageSchedule(id, user.id, user.role, dto);
   }
 
   @Put(':id')

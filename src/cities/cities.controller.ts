@@ -2,6 +2,8 @@ import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } f
 import { CitiesService } from './cities.service';
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
+import { CreateCityAreaDto } from './dto/create-city-area.dto';
+import { UpdateCityAreaDto } from './dto/update-city-area.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -22,6 +24,35 @@ export class CitiesController {
   findAll(@Query('isActive') isActive?: string) {
     const filter = isActive === 'true' ? true : isActive === 'false' ? false : undefined;
     return this.service.findAll(filter);
+  }
+
+  @Post(':cityId/areas')
+  @Roles(UserRole.admin)
+  createArea(@Param('cityId') cityId: string, @Body() dto: CreateCityAreaDto) {
+    return this.service.createArea(cityId, dto);
+  }
+
+  @Get(':cityId/areas')
+  findAreas(@Param('cityId') cityId: string, @Query('isActive') isActive?: string) {
+    const filter = isActive === 'true' ? true : isActive === 'false' ? false : undefined;
+    return this.service.findAreas(cityId, filter);
+  }
+
+  @Get(':cityId/areas/:areaId')
+  findArea(@Param('cityId') cityId: string, @Param('areaId') areaId: string) {
+    return this.service.findArea(cityId, areaId);
+  }
+
+  @Patch(':cityId/areas/:areaId')
+  @Roles(UserRole.admin)
+  updateArea(@Param('cityId') cityId: string, @Param('areaId') areaId: string, @Body() dto: UpdateCityAreaDto) {
+    return this.service.updateArea(cityId, areaId, dto);
+  }
+
+  @Delete(':cityId/areas/:areaId')
+  @Roles(UserRole.admin)
+  removeArea(@Param('cityId') cityId: string, @Param('areaId') areaId: string) {
+    return this.service.removeArea(cityId, areaId);
   }
 
   @Get(':id')
