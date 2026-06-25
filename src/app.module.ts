@@ -15,7 +15,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { SpecializationsModule } from './specializations/specializations.module';
 import { DrugGroupsModule } from './drug-groups/drug-groups.module';
 import { ProductsModule } from './products/products.module';
-// import { OrdersModule } from './orders/orders.module';
+import { OrdersModule } from './orders/orders.module';
 import { PromotionsModule } from './promotions/promotions.module';
 import { DistributorInventoryModule } from './distributor-inventory/distributor-inventory.module';
 import { RepresentativeProfileModule } from './profiles/representative/representative-profile.module';
@@ -38,7 +38,7 @@ import { SampleQuotasModule } from './sample-quotas/sample-quotas.module';
     SpecializationsModule,
     DrugGroupsModule,
     ProductsModule,
-    // OrdersModule,
+    OrdersModule,
     PromotionsModule,
     DistributorInventoryModule,
     RepresentativeProfileModule,
