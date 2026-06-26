@@ -90,6 +90,7 @@ model User {
   doctorProfile             DoctorProfile?          @relation("UserDoctorProfile")
   verifiedDoctors           DoctorProfile[]         @relation("DoctorVerifier")
   inventoryMovementsCreated InventoryMovement[]
+  stockMovementsCreated     StockMovement[]
   receivedMessages          Message[]               @relation("ReceivedMessages")
   sentMessages              Message[]               @relation("SentMessages")
   notifications             Notification[]
@@ -115,6 +116,7 @@ model CompanyProfile {
   verifiedBy            String?                 @map("verified_by") @db.Uuid
   createdAt             DateTime                @default(now()) @map("created_at")
   companyDistributors   CompanyDistributor[]
+  inventories           Inventory[]             @relation("CompanyInventory")
   user                  User                    @relation("UserCompanyProfile", fields: [userId], references: [id])
   verifier              User?                   @relation("CompanyVerifier", fields: [verifiedBy], references: [id])
   orders                Order[]
@@ -146,19 +148,20 @@ model DoctorProfile {
 }
 
 model PharmacistProfile {
-  id                String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  userId            String    @unique @map("user_id") @db.Uuid
-  pharmacyLicenseNo String    @unique @map("pharmacy_license_no") @db.VarChar(50)
-  pharmacyName      String    @map("pharmacy_name") @db.VarChar(200)
-  commercialRegNo   String?   @map("commercial_reg_no") @db.VarChar(50)
+  id                String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId            String      @unique @map("user_id") @db.Uuid
+  pharmacyLicenseNo String      @unique @map("pharmacy_license_no") @db.VarChar(50)
+  pharmacyName      String      @map("pharmacy_name") @db.VarChar(200)
+  commercialRegNo   String?     @map("commercial_reg_no") @db.VarChar(50)
   address           String
-  licenseDocUrl     String?   @map("license_doc_url") @db.VarChar(500)
-  verifiedAt        DateTime? @map("verified_at")
-  verifiedBy        String?   @map("verified_by") @db.Uuid
-  createdAt         DateTime  @default(now()) @map("created_at")
+  licenseDocUrl     String?     @map("license_doc_url") @db.VarChar(500)
+  verifiedAt        DateTime?   @map("verified_at")
+  verifiedBy        String?     @map("verified_by") @db.Uuid
+  createdAt         DateTime    @default(now()) @map("created_at")
   orders            Order[]
-  user              User      @relation("UserPharmacistProfile", fields: [userId], references: [id])
-  verifier          User?     @relation("PharmacistVerifier", fields: [verifiedBy], references: [id])
+  inventories       Inventory[] @relation("PharmacistInventory")
+  user              User        @relation("UserPharmacistProfile", fields: [userId], references: [id])
+  verifier          User?       @relation("PharmacistVerifier", fields: [verifiedBy], references: [id])
 
   @@map("pharmacist_profiles")
 }
@@ -174,6 +177,7 @@ model DistributorProfile {
   companyDistributors  CompanyDistributor[]
   coverageAreas        DistributorCoverageArea[]
   distributorInventory DistributorInventory[]
+  inventories          Inventory[]
   user                 User                      @relation("UserDistributorProfile", fields: [userId], references: [id])
   verifier             User?                     @relation("DistributorVerifier", fields: [verifiedBy], references: [id])
   inventoryMovements   InventoryMovement[]
@@ -259,6 +263,8 @@ model Product {
   createdAt                    DateTime               @default(now()) @map("created_at")
   updatedAt                    DateTime               @updatedAt @map("updated_at")
   distributorInventory         DistributorInventory[]
+  inventories                  Inventory[]
+  stockMovements               StockMovement[]
   inventoryMovements           InventoryMovement[]
   messages                     Message[]
   orderItems                   OrderItem[]
@@ -457,6 +463,51 @@ model DistributorInventory {
   @@map("distributor_inventory")
 }
 
+model Inventory {
+  id                String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  ownerType         InventoryOwnerType  @map("owner_type")
+  companyId         String?             @map("company_id") @db.Uuid
+  distributorId     String?             @map("distributor_id") @db.Uuid
+  pharmacistId      String?             @map("pharmacist_id") @db.Uuid
+  productId         String              @map("product_id") @db.Uuid
+  quantityAvailable Int                 @default(0) @map("quantity_available")
+  lowStockThreshold Int                 @default(10) @map("low_stock_threshold")
+  lastUpdated       DateTime            @default(now()) @map("last_updated")
+  company           CompanyProfile?     @relation("CompanyInventory", fields: [companyId], references: [id])
+  distributor       DistributorProfile? @relation(fields: [distributorId], references: [id])
+  pharmacist        PharmacistProfile?  @relation("PharmacistInventory", fields: [pharmacistId], references: [id])
+  product           Product             @relation(fields: [productId], references: [id])
+  movements         StockMovement[]
+
+  @@unique([companyId, productId])
+  @@unique([distributorId, productId])
+  @@unique([pharmacistId, productId])
+  @@index([ownerType])
+  @@map("inventories")
+}
+
+model StockMovement {
+  id            String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  inventoryId   String                  @map("inventory_id") @db.Uuid
+  productId     String                  @map("product_id") @db.Uuid
+  ownerType     InventoryOwnerType      @map("owner_type")
+  type          InventoryMovementType
+  quantity      Int
+  referenceType InventoryReferenceType? @map("reference_type")
+  referenceId   String?                 @map("reference_id") @db.Uuid
+  note          String?
+  createdBy     String?                 @map("created_by") @db.Uuid
+  createdAt     DateTime                @default(now()) @map("created_at")
+  creator       User?                   @relation(fields: [createdBy], references: [id])
+  inventory     Inventory               @relation(fields: [inventoryId], references: [id])
+  product       Product                 @relation(fields: [productId], references: [id])
+
+  @@index([inventoryId, createdAt])
+  @@index([productId])
+  @@index([referenceType, referenceId])
+  @@map("stock_movements")
+}
+
 model InventoryMovement {
   id            String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   distributorId String?               @map("distributor_id") @db.Uuid
@@ -638,6 +689,18 @@ enum SampleRequestStatus {
 enum InventoryMovementType {
   in
   out
+  adjustment
+}
+
+enum InventoryOwnerType {
+  company
+  distributor
+  pharmacist
+}
+
+enum InventoryReferenceType {
+  order
+  manual
   adjustment
 }
 

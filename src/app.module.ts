@@ -22,6 +22,7 @@ import { RepresentativeProfileModule } from './profiles/representative/represent
 import { SampleRequestsModule } from './sample-requests/sample-requests.module';
 import { CompanyDistributorsModule } from './company-distributors/company-distributors.module';
 import { SampleQuotasModule } from './sample-quotas/sample-quotas.module';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { SampleQuotasModule } from './sample-quotas/sample-quotas.module';
     SampleRequestsModule,
     CompanyDistributorsModule,
     SampleQuotasModule,
+    InventoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
