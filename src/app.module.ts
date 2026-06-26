@@ -23,6 +23,7 @@ import { SampleRequestsModule } from './sample-requests/sample-requests.module';
 import { CompanyDistributorsModule } from './company-distributors/company-distributors.module';
 import { SampleQuotasModule } from './sample-quotas/sample-quotas.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { CompanyOrdersModule } from './company-orders/company-orders.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { InventoryModule } from './inventory/inventory.module';
     CompanyDistributorsModule,
     SampleQuotasModule,
     InventoryModule,
+    CompanyOrdersModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -116,6 +116,7 @@ model CompanyProfile {
   verifiedBy            String?                 @map("verified_by") @db.Uuid
   createdAt             DateTime                @default(now()) @map("created_at")
   companyDistributors   CompanyDistributor[]
+  distributorOrders     CompanyDistributorOrder[]
   inventories           Inventory[]             @relation("CompanyInventory")
   user                  User                    @relation("UserCompanyProfile", fields: [userId], references: [id])
   verifier              User?                   @relation("CompanyVerifier", fields: [verifiedBy], references: [id])
@@ -176,6 +177,7 @@ model DistributorProfile {
   createdAt            DateTime                  @default(now()) @map("created_at")
   companyDistributors  CompanyDistributor[]
   coverageAreas        DistributorCoverageArea[]
+  companyOrders        CompanyDistributorOrder[]
   distributorInventory DistributorInventory[]
   inventories          Inventory[]
   user                 User                      @relation("UserDistributorProfile", fields: [userId], references: [id])
@@ -263,6 +265,7 @@ model Product {
   createdAt                    DateTime               @default(now()) @map("created_at")
   updatedAt                    DateTime               @updatedAt @map("updated_at")
   distributorInventory         DistributorInventory[]
+  companyDistributorOrderItems CompanyDistributorOrderItem[]
   inventories                  Inventory[]
   stockMovements               StockMovement[]
   inventoryMovements           InventoryMovement[]
@@ -330,6 +333,7 @@ model PromotionProduct {
   promotionId     String      @map("promotion_id") @db.Uuid
   productId       String      @map("product_id") @db.Uuid
   discountPercent Decimal     @map("discount_percent") @db.Decimal(5, 2)
+  companyOrderItems CompanyDistributorOrderItem[]
   orderItems      OrderItem[]
   product         Product     @relation(fields: [productId], references: [id])
   promotion       Promotion   @relation(fields: [promotionId], references: [id])
@@ -408,6 +412,47 @@ model OrderItem {
   promotionProduct   PromotionProduct? @relation(fields: [promotionProductId], references: [id])
 
   @@map("order_items")
+}
+
+model CompanyDistributorOrder {
+  id              String                        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  orderNumber     String                        @unique @map("order_number") @db.VarChar(24)
+  companyId       String                        @map("company_id") @db.Uuid
+  distributorId   String                        @map("distributor_id") @db.Uuid
+  status          OrderStatus                   @default(pending)
+  totalAmount     Decimal                       @default(0) @map("total_amount") @db.Decimal(10, 2)
+  paymentMethod   PaymentMethod                 @default(bank_transfer) @map("payment_method")
+  deliveryAddress String                        @map("delivery_address")
+  notes           String?
+  rejectionReason String?                       @map("rejection_reason")
+  approvedAt      DateTime?                     @map("approved_at")
+  deliveredAt     DateTime?                     @map("delivered_at")
+  createdAt       DateTime                      @default(now()) @map("created_at")
+  updatedAt       DateTime                      @updatedAt @map("updated_at")
+  company         CompanyProfile                @relation(fields: [companyId], references: [id])
+  distributor     DistributorProfile            @relation(fields: [distributorId], references: [id])
+  orderItems      CompanyDistributorOrderItem[]
+
+  @@index([companyId, status])
+  @@index([distributorId, status])
+  @@map("company_distributor_orders")
+}
+
+model CompanyDistributorOrderItem {
+  id                 String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  orderId            String                  @map("order_id") @db.Uuid
+  productId          String                  @map("product_id") @db.Uuid
+  productName        String?                 @map("product_name") @db.VarChar(200)
+  quantity           Int
+  unitPrice          Decimal                 @map("unit_price") @db.Decimal(10, 2)
+  promotionProductId String?                 @map("promotion_product_id") @db.Uuid
+  discountAmount     Decimal                 @default(0) @map("discount_amount") @db.Decimal(10, 2)
+  subtotal           Decimal?                @db.Decimal(10, 2)
+  order              CompanyDistributorOrder @relation(fields: [orderId], references: [id])
+  product            Product                 @relation(fields: [productId], references: [id])
+  promotionProduct   PromotionProduct?       @relation(fields: [promotionProductId], references: [id])
+
+  @@map("company_distributor_order_items")
 }
 
 model RepresentativeProfile {
