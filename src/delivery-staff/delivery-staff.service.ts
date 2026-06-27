@@ -6,7 +6,7 @@ import { CreateDeliveryStaffDto } from './dto/create-delivery-staff.dto';
 import { UpdateDeliveryStaffDto } from './dto/update-delivery-staff.dto';
 
 const STAFF_INCLUDE = {
-  user: { select: { id: true, email: true, fullName: true, phone: true, status: true } },
+  user: { select: { id: true, email: true, fullName: true, phone: true, status: true ,role: true} },
 } as const;
 
 @Injectable()

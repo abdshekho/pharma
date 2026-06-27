@@ -14,11 +14,11 @@ import { PaymentMethod } from '@prisma/client';
 
 export class OrderItemDto {
   @IsUUID()
-  productId: string;
+  productId: string='';
 
   @IsNumber()
   @Min(1)
-  quantity: number;
+  quantity: number=1;
 
   @IsOptional()
   @IsUUID()
@@ -29,14 +29,14 @@ export class CreateOrderDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => OrderItemDto)
-  items: OrderItemDto[];
+  items: OrderItemDto[]=[];
 
   @IsEnum(PaymentMethod)
-  paymentMethod: PaymentMethod;
+  paymentMethod: PaymentMethod=PaymentMethod.cod;
 
   @IsString()
   @IsNotEmpty()
-  deliveryAddress: string;
+  deliveryAddress: string='';
 
   @IsOptional()
   @IsString()
