@@ -7,14 +7,14 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
-import { OrderStatus, UserRole } from '@prisma/client';
-import { DistributorInventoryService } from '../distributor-inventory/distributor-inventory.service';
+import { InventoryOwnerType, OrderStatus, UserRole } from '@prisma/client';
+import { InventoryService } from '../inventory/inventory.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     private prisma: PrismaService,
-    private inventoryService: DistributorInventoryService,
+    private stockService: InventoryService,
   ) {}
 
   private async getPharmacistProfile(userId: string) {
@@ -220,8 +220,9 @@ export class OrdersService {
 
       // خصم من المخزون لما يتسلم الطلب
       if (dto.status === OrderStatus.delivered && order.distributorId) {
-        await this.inventoryService.deductForOrder(
-          order.distributorId,
+        await this.stockService.transferForOrder(
+          { ownerType: InventoryOwnerType.distributor, ownerId: order.distributorId },
+          { ownerType: InventoryOwnerType.pharmacist, ownerId: order.pharmacistId },
           id,
           updated.orderItems.map((i) => ({ productId: i.productId, quantity: i.quantity })),
           userId,

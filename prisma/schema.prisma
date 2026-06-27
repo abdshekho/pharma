@@ -90,6 +90,7 @@ model User {
   doctorProfile             DoctorProfile?          @relation("UserDoctorProfile")
   verifiedDoctors           DoctorProfile[]         @relation("DoctorVerifier")
   inventoryMovementsCreated InventoryMovement[]
+  stockMovementsCreated     StockMovement[]
   receivedMessages          Message[]               @relation("ReceivedMessages")
   sentMessages              Message[]               @relation("SentMessages")
   notifications             Notification[]
@@ -116,6 +117,8 @@ model CompanyProfile {
   verifiedBy            String?                 @map("verified_by") @db.Uuid
   createdAt             DateTime                @default(now()) @map("created_at")
   companyDistributors   CompanyDistributor[]
+  distributorOrders     CompanyDistributorOrder[]
+  inventories           Inventory[]             @relation("CompanyInventory")
   user                  User                    @relation("UserCompanyProfile", fields: [userId], references: [id])
   verifier              User?                   @relation("CompanyVerifier", fields: [verifiedBy], references: [id])
   orders                Order[]
@@ -147,19 +150,20 @@ model DoctorProfile {
 }
 
 model PharmacistProfile {
-  id                String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  userId            String    @unique @map("user_id") @db.Uuid
-  pharmacyLicenseNo String    @unique @map("pharmacy_license_no") @db.VarChar(50)
-  pharmacyName      String    @map("pharmacy_name") @db.VarChar(200)
-  commercialRegNo   String?   @map("commercial_reg_no") @db.VarChar(50)
+  id                String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId            String      @unique @map("user_id") @db.Uuid
+  pharmacyLicenseNo String      @unique @map("pharmacy_license_no") @db.VarChar(50)
+  pharmacyName      String      @map("pharmacy_name") @db.VarChar(200)
+  commercialRegNo   String?     @map("commercial_reg_no") @db.VarChar(50)
   address           String
-  licenseDocUrl     String?   @map("license_doc_url") @db.VarChar(500)
-  verifiedAt        DateTime? @map("verified_at")
-  verifiedBy        String?   @map("verified_by") @db.Uuid
-  createdAt         DateTime  @default(now()) @map("created_at")
+  licenseDocUrl     String?     @map("license_doc_url") @db.VarChar(500)
+  verifiedAt        DateTime?   @map("verified_at")
+  verifiedBy        String?     @map("verified_by") @db.Uuid
+  createdAt         DateTime    @default(now()) @map("created_at")
   orders            Order[]
-  user              User      @relation("UserPharmacistProfile", fields: [userId], references: [id])
-  verifier          User?     @relation("PharmacistVerifier", fields: [verifiedBy], references: [id])
+  inventories       Inventory[] @relation("PharmacistInventory")
+  user              User        @relation("UserPharmacistProfile", fields: [userId], references: [id])
+  verifier          User?       @relation("PharmacistVerifier", fields: [verifiedBy], references: [id])
 
   @@map("pharmacist_profiles")
 }
@@ -174,7 +178,9 @@ model DistributorProfile {
   createdAt            DateTime                  @default(now()) @map("created_at")
   companyDistributors  CompanyDistributor[]
   coverageAreas        DistributorCoverageArea[]
+  companyOrders        CompanyDistributorOrder[]
   distributorInventory DistributorInventory[]
+  inventories          Inventory[]
   user                 User                      @relation("UserDistributorProfile", fields: [userId], references: [id])
   verifier             User?                     @relation("DistributorVerifier", fields: [verifiedBy], references: [id])
   inventoryMovements   InventoryMovement[]
@@ -275,6 +281,9 @@ model Product {
   createdAt                    DateTime               @default(now()) @map("created_at")
   updatedAt                    DateTime               @updatedAt @map("updated_at")
   distributorInventory         DistributorInventory[]
+  companyDistributorOrderItems CompanyDistributorOrderItem[]
+  inventories                  Inventory[]
+  stockMovements               StockMovement[]
   inventoryMovements           InventoryMovement[]
   messages                     Message[]
   orderItems                   OrderItem[]
@@ -340,6 +349,7 @@ model PromotionProduct {
   promotionId     String      @map("promotion_id") @db.Uuid
   productId       String      @map("product_id") @db.Uuid
   discountPercent Decimal     @map("discount_percent") @db.Decimal(5, 2)
+  companyOrderItems CompanyDistributorOrderItem[]
   orderItems      OrderItem[]
   product         Product     @relation(fields: [productId], references: [id])
   promotion       Promotion   @relation(fields: [promotionId], references: [id])
@@ -422,6 +432,47 @@ model OrderItem {
   @@map("order_items")
 }
 
+model CompanyDistributorOrder {
+  id              String                        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  orderNumber     String                        @unique @map("order_number") @db.VarChar(24)
+  companyId       String                        @map("company_id") @db.Uuid
+  distributorId   String                        @map("distributor_id") @db.Uuid
+  status          OrderStatus                   @default(pending)
+  totalAmount     Decimal                       @default(0) @map("total_amount") @db.Decimal(10, 2)
+  paymentMethod   PaymentMethod                 @default(bank_transfer) @map("payment_method")
+  deliveryAddress String                        @map("delivery_address")
+  notes           String?
+  rejectionReason String?                       @map("rejection_reason")
+  approvedAt      DateTime?                     @map("approved_at")
+  deliveredAt     DateTime?                     @map("delivered_at")
+  createdAt       DateTime                      @default(now()) @map("created_at")
+  updatedAt       DateTime                      @updatedAt @map("updated_at")
+  company         CompanyProfile                @relation(fields: [companyId], references: [id])
+  distributor     DistributorProfile            @relation(fields: [distributorId], references: [id])
+  orderItems      CompanyDistributorOrderItem[]
+
+  @@index([companyId, status])
+  @@index([distributorId, status])
+  @@map("company_distributor_orders")
+}
+
+model CompanyDistributorOrderItem {
+  id                 String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  orderId            String                  @map("order_id") @db.Uuid
+  productId          String                  @map("product_id") @db.Uuid
+  productName        String?                 @map("product_name") @db.VarChar(200)
+  quantity           Int
+  unitPrice          Decimal                 @map("unit_price") @db.Decimal(10, 2)
+  promotionProductId String?                 @map("promotion_product_id") @db.Uuid
+  discountAmount     Decimal                 @default(0) @map("discount_amount") @db.Decimal(10, 2)
+  subtotal           Decimal?                @db.Decimal(10, 2)
+  order              CompanyDistributorOrder @relation(fields: [orderId], references: [id])
+  product            Product                 @relation(fields: [productId], references: [id])
+  promotionProduct   PromotionProduct?       @relation(fields: [promotionProductId], references: [id])
+
+  @@map("company_distributor_order_items")
+}
+
 model RepresentativeProfile {
   id             String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   userId         String          @unique @map("user_id") @db.Uuid
@@ -473,6 +524,51 @@ model DistributorInventory {
 
   @@unique([distributorId, productId])
   @@map("distributor_inventory")
+}
+
+model Inventory {
+  id                String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  ownerType         InventoryOwnerType  @map("owner_type")
+  companyId         String?             @map("company_id") @db.Uuid
+  distributorId     String?             @map("distributor_id") @db.Uuid
+  pharmacistId      String?             @map("pharmacist_id") @db.Uuid
+  productId         String              @map("product_id") @db.Uuid
+  quantityAvailable Int                 @default(0) @map("quantity_available")
+  lowStockThreshold Int                 @default(10) @map("low_stock_threshold")
+  lastUpdated       DateTime            @default(now()) @map("last_updated")
+  company           CompanyProfile?     @relation("CompanyInventory", fields: [companyId], references: [id])
+  distributor       DistributorProfile? @relation(fields: [distributorId], references: [id])
+  pharmacist        PharmacistProfile?  @relation("PharmacistInventory", fields: [pharmacistId], references: [id])
+  product           Product             @relation(fields: [productId], references: [id])
+  movements         StockMovement[]
+
+  @@unique([companyId, productId])
+  @@unique([distributorId, productId])
+  @@unique([pharmacistId, productId])
+  @@index([ownerType])
+  @@map("inventories")
+}
+
+model StockMovement {
+  id            String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  inventoryId   String                  @map("inventory_id") @db.Uuid
+  productId     String                  @map("product_id") @db.Uuid
+  ownerType     InventoryOwnerType      @map("owner_type")
+  type          InventoryMovementType
+  quantity      Int
+  referenceType InventoryReferenceType? @map("reference_type")
+  referenceId   String?                 @map("reference_id") @db.Uuid
+  note          String?
+  createdBy     String?                 @map("created_by") @db.Uuid
+  createdAt     DateTime                @default(now()) @map("created_at")
+  creator       User?                   @relation(fields: [createdBy], references: [id])
+  inventory     Inventory               @relation(fields: [inventoryId], references: [id])
+  product       Product                 @relation(fields: [productId], references: [id])
+
+  @@index([inventoryId, createdAt])
+  @@index([productId])
+  @@index([referenceType, referenceId])
+  @@map("stock_movements")
 }
 
 model InventoryMovement {
@@ -657,6 +753,18 @@ enum SampleRequestStatus {
 enum InventoryMovementType {
   in
   out
+  adjustment
+}
+
+enum InventoryOwnerType {
+  company
+  distributor
+  pharmacist
+}
+
+enum InventoryReferenceType {
+  order
+  manual
   adjustment
 }
 
