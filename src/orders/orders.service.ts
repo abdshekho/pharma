@@ -251,6 +251,7 @@ export class OrdersService {
       [UserRole.company]: {},
       [UserRole.doctor]: {},
       [UserRole.representative]: {},
+      [UserRole.delivery_staff]: {},
     };
 
     const allowedNext = allowed[role]?.[current] ?? [];

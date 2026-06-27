@@ -158,6 +158,19 @@ private getProfileField(role: string): string {
     const verifiedAt = new Date();
     const verifiedBy = adminId;
 
+    const profileExistsMap: Record<string, () => Promise<any>> = {
+      company:     () => this.prisma.companyProfile.findUnique({ where: { userId } }),
+      doctor:      () => this.prisma.doctorProfile.findUnique({ where: { userId } }),
+      pharmacist:  () => this.prisma.pharmacistProfile.findUnique({ where: { userId } }),
+      distributor: () => this.prisma.distributorProfile.findUnique({ where: { userId } }),
+    };
+
+    const profileFinder = profileExistsMap[user.role];
+    if (profileFinder) {
+      const profile = await profileFinder();
+      if (!profile) throw new BadRequestException('User has not completed their profile yet');
+    }
+
     const profileMap: Record<string, () => Promise<any>> = {
       company:     () => this.prisma.companyProfile.update({ where: { userId }, data: { verifiedAt, verifiedBy } }),
       doctor:      () => this.prisma.doctorProfile.update({ where: { userId }, data: { verifiedAt, verifiedBy } }),

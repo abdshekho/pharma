@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { CompanyDistributorsService } from './company-distributors.service';
-import { CreateCompanyDistributorDto,CreateRequestCompanyDistributorDto, UpdateCompanyDistributorDto } from './dto/company-distributor.dto';
+import { CreateCompanyDistributorDto, CreateRequestCompanyDistributorDto, UpdateCompanyDistributorDto, FindAvailableCompaniesDto } from './dto/company-distributor.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -35,6 +35,18 @@ export class CompanyDistributorsController {
   @Roles(UserRole.company)
   findInActiveDistributer(@CurrentUser() user: any) {
     return this.service.findInActiveDistributer(user.id);
+  }
+
+  @Get('my-companies')
+  @Roles(UserRole.distributor)
+  findMyAcceptedCompanies(@CurrentUser() user: any) {
+    return this.service.findMyAcceptedCompanies(user.id);
+  }
+
+  @Get('available-companies')
+  @Roles(UserRole.distributor)
+  findAvailableCompanies(@CurrentUser() user: any, @Query() query: FindAvailableCompaniesDto) {
+    return this.service.findAvailableCompanies(user.id, query);
   }
 
   @Patch(':id/status')

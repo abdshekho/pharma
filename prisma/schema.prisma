@@ -97,6 +97,7 @@ model User {
   verifiedPharmacists       PharmacistProfile[]     @relation("PharmacistVerifier")
   representativeProfile     RepresentativeProfile?  @relation("UserRepresentativeProfile")
   verifiedRepresentatives   RepresentativeProfile[] @relation("RepresentativeVerifier")
+  deliveryStaffProfile      DeliveryStaffProfile?   @relation("UserDeliveryStaffProfile")
   city                      City?                   @relation(fields: [cityId], references: [id])
 
   @@map("users")
@@ -179,8 +180,23 @@ model DistributorProfile {
   inventoryMovements   InventoryMovement[]
   orders               Order[]
   promotions           Promotion[]
+  deliveryStaff        DeliveryStaffProfile[]
 
   @@map("distributor_profiles")
+}
+
+model DeliveryStaffProfile {
+  id            String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId        String             @unique @map("user_id") @db.Uuid
+  distributorId String             @map("distributor_id") @db.Uuid
+  licensePlate  String?            @map("license_plate") @db.VarChar(50)
+  isActive      Boolean            @default(true) @map("is_active")
+  createdAt     DateTime           @default(now()) @map("created_at")
+  user          User               @relation("UserDeliveryStaffProfile", fields: [userId], references: [id])
+  distributor   DistributorProfile @relation(fields: [distributorId], references: [id])
+  orders        Order[]
+
+  @@map("delivery_staff_profiles")
 }
 
 model DistributorCoverageArea {
@@ -366,8 +382,9 @@ model Order {
   orderNumber     String              @unique @map("order_number") @db.VarChar(20)
   pharmacistId    String              @map("pharmacist_id") @db.Uuid
   companyId       String              @map("company_id") @db.Uuid
-  distributorId   String?             @map("distributor_id") @db.Uuid
-  cityId          String              @map("city_id") @db.Uuid
+  distributorId     String?             @map("distributor_id") @db.Uuid
+  deliveryStaffId   String?             @map("delivery_staff_id") @db.Uuid
+  cityId            String              @map("city_id") @db.Uuid
   status          OrderStatus         @default(pending)
   totalAmount     Decimal             @default(0) @map("total_amount") @db.Decimal(10, 2)
   paymentMethod   PaymentMethod       @default(cod) @map("payment_method")
@@ -381,8 +398,9 @@ model Order {
   orderItems      OrderItem[]
   city            City                @relation(fields: [cityId], references: [id])
   company         CompanyProfile      @relation(fields: [companyId], references: [id])
-  distributor     DistributorProfile? @relation(fields: [distributorId], references: [id])
-  pharmacist      PharmacistProfile   @relation(fields: [pharmacistId], references: [id])
+  distributor     DistributorProfile?  @relation(fields: [distributorId], references: [id])
+  deliveryStaff   DeliveryStaffProfile? @relation(fields: [deliveryStaffId], references: [id])
+  pharmacist      PharmacistProfile    @relation(fields: [pharmacistId], references: [id])
 
   @@map("orders")
 }
@@ -535,6 +553,7 @@ enum UserRole {
   distributor
   representative
   admin
+  delivery_staff
 }
 
 enum UserStatus {

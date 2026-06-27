@@ -1,4 +1,4 @@
-import { IsEnum, IsUUID } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 import { CompanyDistributorStatus } from '@prisma/client';
 
 export class CreateCompanyDistributorDto {
@@ -21,4 +21,14 @@ export class CreateRequestCompanyDistributorDto {
 export class UpdateCompanyDistributorDto {
   @IsEnum(CompanyDistributorStatus)
   status: CompanyDistributorStatus = CompanyDistributorStatus.active;
+}
+
+export class FindAvailableCompaniesDto {
+  @IsOptional()
+  @IsUUID()
+  cityId?: string;
+
+  @IsOptional()
+  @IsString()
+  search?: string;
 }

@@ -4467,6 +4467,74 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Get My Accepted Companies",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/company-distributors/my-companies",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "company-distributors",
+                "my-companies"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Available Companies to Join",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/company-distributors/available-companies",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "company-distributors",
+                "available-companies"
+              ],
+              "query": [
+                {
+                  "key": "cityId",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -4697,6 +4765,151 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "delivery-staff",
+      "item": [
+        {
+          "name": "Create Delivery Staff",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"driver@example.com\",\n    \"password\": \"password123\",\n    \"fullName\": \"Ahmed Ali\",\n    \"phone\": \"0912345678\",\n    \"licensePlate\": \"123-AB\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/delivery-staff",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "delivery-staff"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Delivery Staff",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/delivery-staff",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "delivery-staff"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Delivery Staff by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/delivery-staff/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "delivery-staff",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Delivery Staff",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"fullName\": \"Ahmed Ali Updated\",\n    \"phone\": \"0987654321\",\n    \"licensePlate\": \"456-CD\",\n    \"isActive\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/delivery-staff/:id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "delivery-staff",
+                ":id"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "event": [
