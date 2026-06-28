@@ -26,8 +26,8 @@ export class DrugGroupsController {
   }
 
   @Get()
-  findAll(@Query('fields') fields?: string) {
-    return this.service.findAll(fields);
+  findAll(@Query('fields') fields?: string,@Query('search') search?: string,) {
+    return this.service.findAll(fields,search);
   }
 
   @Get(':id')

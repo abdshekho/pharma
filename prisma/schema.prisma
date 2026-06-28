@@ -32,6 +32,7 @@ model CityArea {
   createdAt         DateTime                  @default(now()) @map("created_at")
   city              City                      @relation(fields: [cityId], references: [id])
   distributorRoutes DistributorCoverageArea[]
+  pharmacists       PharmacistProfile[]
 
   @@unique([cityId, nameAr])
   @@index([cityId, isActive])
@@ -160,6 +161,8 @@ model PharmacistProfile {
   verifiedAt        DateTime?   @map("verified_at")
   verifiedBy        String?     @map("verified_by") @db.Uuid
   createdAt         DateTime    @default(now()) @map("created_at")
+  areaId            String?     @map("area_id") @db.Uuid 
+  area              CityArea?   @relation(fields: [areaId], references: [id])
   orders            Order[]
   inventories       Inventory[] @relation("PharmacistInventory")
   user              User        @relation("UserPharmacistProfile", fields: [userId], references: [id])

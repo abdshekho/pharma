@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateDrugGroupDto } from './dto/create-drug-group.dto';
 import { UpdateDrugGroupDto } from './dto/update-drug-group.dto';
-
+import { Prisma } from '@prisma/client'; // تأكد من استيراد Prisma
 const ALLOWED_FIELDS = ['id', 'nameAr', 'nameEn', 'description', 'isActive', 'createdAt', 'categories', 'products'] as const;
 type DrugGroupField = (typeof ALLOWED_FIELDS)[number];
 
@@ -15,7 +15,7 @@ const productInclude = {
   packSize: true,
   packUnit: true,
   packageType: true,
-  price: true,
+  // price: true,
   status: true,
   imageUrl: true,
 };
@@ -76,14 +76,27 @@ export class DrugGroupsService {
     });
   }
 
-  async findAll(fields?: string) {
+async findAll(fields?: string, search?: string) {
     const parsedFields = this.parseFields(fields);
+    
+    let whereCondition: Prisma.DrugGroupWhereInput = {};
+    if (search) {
+        whereCondition = {
+            OR: [
+                { nameAr: { contains: search, mode: Prisma.QueryMode.insensitive } },
+                { nameEn: { contains: search, mode: Prisma.QueryMode.insensitive } }
+            ]
+        };
+    }
+    
     const items = await this.prisma.drugGroup.findMany({
-      include: this.buildInclude(parsedFields),
-      orderBy: { nameAr: 'asc' },
+        where: whereCondition,
+        include: this.buildInclude(parsedFields),
+        orderBy: { nameAr: 'asc' },
     });
+    
     return items.map((item) => this.pickFields(this.format(item), parsedFields));
-  }
+}
 
   async findOne(id: string, fields?: string) {
     const parsedFields = this.parseFields(fields);

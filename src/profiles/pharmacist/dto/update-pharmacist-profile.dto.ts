@@ -1,4 +1,5 @@
-import { IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class UpdatePharmacistProfileDto {
   @IsString()
@@ -20,4 +21,8 @@ export class UpdatePharmacistProfileDto {
   @IsString()
   @IsOptional()
   licenseDocUrl?: string;
+
+  @IsUUID()
+  @Transform(({ value }) => value || null)
+  areaId: string='';
 }

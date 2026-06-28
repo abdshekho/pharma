@@ -14,6 +14,15 @@ export class PharmacistProfileService {
     const pharmacyLicenseNo = await this.prisma.pharmacistProfile.findUnique({ where: { pharmacyLicenseNo: dto.pharmacyLicenseNo } });
     if(pharmacyLicenseNo) throw new ConflictException('pharmacyLicenseNo already exists');
 
+      if (dto.areaId) {
+      const areaExists = await this.prisma.cityArea.findUnique({
+        where: { id: dto.areaId },
+      });
+      if (!areaExists) {
+        throw new ConflictException('Invalid Area ID');
+      }
+    }
+
     return this.prisma.pharmacistProfile.create({ data: { userId, ...dto } });
   }
 
