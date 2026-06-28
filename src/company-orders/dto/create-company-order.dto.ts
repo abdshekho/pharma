@@ -1,47 +1,51 @@
-import { Type } from 'class-transformer';
+import { Type } from "class-transformer";
 import {
-    IsArray,
-    IsEnum,
-    IsNotEmpty,
-    IsNumber,
-    IsOptional,
-    IsString,
-    IsUUID,
-    Min,
-    ValidateNested,
-} from 'class-validator';
-import { PaymentMethod } from '@prisma/client';
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Min,
+  ValidateNested,
+} from "class-validator";
+import { PaymentMethod } from "@prisma/client";
 
 export class CompanyOrderItemDto {
-    @IsUUID()
-    productId: string ='';
+  @IsUUID()
+  productId: string = "";
 
-    @IsNumber()
-    @Min( 1 )
-    quantity: number=0;
+  @IsNumber()
+  @Min(1)
+  quantity: number = 0;
 
-    @IsOptional()
-    @IsUUID()
-    promotionProductId?: string;
+  @IsOptional()
+  @IsUUID()
+  promotionProductId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  promotionBuyXGetYId?: string;
 }
 
 export class CreateCompanyOrderDto {
-    @IsUUID()
-    companyId: string = '';
+  @IsUUID()
+  companyId: string = "";
 
-    @IsArray()
-    @ValidateNested( { each: true } )
-    @Type( () => CompanyOrderItemDto )
-    items: CompanyOrderItemDto[] = [];
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CompanyOrderItemDto)
+  items: CompanyOrderItemDto[] = [];
 
-    @IsEnum( PaymentMethod )
-    paymentMethod: PaymentMethod = PaymentMethod.cod;
+  @IsEnum(PaymentMethod)
+  paymentMethod: PaymentMethod = PaymentMethod.cod;
 
-    @IsString()
-    @IsNotEmpty()
-    deliveryAddress: string ='';
+  @IsString()
+  @IsNotEmpty()
+  deliveryAddress: string = "";
 
-    @IsOptional()
-    @IsString()
-    notes?: string;
+  @IsOptional()
+  @IsString()
+  notes?: string;
 }
