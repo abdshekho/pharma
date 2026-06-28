@@ -123,6 +123,8 @@ export class CompanyOrdersService {
       0,
     );
 
+    await this.assertCompanyStockAvailable(dto.companyId, orderItemsData);
+
     return this.prisma.companyDistributorOrder.create({
       data: {
         orderNumber: this.generateOrderNumber(),
@@ -225,7 +227,7 @@ export class CompanyOrdersService {
         include: { orderItems: true },
       });
 
-      if (dto.status === OrderStatus.delivered) {
+      if (dto.status === OrderStatus.approved) {
         await this.inventoryService.transferForOrder(
           { ownerType: InventoryOwnerType.company, ownerId: order.companyId },
           {
@@ -242,8 +244,63 @@ export class CompanyOrdersService {
         );
       }
 
+      if (
+        dto.status === OrderStatus.cancelled &&
+        order.status === OrderStatus.approved
+      ) {
+        await this.inventoryService.transferForOrder(
+          {
+            ownerType: InventoryOwnerType.distributor,
+            ownerId: order.distributorId,
+          },
+          { ownerType: InventoryOwnerType.company, ownerId: order.companyId },
+          id,
+          updated.orderItems.map((i) => ({
+            productId: i.productId,
+            quantity: i.quantity,
+          })),
+          userId,
+          tx,
+        );
+      }
+
       return updated;
     });
+  }
+
+  private async assertCompanyStockAvailable(
+    companyId: string,
+    items: { productId: string; quantity: number }[],
+  ) {
+    const requiredByProduct = this.groupRequiredQuantities(items);
+
+    for (const [productId, quantity] of requiredByProduct) {
+      const inventory = await this.prisma.inventory.findUnique({
+        where: { companyId_productId: { companyId, productId } },
+        select: { quantityAvailable: true },
+      });
+
+      if (!inventory || inventory.quantityAvailable < quantity) {
+        throw new BadRequestException(
+          `Insufficient company stock for product ${productId}`,
+        );
+      }
+    }
+  }
+
+  private groupRequiredQuantities(
+    items: { productId: string; quantity: number }[],
+  ) {
+    const requiredByProduct = new Map<string, number>();
+
+    for (const item of items) {
+      requiredByProduct.set(
+        item.productId,
+        (requiredByProduct.get(item.productId) ?? 0) + item.quantity,
+      );
+    }
+
+    return requiredByProduct;
   }
 
   private async calculateDiscount(
@@ -387,7 +444,10 @@ export class CompanyOrdersService {
     > = {
       [UserRole.company]: {
         [OrderStatus.pending]: [OrderStatus.approved, OrderStatus.rejected],
-        [OrderStatus.approved]: [OrderStatus.in_delivery],
+        [OrderStatus.approved]: [
+          OrderStatus.in_delivery,
+          OrderStatus.cancelled,
+        ],
         [OrderStatus.in_delivery]: [OrderStatus.delivered],
       },
       [UserRole.distributor]: {

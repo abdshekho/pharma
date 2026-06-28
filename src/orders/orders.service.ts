@@ -105,6 +105,11 @@ export class OrdersService {
 
     for (const [companyId, items] of groups) {
       const distributorId = await this.findDistributor(companyId, user.cityId);
+      if (!distributorId) {
+        throw new BadRequestException(
+          "No active distributor found for this company in user city",
+        );
+      }
 
       // حساب الـ items مع الخصومات
       const orderItemsData = (
@@ -150,6 +155,8 @@ export class OrdersService {
         0,
       );
 
+      await this.assertDistributorStockAvailable(distributorId, orderItemsData);
+
       const order = await this.prisma.order.create({
         data: {
           orderNumber: this.generateOrderNumber(),
@@ -175,6 +182,41 @@ export class OrdersService {
     }
 
     return createdOrders.length === 1 ? createdOrders[0] : createdOrders;
+  }
+
+  private async assertDistributorStockAvailable(
+    distributorId: string,
+    items: { productId: string; quantity: number }[],
+  ) {
+    const requiredByProduct = this.groupRequiredQuantities(items);
+
+    for (const [productId, quantity] of requiredByProduct) {
+      const inventory = await this.prisma.inventory.findUnique({
+        where: { distributorId_productId: { distributorId, productId } },
+        select: { quantityAvailable: true },
+      });
+
+      if (!inventory || inventory.quantityAvailable < quantity) {
+        throw new BadRequestException(
+          `Insufficient distributor stock for product ${productId}`,
+        );
+      }
+    }
+  }
+
+  private groupRequiredQuantities(
+    items: { productId: string; quantity: number }[],
+  ) {
+    const requiredByProduct = new Map<string, number>();
+
+    for (const item of items) {
+      requiredByProduct.set(
+        item.productId,
+        (requiredByProduct.get(item.productId) ?? 0) + item.quantity,
+      );
+    }
+
+    return requiredByProduct;
   }
 
   private async calculatePercentageDiscount(
@@ -378,8 +420,7 @@ export class OrdersService {
         include: { orderItems: true },
       });
 
-      // خصم من المخزون لما يتسلم الطلب
-      if (dto.status === OrderStatus.delivered && order.distributorId) {
+      if (dto.status === OrderStatus.approved && order.distributorId) {
         await this.stockService.transferForOrder(
           {
             ownerType: InventoryOwnerType.distributor,
@@ -388,6 +429,30 @@ export class OrdersService {
           {
             ownerType: InventoryOwnerType.pharmacist,
             ownerId: order.pharmacistId,
+          },
+          id,
+          updated.orderItems.map((i) => ({
+            productId: i.productId,
+            quantity: i.quantity,
+          })),
+          userId,
+          tx,
+        );
+      }
+
+      if (
+        dto.status === OrderStatus.cancelled &&
+        order.status === OrderStatus.approved &&
+        order.distributorId
+      ) {
+        await this.stockService.transferForOrder(
+          {
+            ownerType: InventoryOwnerType.pharmacist,
+            ownerId: order.pharmacistId,
+          },
+          {
+            ownerType: InventoryOwnerType.distributor,
+            ownerId: order.distributorId,
           },
           id,
           updated.orderItems.map((i) => ({
@@ -415,7 +480,10 @@ export class OrdersService {
     > = {
       [UserRole.distributor]: {
         [OrderStatus.pending]: [OrderStatus.approved, OrderStatus.rejected],
-        [OrderStatus.approved]: [OrderStatus.in_delivery],
+        [OrderStatus.approved]: [
+          OrderStatus.in_delivery,
+          OrderStatus.cancelled,
+        ],
         [OrderStatus.in_delivery]: [OrderStatus.delivered],
       },
       [UserRole.pharmacist]: {

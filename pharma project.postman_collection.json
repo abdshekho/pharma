@@ -4906,7 +4906,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"companyId\": \"c80d5719-8814-488c-8b53-f70d33fc54f2\",\r\n      \"items\": [\r\n    {\r\n      \"productId\": \"da675394-3744-4b20-a580-24d07a5c1692\",\r\n      \"quantity\": 10,\r\n      \"promotionProductId\": null\r\n    }\r\n  ],\r\n    \"paymentMethod\": \"cod\", \r\n    \"deliveryAddress\":\" test deliveryAddress\",\r\n    \"notes\": \"test notes\"\r\n}\r\n",
+              "raw": "{\r\n    \"companyId\": \"c80d5719-8814-488c-8b53-f70d33fc54f2\",\r\n      \"items\": [\r\n    {\r\n      \"productId\": \"d3df4cf7-0d0d-4b57-b6e3-55a2126f3fc9\",\r\n      \"quantity\": 10,\r\n      \"promotionBuyXGetYId\": \"b937893e-3450-4c23-b42b-8c91399a2bad\"\r\n    },\r\n    {\r\n      \"productId\": \"da675394-3744-4b20-a580-24d07a5c1692\",\r\n      \"quantity\": 1,\r\n      \"promotionProductId\": \"6b3d6660-1eb5-4cf6-84c2-dbb0e9772868\"\r\n    },\r\n    {\r\n      \"productId\": \"da675394-3744-4b20-a580-24d07a5c1692\",\r\n      \"quantity\": 1\r\n    }\r\n  ],\r\n    \"paymentMethod\": \"cod\", \r\n    \"deliveryAddress\":\" test deliveryAddress\",\r\n    \"notes\": \"test notes\"\r\n}\r\n",
               "options": {
                 "raw": {
                   "language": "json"
