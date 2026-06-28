@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "9791eb85-2d98-48ad-9348-08760af8a882",
+    "_postman_id": "833848d3-f3cc-4897-b708-32a3e60ae551",
     "name": "pharma project",
     "description": "# 🚀 Get started here\n\nThis template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.\n\n## 🔖 **How to use this template**\n\n#### **Step 1: Send requests**\n\nRESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.\n\nThis collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click \"Send\" to see what happens.\n\n#### **Step 2: View responses**\n\nObserve the response tab for status code (200 OK), response time, and size.\n\n#### **Step 3: Send new Body data**\n\nUpdate or add new data in \"Body\" in the POST request. Typically, Body data is also used in PUT request.\n\n```\n{\n    \"name\": \"Add your name in the body\"\n}\n\n ```\n\n#### **Step 4: Update the variable**\n\nVariables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.\n\n#### **Step 5: Add tests in the \"Scripts\" tab**\n\nAdding tests to your requests can help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the \"Test Results\" tab.\n\n<img src=\"https://content.pstmn.io/fa30ea0a-373d-4545-a668-e7b283cca343/aW1hZ2UucG5n\" alt=\"\" height=\"1530\" width=\"2162\">\n\n## 💪 Pro tips\n\n- Use folders to group related requests and organize the collection.\n    \n- Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) to verify if the API works as expected and execute workflows.\n    \n\n## 💡Related templates\n\n[API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  \n[Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -1397,7 +1397,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"pharmacyLicenseNo\": \"PH-12345\",\n  \"pharmacyName\": \"صيدلية الشفاء\",\n  \"address\": \"دمشق - شارع الثورة\",\n  \"commercialRegNo\": \"CR-99999\",\n  \"licenseDocUrl\": \"https://docs.example.com/ph-license.pdf\"\n}",
+                  "raw": "{\n  \"pharmacyLicenseNo\": \"PH-55551\",\n  \"pharmacyName\": \"صيدلية الشفاء\",\n  \"address\": \"دمشق - الزبلطاني\",\n  \"commercialRegNo\": \"CR-9193\",\n  \"licenseDocUrl\": \"https://docs.example.com/ph-license.pdf\",\n  \"areaId\":\"0af1038c-2964-4bec-ab69-61f687276c84\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2443,7 +2443,7 @@
           "response": []
         },
         {
-          "name": "Update area (Admin) Copy",
+          "name": "Delete area (Admin)",
           "request": {
             "auth": {
               "type": "bearer",
@@ -2894,7 +2894,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/drug-groups?fields=id,nameAr,nameEn,description,categories,products",
+              "raw": "{{base_url}}/drug-groups?fields=id,nameAr,nameEn,description,categories,products&&search=بارا",
               "host": [
                 "{{base_url}}"
               ],
@@ -2905,6 +2905,14 @@
                 {
                   "key": "fields",
                   "value": "id,nameAr,nameEn,description,categories,products"
+                },
+                {
+                  "key": null,
+                  "value": null
+                },
+                {
+                  "key": "search",
+                  "value": "بارا"
                 }
               ]
             }
@@ -3133,7 +3141,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"items\": [\n    {\n      \"productId\": \"da675394-3744-4b20-a580-24d07a5c1692\",\n      \"quantity\": 10,\n      \"promotionProductId\": null\n    }\n  ],\n  \"paymentMethod\": \"cod\",\n  \"deliveryAddress\": \"دمشق - شارع الثورة\",\n  \"notes\": \"يرجى التوصيل صباحاً\"\n}",
+              "raw": "{\n  \"paymentMethod\": \"cod\",\n  \"deliveryAddress\": \"test deliveryAddress\",\n  \"notes\": \"\",\n  \"items\": [\n    {\n        //productX id in promotionBuyXGetY\n      \"productId\": \"d3df4cf7-0d0d-4b57-b6e3-55a2126f3fc9\",\n      \"quantity\": 10,\n      // promotion_buyXgetY ->id\n      \"promotionBuyXGetYId\": \"b5eeb2dd-9711-41db-ac1d-10ba736e2366\"\n    },\n    {\n        // product id in discountPercent\n      \"productId\": \"da675394-3744-4b20-a580-24d07a5c1692\",\n      \"quantity\": 1,\n      //promotion_productId -> id\n      \"promotionProductId\": \"c43e1024-d649-4c26-a108-bda381ef9a40\"\n    },\n    {\n        //normal product\n      \"productId\": \"d3df4cf7-0d0d-4b57-b6e3-55a2126f3fc9\",\n      \"quantity\": 2\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4882,7 +4890,7 @@
           "response": []
         },
         {
-          "name": "create order(Distributor) Copy",
+          "name": "create order(Distributor)",
           "request": {
             "auth": {
               "type": "bearer",
@@ -4994,7 +5002,7 @@
           "response": []
         },
         {
-          "name": "Update status delivered(A C) Copy",
+          "name": "Update status delivered(A C)",
           "request": {
             "auth": {
               "type": "bearer",
@@ -5032,91 +5040,6 @@
           "response": []
         }
       ]
-    },
-    {
-      "name": "import drug_group file",
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{access_token}}",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "localhost:3000/drug-groups/import/atc/local",
-          "host": [
-            "localhost"
-          ],
-          "port": "3000",
-          "path": [
-            "drug-groups",
-            "import",
-            "atc",
-            "local"
-          ]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "import drug_group upload file",
-      "request": {
-        "auth": {
-          "type": "bearer",
-          "bearer": [
-            {
-              "key": "token",
-              "value": "{{access_token}}",
-              "type": "string"
-            }
-          ]
-        },
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "multipart/form-data",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "localhost:3000/drug-groups/import/atc",
-          "host": [
-            "localhost"
-          ],
-          "port": "3000",
-          "path": [
-            "drug-groups",
-            "import",
-            "atc"
-          ]
-        }
-      },
-      "response": []
     },
     {
       "name": "delivery-staff",
@@ -5262,6 +5185,91 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "import drug_group file",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:3000/drug-groups/import/atc/local",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "drug-groups",
+            "import",
+            "atc",
+            "local"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "import drug_group upload file",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "multipart/form-data",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:3000/drug-groups/import/atc",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "drug-groups",
+            "import",
+            "atc"
+          ]
+        }
+      },
+      "response": []
     }
   ],
   "event": [
