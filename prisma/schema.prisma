@@ -48,6 +48,7 @@ model Specialization {
   isActive                     Boolean                       @default(true) @map("is_active")
   doctorProfiles               DoctorProfile[]
   productTargetSpecializations ProductTargetSpecialization[]
+  productSpecializations       ProductSpecialization[]
   parent                       Specialization?               @relation("SpecializationHierarchy", fields: [parentId], references: [id])
   children                     Specialization[]              @relation("SpecializationHierarchy")
 
@@ -106,22 +107,22 @@ model User {
 }
 
 model CompanyProfile {
-  id                    String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  userId                String                  @unique @map("user_id") @db.Uuid
-  companyName           String                  @map("company_name") @db.VarChar(200)
-  commercialRegNo       String                  @map("commercial_reg_no") @db.VarChar(50)
-  healthMinistryLicense String                  @map("health_ministry_license") @db.VarChar(50)
-  logoUrl               String?                 @map("logo_url") @db.VarChar(500)
-  website               String?                 @db.VarChar(500)
+  id                    String                    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId                String                    @unique @map("user_id") @db.Uuid
+  companyName           String                    @map("company_name") @db.VarChar(200)
+  commercialRegNo       String                    @map("commercial_reg_no") @db.VarChar(50)
+  healthMinistryLicense String                    @map("health_ministry_license") @db.VarChar(50)
+  logoUrl               String?                   @map("logo_url") @db.VarChar(500)
+  website               String?                   @db.VarChar(500)
   description           String?
-  verifiedAt            DateTime?               @map("verified_at")
-  verifiedBy            String?                 @map("verified_by") @db.Uuid
-  createdAt             DateTime                @default(now()) @map("created_at")
+  verifiedAt            DateTime?                 @map("verified_at")
+  verifiedBy            String?                   @map("verified_by") @db.Uuid
+  createdAt             DateTime                  @default(now()) @map("created_at")
   companyDistributors   CompanyDistributor[]
   distributorOrders     CompanyDistributorOrder[]
-  inventories           Inventory[]             @relation("CompanyInventory")
-  user                  User                    @relation("UserCompanyProfile", fields: [userId], references: [id])
-  verifier              User?                   @relation("CompanyVerifier", fields: [verifiedBy], references: [id])
+  inventories           Inventory[]               @relation("CompanyInventory")
+  user                  User                      @relation("UserCompanyProfile", fields: [userId], references: [id])
+  verifier              User?                     @relation("CompanyVerifier", fields: [verifiedBy], references: [id])
   orders                Order[]
   products              Product[]
   promotions            Promotion[]
@@ -161,7 +162,7 @@ model PharmacistProfile {
   verifiedAt        DateTime?   @map("verified_at")
   verifiedBy        String?     @map("verified_by") @db.Uuid
   createdAt         DateTime    @default(now()) @map("created_at")
-  areaId            String?     @map("area_id") @db.Uuid 
+  areaId            String?     @map("area_id") @db.Uuid
   area              CityArea?   @relation(fields: [areaId], references: [id])
   orders            Order[]
   inventories       Inventory[] @relation("PharmacistInventory")
@@ -264,25 +265,25 @@ model DrugGroupCategory {
 }
 
 model Product {
-  id                           String                 @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  companyId                    String                 @map("company_id") @db.Uuid
-  nameAr                       String                 @map("name_ar") @db.VarChar(200)
-  nameEn                       String?                @map("name_en") @db.VarChar(200)
-  dosageForm                   DosageForm?            @map("dosage_form")
-  packSize                     Int?                   @map("pack_size")
-  packUnit                     PackUnit?              @map("pack_unit")
-  packageType                  PackageType?           @map("package_type")
-  barcode                      String?                @unique @db.VarChar(100)
-  strength                     String?                @db.VarChar(50)
-  usageInstructions            String?                @map("usage_instructions")
-  companyToDistributorPrice    Decimal                @db.Decimal(10, 2)
-  distributorToPharmacistPrice Decimal                @db.Decimal(10, 2)
-  pharmacistToConsumerPrice    Decimal                @db.Decimal(10, 2)
-  status                       ProductStatus          @default(draft)
-  imageUrl                     String?                @map("image_url") @db.VarChar(500)
-  brochureUrl                  String?                @map("brochure_url") @db.VarChar(500)
-  createdAt                    DateTime               @default(now()) @map("created_at")
-  updatedAt                    DateTime               @updatedAt @map("updated_at")
+  id                           String                        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  companyId                    String                        @map("company_id") @db.Uuid
+  nameAr                       String                        @map("name_ar") @db.VarChar(200)
+  nameEn                       String?                       @map("name_en") @db.VarChar(200)
+  dosageForm                   DosageForm?                   @map("dosage_form")
+  packSize                     Int?                          @map("pack_size")
+  packUnit                     PackUnit?                     @map("pack_unit")
+  packageType                  PackageType?                  @map("package_type")
+  barcode                      String?                       @unique @db.VarChar(100)
+  strength                     String?                       @db.VarChar(50)
+  usageInstructions            String?                       @map("usage_instructions")
+  companyToDistributorPrice    Decimal                       @db.Decimal(10, 2)
+  distributorToPharmacistPrice Decimal                       @db.Decimal(10, 2)
+  pharmacistToConsumerPrice    Decimal                       @db.Decimal(10, 2)
+  status                       ProductStatus                 @default(draft)
+  imageUrl                     String?                       @map("image_url") @db.VarChar(500)
+  brochureUrl                  String?                       @map("brochure_url") @db.VarChar(500)
+  createdAt                    DateTime                      @default(now()) @map("created_at")
+  updatedAt                    DateTime                      @updatedAt @map("updated_at")
   distributorInventory         DistributorInventory[]
   companyDistributorOrderItems CompanyDistributorOrderItem[]
   inventories                  Inventory[]
@@ -291,9 +292,10 @@ model Product {
   messages                     Message[]
   orderItems                   OrderItem[]
   productDrugGroups            ProductDrugGroup[]
-  company                      CompanyProfile         @relation(fields: [companyId], references: [id])
-  buyXgetYAsBuy                PromotionBuyXGetY[]    @relation("BuyProduct")
-  buyXgetYAsFree               PromotionBuyXGetY[]    @relation("FreeProduct")
+  productSpecializations       ProductSpecialization[]
+  company                      CompanyProfile                @relation(fields: [companyId], references: [id])
+  buyXgetYAsBuy                PromotionBuyXGetY[]           @relation("BuyProduct")
+  buyXgetYAsFree               PromotionBuyXGetY[]           @relation("FreeProduct")
   promotionProducts            PromotionProduct[]
   sampleQuotas                 SampleQuota[]
   sampleRequests               SampleRequest[]
@@ -309,6 +311,16 @@ model ProductDrugGroup {
 
   @@id([productId, drugGroupId])
   @@map("product_drug_groups")
+}
+
+model ProductSpecialization {
+  productId        String         @map("product_id") @db.Uuid
+  specializationId String         @map("specialization_id") @db.Uuid
+  product          Product        @relation(fields: [productId], references: [id])
+  specialization   Specialization @relation(fields: [specializationId], references: [id])
+
+  @@id([productId, specializationId])
+  @@map("product_specializations")
 }
 
 model ProductTargetSpecialization {
@@ -348,14 +360,14 @@ model Promotion {
 }
 
 model PromotionProduct {
-  id              String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  promotionId     String      @map("promotion_id") @db.Uuid
-  productId       String      @map("product_id") @db.Uuid
-  discountPercent Decimal     @map("discount_percent") @db.Decimal(5, 2)
+  id                String                        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  promotionId       String                        @map("promotion_id") @db.Uuid
+  productId         String                        @map("product_id") @db.Uuid
+  discountPercent   Decimal                       @map("discount_percent") @db.Decimal(5, 2)
   companyOrderItems CompanyDistributorOrderItem[]
-  orderItems      OrderItem[]
-  product         Product     @relation(fields: [productId], references: [id])
-  promotion       Promotion   @relation(fields: [promotionId], references: [id])
+  orderItems        OrderItem[]
+  product           Product                       @relation(fields: [productId], references: [id])
+  promotion         Promotion                     @relation(fields: [promotionId], references: [id])
 
   @@unique([promotionId, productId])
   @@map("promotion_products")
@@ -391,29 +403,29 @@ model SampleQuota {
 }
 
 model Order {
-  id              String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  orderNumber     String              @unique @map("order_number") @db.VarChar(20)
-  pharmacistId    String              @map("pharmacist_id") @db.Uuid
-  companyId       String              @map("company_id") @db.Uuid
-  distributorId     String?             @map("distributor_id") @db.Uuid
-  deliveryStaffId   String?             @map("delivery_staff_id") @db.Uuid
-  cityId            String              @map("city_id") @db.Uuid
-  status          OrderStatus         @default(pending)
-  totalAmount     Decimal             @default(0) @map("total_amount") @db.Decimal(10, 2)
-  paymentMethod   PaymentMethod       @default(cod) @map("payment_method")
-  deliveryAddress String              @map("delivery_address")
+  id              String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  orderNumber     String                @unique @map("order_number") @db.VarChar(20)
+  pharmacistId    String                @map("pharmacist_id") @db.Uuid
+  companyId       String                @map("company_id") @db.Uuid
+  distributorId   String?               @map("distributor_id") @db.Uuid
+  deliveryStaffId String?               @map("delivery_staff_id") @db.Uuid
+  cityId          String                @map("city_id") @db.Uuid
+  status          OrderStatus           @default(pending)
+  totalAmount     Decimal               @default(0) @map("total_amount") @db.Decimal(10, 2)
+  paymentMethod   PaymentMethod         @default(cod) @map("payment_method")
+  deliveryAddress String                @map("delivery_address")
   notes           String?
-  rejectionReason String?             @map("rejection_reason")
-  approvedAt      DateTime?           @map("approved_at")
-  deliveredAt     DateTime?           @map("delivered_at")
-  createdAt       DateTime            @default(now()) @map("created_at")
-  updatedAt       DateTime            @updatedAt @map("updated_at")
+  rejectionReason String?               @map("rejection_reason")
+  approvedAt      DateTime?             @map("approved_at")
+  deliveredAt     DateTime?             @map("delivered_at")
+  createdAt       DateTime              @default(now()) @map("created_at")
+  updatedAt       DateTime              @updatedAt @map("updated_at")
   orderItems      OrderItem[]
-  city            City                @relation(fields: [cityId], references: [id])
-  company         CompanyProfile      @relation(fields: [companyId], references: [id])
-  distributor     DistributorProfile?  @relation(fields: [distributorId], references: [id])
+  city            City                  @relation(fields: [cityId], references: [id])
+  company         CompanyProfile        @relation(fields: [companyId], references: [id])
+  distributor     DistributorProfile?   @relation(fields: [distributorId], references: [id])
   deliveryStaff   DeliveryStaffProfile? @relation(fields: [deliveryStaffId], references: [id])
-  pharmacist      PharmacistProfile    @relation(fields: [pharmacistId], references: [id])
+  pharmacist      PharmacistProfile     @relation(fields: [pharmacistId], references: [id])
 
   @@map("orders")
 }
@@ -537,6 +549,7 @@ model Inventory {
   pharmacistId      String?             @map("pharmacist_id") @db.Uuid
   productId         String              @map("product_id") @db.Uuid
   quantityAvailable Int                 @default(0) @map("quantity_available")
+  freeQuantity      Int                 @default(0) @map("free_quantity")
   lowStockThreshold Int                 @default(10) @map("low_stock_threshold")
   lastUpdated       DateTime            @default(now()) @map("last_updated")
   company           CompanyProfile?     @relation("CompanyInventory", fields: [companyId], references: [id])
@@ -749,8 +762,10 @@ enum PaymentMethod {
 enum SampleRequestStatus {
   pending
   approved
-  rejected
+  in_delivery
   delivered
+  cancelled
+  rejected
 }
 
 enum InventoryMovementType {

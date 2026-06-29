@@ -1,12 +1,32 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import { CreateProductDto } from "./dto/create-product.dto";
+import { UpdateProductDto } from "./dto/update-product.dto";
 
 const ALLOWED_FIELDS = [
-  'id', 'nameAr', 'nameEn', 'dosageForm', 'packSize', 'packUnit', 'packageType',
-  'barcode', 'strength', 'usageInstructions', 'price', 'status',
-  'imageUrl', 'brochureUrl', 'createdAt', 'updatedAt', 'companyId', 'drugGroups',
+  "id",
+  "nameAr",
+  "nameEn",
+  "dosageForm",
+  "packSize",
+  "packUnit",
+  "packageType",
+  "barcode",
+  "strength",
+  "usageInstructions",
+  "price",
+  "status",
+  "imageUrl",
+  "brochureUrl",
+  "createdAt",
+  "updatedAt",
+  "companyId",
+  "drugGroups",
+  "specializations",
 ] as const;
 type ProductField = (typeof ALLOWED_FIELDS)[number];
 
@@ -17,9 +37,11 @@ export class ProductsService {
   private parseFields(fields?: string): ProductField[] | null {
     if (!fields) return null;
     return fields
-      .split(',')
+      .split(",")
       .map((f) => f.trim())
-      .filter((f) => (ALLOWED_FIELDS as readonly string[]).includes(f)) as ProductField[];
+      .filter((f) =>
+        (ALLOWED_FIELDS as readonly string[]).includes(f),
+      ) as ProductField[];
   }
 
   private pickFields(item: any, fields: ProductField[] | null): any {
@@ -30,43 +52,65 @@ export class ProductsService {
   }
 
   private buildInclude(fields: ProductField[] | null) {
-    if (!fields || fields.includes('drugGroups')) {
+    if (
+      !fields ||
+      fields.includes("drugGroups") ||
+      fields.includes("specializations")
+    ) {
       return {
-        productDrugGroups: {
-          include: {
-            drugGroup: {
-              include: { drugGroupCategories: { include: { category: true } } },
+        ...((!fields || fields.includes("drugGroups")) && {
+          productDrugGroups: {
+            include: {
+              drugGroup: {
+                include: {
+                  drugGroupCategories: { include: { category: true } },
+                },
+              },
             },
           },
-        },
+        }),
+        ...((!fields || fields.includes("specializations")) && {
+          productSpecializations: {
+            include: { specialization: true },
+          },
+        }),
       };
     }
     return {};
   }
 
   private format(item: any): any {
-    const { productDrugGroups, ...rest } = item;
+    const { productDrugGroups, productSpecializations, ...rest } = item;
     return {
       ...rest,
       ...(productDrugGroups !== undefined && {
         drugGroups: productDrugGroups.map((r: any) => ({
           ...r.drugGroup,
-          categories: r.drugGroup.drugGroupCategories?.map((c: any) => c.category) ?? [],
+          categories:
+            r.drugGroup.drugGroupCategories?.map((c: any) => c.category) ?? [],
           drugGroupCategories: undefined,
         })),
+      }),
+      ...(productSpecializations !== undefined && {
+        specializations: productSpecializations.map(
+          (r: any) => r.specialization,
+        ),
       }),
     };
   }
 
   private async resolveCompanyId(userId: string): Promise<string> {
-    const profile = await this.prisma.companyProfile.findUnique({ where: { userId }, select: { id: true } });
-    if (!profile) throw new NotFoundException('Company profile not found');
+    const profile = await this.prisma.companyProfile.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+    if (!profile) throw new NotFoundException("Company profile not found");
     return profile.id;
   }
 
   async create(userId: string, dto: CreateProductDto) {
     const companyId = await this.resolveCompanyId(userId);
-    const { drugGroupIds, ...data } = dto;
+    const { drugGroupIds, specializationIds, ...data } = dto;
 
     return this.prisma.product.create({
       data: {
@@ -76,79 +120,84 @@ export class ProductsService {
         pharmacistToConsumerPrice: data.pharmacistToConsumerPrice as any,
         companyId,
         ...(drugGroupIds?.length && {
-          productDrugGroups: { create: drugGroupIds.map((id) => ({ drugGroupId: id })) },
+          productDrugGroups: {
+            create: drugGroupIds.map((id) => ({ drugGroupId: id })),
+          },
+        }),
+        ...(specializationIds?.length && {
+          productSpecializations: {
+            create: specializationIds.map((id) => ({ specializationId: id })),
+          },
         }),
       },
       include: this.buildInclude(null),
     });
   }
 
-  async findAll(
-    filters?: { 
-      search?: string; 
-      companyId?: string; 
-      dosageForm?: string;
-      page?: number; 
-      limit?: number; 
-      fields?: string;
-      userRole?: string;
-    },
-  ) {
+  async findAll(filters?: {
+    search?: string;
+    companyId?: string;
+    dosageForm?: string;
+    page?: number;
+    limit?: number;
+    fields?: string;
+    userRole?: string;
+  }) {
     const page = Math.max(1, filters?.page || 1);
     const limit = Math.max(1, Math.min(100, filters?.limit || 20));
     const skip = (page - 1) * limit;
-    
+
     const parsedFields = this.parseFields(filters?.fields);
-    
+
     // Build search and filter conditions
     const whereConditions: any[] = [];
-    
+
     // Company filter
     if (filters?.companyId) {
       whereConditions.push({ companyId: filters.companyId });
     }
-    
+
     // Dosage form filter
     if (filters?.dosageForm) {
       whereConditions.push({ dosageForm: filters.dosageForm });
     }
-    
+
     // Text search across name fields and drug groups
     if (filters?.search?.trim()) {
       const searchTerm = filters.search.trim();
-      
+
       // Search in name fields (case-insensitive partial match)
       const nameSearch = {
         OR: [
-          { nameAr: { contains: searchTerm, mode: 'insensitive' } },
-          { nameEn: { contains: searchTerm, mode: 'insensitive' } },
+          { nameAr: { contains: searchTerm, mode: "insensitive" } },
+          { nameEn: { contains: searchTerm, mode: "insensitive" } },
         ],
       };
-      
+
       // Search in drug groups (requires joining with productDrugGroups)
       const drugGroupSearch = {
         productDrugGroups: {
           some: {
             drugGroup: {
               OR: [
-                { nameAr: { contains: searchTerm, mode: 'insensitive' } },
-                { nameEn: { contains: searchTerm, mode: 'insensitive' } },
+                { nameAr: { contains: searchTerm, mode: "insensitive" } },
+                { nameEn: { contains: searchTerm, mode: "insensitive" } },
               ],
             },
           },
         },
       };
-      
+
       whereConditions.push({
         OR: [nameSearch, drugGroupSearch],
       });
     }
-    
+
     // Combine all conditions with AND
     const where = whereConditions.length > 0 ? { AND: whereConditions } : {};
 
     // Include product prices in the query
-    
+
     const [items, total] = await Promise.all([
       this.prisma.product.findMany({
         where,
@@ -160,7 +209,9 @@ export class ProductsService {
     ]);
 
     return {
-      data: items.map((item) => this.pickFields(this.format(item), parsedFields)),
+      data: items.map((item) =>
+        this.pickFields(this.format(item), parsedFields),
+      ),
       meta: {
         page,
         limit,
@@ -172,24 +223,23 @@ export class ProductsService {
     };
   }
 
-
   async findOne(id: string, fields?: string) {
     const parsedFields = this.parseFields(fields);
     const item = await this.prisma.product.findUnique({
       where: { id },
       include: this.buildInclude(parsedFields),
     });
-    if (!item) throw new NotFoundException('Product not found');
+    if (!item) throw new NotFoundException("Product not found");
     return this.pickFields(this.format(item), parsedFields);
   }
 
   async update(id: string, userId: string, dto: UpdateProductDto) {
     const companyId = await this.resolveCompanyId(userId);
     const product = await this.prisma.product.findUnique({ where: { id } });
-    if (!product) throw new NotFoundException('Product not found');
+    if (!product) throw new NotFoundException("Product not found");
     if (product.companyId !== companyId) throw new ForbiddenException();
 
-    const { drugGroupIds, ...data } = dto;
+    const { drugGroupIds, specializationIds, ...data } = dto;
 
     return this.prisma.product.update({
       where: { id },
@@ -204,6 +254,12 @@ export class ProductsService {
             create: drugGroupIds.map((gid) => ({ drugGroupId: gid })),
           },
         }),
+        ...(specializationIds && {
+          productSpecializations: {
+            deleteMany: {},
+            create: specializationIds.map((sid) => ({ specializationId: sid })),
+          },
+        }),
       },
       include: this.buildInclude(null),
     });
@@ -212,13 +268,16 @@ export class ProductsService {
   async remove(id: string, userId: string) {
     const companyId = await this.resolveCompanyId(userId);
     const product = await this.prisma.product.findUnique({ where: { id } });
-    if (!product) throw new NotFoundException('Product not found');
+    if (!product) throw new NotFoundException("Product not found");
     if (product.companyId !== companyId) throw new ForbiddenException();
     // Delete all related records
-    await this.prisma.productDrugGroup.deleteMany({ where: { productId: product.id } });
+    await this.prisma.productDrugGroup.deleteMany({
+      where: { productId: product.id },
+    });
+    await this.prisma.productSpecialization.deleteMany({
+      where: { productId: product.id },
+    });
     await this.prisma.product.delete({ where: { id } });
-    return { message: 'Product deleted successfully' };
+    return { message: "Product deleted successfully" };
   }
-
-  
 }

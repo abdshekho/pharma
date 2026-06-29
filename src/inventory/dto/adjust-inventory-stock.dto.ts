@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsInt, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class AdjustInventoryStockDto {
   @IsUUID()
@@ -6,6 +6,10 @@ export class AdjustInventoryStockDto {
 
   @IsInt()
   quantity: number;
+
+  @IsOptional()
+  @IsInt()
+  freeQuantity?: number;
 
   @IsOptional()
   @IsString()

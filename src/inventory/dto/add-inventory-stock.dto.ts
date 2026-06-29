@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, IsString, IsUUID, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, IsUUID, Min } from "class-validator";
 
 export class AddInventoryStockDto {
   @IsUUID()
@@ -7,6 +7,11 @@ export class AddInventoryStockDto {
   @IsInt()
   @Min(1)
   quantity: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  freeQuantity?: number;
 
   @IsOptional()
   @IsInt()

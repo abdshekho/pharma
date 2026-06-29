@@ -1,5 +1,20 @@
-import { IsString, IsOptional, IsUUID, IsArray, IsEnum, IsInt, IsDecimal, Length, Min } from 'class-validator';
-import { DosageForm, PackUnit, PackageType, ProductStatus } from '@prisma/client';
+import {
+  IsString,
+  IsOptional,
+  IsUUID,
+  IsArray,
+  IsEnum,
+  IsInt,
+  IsDecimal,
+  Length,
+  Min,
+} from "class-validator";
+import {
+  DosageForm,
+  PackUnit,
+  PackageType,
+  ProductStatus,
+} from "@prisma/client";
 
 export class CreateProductDto {
   @IsString()
@@ -54,8 +69,13 @@ export class CreateProductDto {
 
   @IsOptional()
   @IsArray()
-  @IsUUID('all', { each: true })
+  @IsUUID("all", { each: true })
   drugGroupIds?: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsUUID("all", { each: true })
+  specializationIds?: string[];
 
   @IsOptional()
   @IsDecimal()
@@ -71,5 +91,5 @@ export class CreateProductDto {
 
   @IsOptional()
   @IsString()
-  status?: ProductStatus  = 'draft';
+  status?: ProductStatus = "draft";
 }
