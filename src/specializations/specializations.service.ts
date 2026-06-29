@@ -9,6 +9,7 @@ type SpecializationField = (typeof ALLOWED_FIELDS)[number];
 @Injectable()
 export class SpecializationsService {
   constructor (private prisma: PrismaService) { }
+  
   private parseFields(fields?: string): SpecializationField[] | null {
     if (!fields) return null;
     const requested = fields.split(',').map((f) => f.trim());
@@ -17,27 +18,11 @@ export class SpecializationsService {
     ) as SpecializationField[];
   }
 
-  private pickFields(category: any, fields: SpecializationField[] | null): any {
-    if (!fields || fields.length === 0) return category;
+  private pickFields(specialization: any, fields: SpecializationField[] | null): any {
+    if (!fields || fields.length === 0) return specialization;
     const result: any = {};
-    for (const f of fields) result[f] = category[f];
-    if (category.children)
-      result['children'] = category.children.map((c: any) => this.pickFields(c, fields));
+    for (const f of fields) result[f] = specialization[f];
     return result;
-  }
-
-  private async loadTree(where: any, isActive?: boolean): Promise<any[]> {
-    const activeWhere = isActive !== undefined ? { isActive } : {};
-    const items = await this.prisma.specialization.findMany({
-      where,
-      orderBy: { nameAr: 'asc' },
-    });
-    return Promise.all(
-      items.map(async (s) => ({
-        ...s,
-        children: await this.loadTree({ parentId: s.id, ...activeWhere }, isActive),
-      })),
-    );
   }
 
   async create(dto: CreateSpecializationDto) {
@@ -54,20 +39,24 @@ export class SpecializationsService {
 
   async findAll(isActive?: boolean, fields?: string) {
     const parsedFields = this.parseFields(fields);
-    const activeWhere = isActive !== undefined ? { isActive } : {};
-    const tree = await this.loadTree({ parentId: null, ...activeWhere }, isActive);
-    return tree.map((cat) => this.pickFields(cat, parsedFields));
+    const where: any = {};
+    
+    if (isActive !== undefined) {
+      where.isActive = isActive;
+    }
+
+    const specializations = await this.prisma.specialization.findMany({ 
+      where,
+      orderBy: { nameAr: 'asc' }
+    });
+    
+    return specializations.map((spec) => this.pickFields(spec, parsedFields));
   }
 
   async findOne(id: string, fields?: string) {
     const spec = await this.prisma.specialization.findUnique({ where: { id } });
     if (!spec) throw new NotFoundException('Specialization not found');
-        const withChildren = {
-      ...spec,
-      children: await this.loadTree({ parentId: id }),
-    };
-    // return { ...spec, children: await this.loadTree({ parentId: id }) };
-    return this.pickFields(withChildren, this.parseFields(fields));
+    return this.pickFields(spec, this.parseFields(fields));
   }
 
   async update(id: string, dto: UpdateSpecializationDto) {
@@ -83,9 +72,15 @@ export class SpecializationsService {
   }
 
   async remove(id: string) {
-    const spec = await this.findOne(id);
-    if (spec.children?.length > 0)
+    // التحقق من وجود تخصصات فرعية
+    const children = await this.prisma.specialization.findMany({
+      where: { parentId: id }
+    });
+    
+    if (children.length > 0) {
       throw new BadRequestException('Cannot delete specialization with sub-specializations');
+    }
+    
     await this.prisma.specialization.delete({ where: { id } });
     return { message: 'Specialization deleted successfully' };
   }
