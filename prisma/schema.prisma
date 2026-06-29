@@ -91,7 +91,6 @@ model User {
   verifiedDistributors      DistributorProfile[]    @relation("DistributorVerifier")
   doctorProfile             DoctorProfile?          @relation("UserDoctorProfile")
   verifiedDoctors           DoctorProfile[]         @relation("DoctorVerifier")
-  inventoryMovementsCreated InventoryMovement[]
   stockMovementsCreated     StockMovement[]
   receivedMessages          Message[]               @relation("ReceivedMessages")
   sentMessages              Message[]               @relation("SentMessages")
@@ -183,11 +182,9 @@ model DistributorProfile {
   companyDistributors  CompanyDistributor[]
   coverageAreas        DistributorCoverageArea[]
   companyOrders        CompanyDistributorOrder[]
-  distributorInventory DistributorInventory[]
   inventories          Inventory[]
   user                 User                      @relation("UserDistributorProfile", fields: [userId], references: [id])
   verifier             User?                     @relation("DistributorVerifier", fields: [verifiedBy], references: [id])
-  inventoryMovements   InventoryMovement[]
   orders               Order[]
   promotions           Promotion[]
   deliveryStaff        DeliveryStaffProfile[]
@@ -284,11 +281,9 @@ model Product {
   brochureUrl                  String?                       @map("brochure_url") @db.VarChar(500)
   createdAt                    DateTime                      @default(now()) @map("created_at")
   updatedAt                    DateTime                      @updatedAt @map("updated_at")
-  distributorInventory         DistributorInventory[]
   companyDistributorOrderItems CompanyDistributorOrderItem[]
   inventories                  Inventory[]
   stockMovements               StockMovement[]
-  inventoryMovements           InventoryMovement[]
   messages                     Message[]
   orderItems                   OrderItem[]
   productDrugGroups            ProductDrugGroup[]
@@ -527,19 +522,6 @@ model SampleRequest {
   @@map("sample_requests")
 }
 
-model DistributorInventory {
-  id                String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  distributorId     String             @map("distributor_id") @db.Uuid
-  productId         String             @map("product_id") @db.Uuid
-  quantityAvailable Int                @default(0) @map("quantity_available")
-  lowStockThreshold Int                @default(10) @map("low_stock_threshold")
-  lastUpdated       DateTime           @default(now()) @map("last_updated")
-  distributor       DistributorProfile @relation(fields: [distributorId], references: [id])
-  product           Product            @relation(fields: [productId], references: [id])
-
-  @@unique([distributorId, productId])
-  @@map("distributor_inventory")
-}
 
 model Inventory {
   id                String              @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
@@ -587,21 +569,6 @@ model StockMovement {
   @@map("stock_movements")
 }
 
-model InventoryMovement {
-  id            String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  distributorId String?               @map("distributor_id") @db.Uuid
-  productId     String?               @map("product_id") @db.Uuid
-  type          InventoryMovementType
-  quantity      Int?
-  referenceId   String?               @map("reference_id") @db.Uuid
-  createdBy     String?               @map("created_by") @db.Uuid
-  createdAt     DateTime?             @default(now()) @map("created_at")
-  creator       User?                 @relation(fields: [createdBy], references: [id])
-  distributor   DistributorProfile?   @relation(fields: [distributorId], references: [id])
-  product       Product?              @relation(fields: [productId], references: [id])
-
-  @@map("inventory_movements")
-}
 
 model Message {
   id               String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
