@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsUUID, IsArray, IsEnum, IsInt, IsDecimal, Length, Min } from 'class-validator';
-import { DosageForm, PackUnit, PackageType } from '@prisma/client';
+import { DosageForm, PackUnit, PackageType, ProductStatus } from '@prisma/client';
 
 export class CreateProductDto {
   @IsString()
@@ -68,4 +68,8 @@ export class CreateProductDto {
   @IsOptional()
   @IsDecimal()
   pharmacistToConsumerPrice?: string;
+
+  @IsOptional()
+  @IsString()
+  status?: ProductStatus  = 'draft';
 }

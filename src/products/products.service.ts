@@ -214,6 +214,8 @@ export class ProductsService {
     const product = await this.prisma.product.findUnique({ where: { id } });
     if (!product) throw new NotFoundException('Product not found');
     if (product.companyId !== companyId) throw new ForbiddenException();
+    // Delete all related records
+    await this.prisma.productDrugGroup.deleteMany({ where: { productId: product.id } });
     await this.prisma.product.delete({ where: { id } });
     return { message: 'Product deleted successfully' };
   }
