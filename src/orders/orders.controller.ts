@@ -7,11 +7,12 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserRole } from '@prisma/client';
+import { newOrderServices } from './newOrder.service';
 
 @Controller('orders')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class OrdersController {
-  constructor(private readonly service: OrdersService) {}
+  constructor(private readonly service: OrdersService,private readonly newOrderServices: newOrderServices) {}
 
   @Post()
   @Roles(UserRole.pharmacist)
@@ -35,5 +36,11 @@ export class OrdersController {
   @Roles(UserRole.distributor, UserRole.pharmacist, UserRole.admin)
   updateStatus(@Param('id') id: string, @Body() dto: UpdateOrderStatusDto, @CurrentUser() user: any) {
     return this.service.updateStatus(id, user.id, user.role, dto);
+  }
+    
+  @Post('fromDistributer')
+  @Roles(UserRole.pharmacist)
+  createAndFindDistributer(@Body() dto: CreateOrderDto, @CurrentUser() user: any) {
+    return this.newOrderServices.create(user.id, dto);
   }
 }

@@ -42,6 +42,9 @@ export class CreateOrderDto {
   @IsNotEmpty()
   deliveryAddress: string = "";
 
+  @IsUUID()
+  distributorId?: string = "";
+
   @IsOptional()
   @IsString()
   notes?: string;
