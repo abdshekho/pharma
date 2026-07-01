@@ -7,11 +7,13 @@ import {
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateOrderDto } from "./dto/create-order.dto";
 import { UpdateOrderStatusDto } from "./dto/update-order-status.dto";
+import { FindDistributorsDto } from "./dto/find-distributors.dto";
 import {
   InventoryOwnerType,
   OrderStatus,
   PromotionLevel,
   UserRole,
+  WeekDay,
 } from "@prisma/client";
 import { InventoryService } from "../inventory/inventory.service";
 
@@ -215,7 +217,7 @@ export class OrdersService {
     });
 
     if(!promo) throw new NotFoundException(`promotionProductId ${promotionProductId} not found`);
-    if (promo.productId !== productId) throw new NotFoundException(`ProductId ${productId}  not found in promotionProductId ${promotionProductId}`);
+    if (promo.productId !== productId) throw new BadRequestException(`ProductId ${productId}  not found in promotionProductId ${promotionProductId}`);
     // if (!promo || promo.productId !== productId) return 0;
 
     const promotion = promo.promotion;
@@ -279,7 +281,7 @@ export class OrdersService {
     });
     // if (!promo || promo.buyProductId !== productId) return null;
     if(!promo) throw new NotFoundException(`promotionBuyXGetYId ${promotionBuyXGetYId} not found`);
-    if (promo.buyProductId !== productId) throw new NotFoundException(`promotionBuyXGetYId ${promotionBuyXGetYId} don't have productId ${productId}`);
+    if (promo.buyProductId !== productId) throw new BadRequestException(`promotionBuyXGetYId ${promotionBuyXGetYId} don't have productId ${productId}`);
 
 
     const promotion = promo.promotion;
@@ -297,8 +299,8 @@ export class OrdersService {
       promo.freeProduct.status === "active";
 
     // if (!isValid || quantity < promo.buyQuantity) return null;
+    if(quantity < promo.buyQuantity) throw new BadRequestException(`promotionBuyXGetYId ${promotionBuyXGetYId} not valid for quantity ${quantity}`);
     if(!isValid) throw new NotFoundException(`promotionBuyXGetYId ${promotionBuyXGetYId} not valid`);
-    if(quantity < promo.buyQuantity) throw new NotFoundException(`promotionBuyXGetYId ${promotionBuyXGetYId} not valid for quantity ${quantity}`);
 
     const freeQuantity =
       Math.floor(quantity / promo.buyQuantity) * promo.freeQuantity;
@@ -449,6 +451,91 @@ export class OrdersService {
     });
   }
 
+  async findAvailableDistributors(userId: string, dto: FindDistributorsDto) {
+    const pharmacist = await this.prisma.pharmacistProfile.findUnique({
+      where: { userId },
+      select: { id: true, areaId: true },
+    });
+    if (!pharmacist) throw new NotFoundException('Pharmacist profile not found');
+    if (!pharmacist.areaId) throw new BadRequestException('Pharmacist area is not set');
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { cityId: true },
+    });
+    if (!user?.cityId) throw new BadRequestException('User city is not set');
+
+    const todayIndex = new Date().getDay();
+    const dayOrder: Record<WeekDay, number> = {
+      sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
+      thursday: 4, friday: 5, saturday: 6,
+    };
+    const dayNames: Record<WeekDay, string> = {
+      sunday: 'الأحد', monday: 'الإثنين', tuesday: 'الثلاثاء',
+      wednesday: 'الأربعاء', thursday: 'الخميس', friday: 'الجمعة',
+      saturday: 'السبت',
+    };
+
+    const coverages = await this.prisma.distributorCoverageArea.findMany({
+      where: { areaId: pharmacist.areaId },
+      include: {
+        distributor: {
+          include: {
+            companyDistributors: {
+              where: dto.companyId
+                ? { companyId: dto.companyId, status: 'active' }
+                : { status: 'active' },
+              include: {
+                company: { select: { id: true, companyName: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const distributorMap = new Map<string, {
+      id: string;
+      companyName: string;
+      deliveryDays: { day: WeekDay; dayName: string; offset: number }[];
+      nearestOffset: number;
+      companies: { id: string; companyName: string }[];
+    }>();
+
+    for (const cov of coverages) {
+      const dist = cov.distributor;
+      if (!distributorMap.has(dist.id)) {
+        distributorMap.set(dist.id, {
+          id: dist.id,
+          companyName: dist.companyName,
+          deliveryDays: [],
+          nearestOffset: Infinity,
+          companies: dist.companyDistributors.map(cd => cd.company),
+        });
+      }
+
+      const entry = distributorMap.get(dist.id)!;
+      const dayIndex = dayOrder[cov.dayOfWeek];
+      const offset = (dayIndex - todayIndex + 7) % 7;
+      entry.deliveryDays.push({
+        day: cov.dayOfWeek,
+        dayName: dayNames[cov.dayOfWeek],
+        offset,
+      });
+      if (offset < entry.nearestOffset) entry.nearestOffset = offset;
+    }
+
+    const result = Array.from(distributorMap.values());
+    result.sort((a, b) => a.nearestOffset - b.nearestOffset);
+
+    // ترتيب أيام التوصيل لكل موزع حسب الأقرب
+    for (const dist of result) {
+      dist.deliveryDays.sort((a, b) => a.offset - b.offset);
+    }
+
+    return result;
+  }
+
   private validateStatusTransition(
     current: OrderStatus,
     next: OrderStatus,
@@ -461,31 +548,24 @@ export class OrdersService {
     > = {
       [UserRole.distributor]: {
         [OrderStatus.pending]: [OrderStatus.approved, OrderStatus.rejected],
-        [OrderStatus.approved]: [
-          OrderStatus.in_delivery,
-          OrderStatus.cancelled,
-        ],
+        [OrderStatus.approved]: [OrderStatus.in_delivery],
         [OrderStatus.in_delivery]: [OrderStatus.delivered],
       },
       [UserRole.pharmacist]: {
         [OrderStatus.pending]: [OrderStatus.cancelled],
       },
       [UserRole.admin]: {
-        [OrderStatus.pending]: [
-          OrderStatus.approved,
-          OrderStatus.rejected,
-          OrderStatus.cancelled,
-        ],
-        [OrderStatus.approved]: [
-          OrderStatus.in_delivery,
-          OrderStatus.cancelled,
-        ],
+        [OrderStatus.pending]: [OrderStatus.approved,OrderStatus.rejected,OrderStatus.cancelled,],
+        [OrderStatus.approved]: [OrderStatus.in_delivery,OrderStatus.cancelled,],
+        [OrderStatus.in_delivery]: [OrderStatus.delivered],
+      },
+      [UserRole.delivery_staff]: {
+        [OrderStatus.approved]: [OrderStatus.in_delivery],
         [OrderStatus.in_delivery]: [OrderStatus.delivered],
       },
       [UserRole.company]: {},
       [UserRole.doctor]: {},
       [UserRole.representative]: {},
-      [UserRole.delivery_staff]: {},
     };
 
     const allowedNext = allowed[role]?.[current] ?? [];

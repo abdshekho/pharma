@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Patch, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
+import { FindDistributorsDto } from './dto/find-distributors.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -17,6 +18,12 @@ export class OrdersController {
   @Roles(UserRole.pharmacist)
   create(@Body() dto: CreateOrderDto, @CurrentUser() user: any) {
     return this.service.create(user.id, dto);
+  }
+
+  @Get('available-distributors')
+  @Roles(UserRole.pharmacist)
+  findAvailableDistributors(@CurrentUser() user: any, @Query() dto: FindDistributorsDto) {
+    return this.service.findAvailableDistributors(user.id, dto);
   }
 
   @Get()
