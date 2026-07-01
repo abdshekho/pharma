@@ -96,7 +96,6 @@ export class OrdersService {
             unitPrice,
             item.quantity,
           );
-
           const orderItem = {
             productId: item.productId,
             productName: product.nameAr,
@@ -214,12 +213,20 @@ export class OrdersService {
         },
       },
     });
-    if (!promo || promo.productId !== productId) return 0;
+
+    if(!promo) throw new NotFoundException(`promotionProductId ${promotionProductId} not found`);
+    if (promo.productId !== productId) throw new NotFoundException(`ProductId ${productId}  not found in promotionProductId ${promotionProductId}`);
+    // if (!promo || promo.productId !== productId) return 0;
 
     const promotion = promo.promotion;
+
     const now = new Date();
+      if(now >= promotion.endsAt) throw new BadRequestException('Promotion has expired')
+      if(now <= promotion.startsAt) throw new BadRequestException('Promotion has not started yet')
+
     const appliesToDistributor =
       !promotion.distributorId || promotion.distributorId === distributorId;
+
     const isValid =
       promotion.companyId === companyId &&
       promotion.level === PromotionLevel.pharmacist &&
@@ -258,6 +265,7 @@ export class OrdersService {
           },
         },
         promotion: {
+          // where :{isActive: true},
           select: {
             companyId: true,
             distributorId: true,
@@ -269,7 +277,10 @@ export class OrdersService {
         },
       },
     });
-    if (!promo || promo.buyProductId !== productId) return null;
+    // if (!promo || promo.buyProductId !== productId) return null;
+    if(!promo) throw new NotFoundException(`promotionBuyXGetYId ${promotionBuyXGetYId} not found`);
+    if (promo.buyProductId !== productId) throw new NotFoundException(`promotionBuyXGetYId ${promotionBuyXGetYId} don't have productId ${productId}`);
+
 
     const promotion = promo.promotion;
     const now = new Date();
@@ -285,7 +296,9 @@ export class OrdersService {
       promo.freeProduct.companyId === companyId &&
       promo.freeProduct.status === "active";
 
-    if (!isValid || quantity < promo.buyQuantity) return null;
+    // if (!isValid || quantity < promo.buyQuantity) return null;
+    if(!isValid) throw new NotFoundException(`promotionBuyXGetYId ${promotionBuyXGetYId} not valid`);
+    if(quantity < promo.buyQuantity) throw new NotFoundException(`promotionBuyXGetYId ${promotionBuyXGetYId} not valid for quantity ${quantity}`);
 
     const freeQuantity =
       Math.floor(quantity / promo.buyQuantity) * promo.freeQuantity;
