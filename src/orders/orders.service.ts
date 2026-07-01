@@ -22,10 +22,18 @@ export class OrdersService {
     private stockService: InventoryService,
   ) {}
 
-  private async getPharmacistProfile(userId: string) {
+  private async getPharmacistProfileId(userId: string) {
     const profile = await this.prisma.pharmacistProfile.findUnique({
       where: { userId },
       select: { id: true },
+    });
+    if (!profile) throw new NotFoundException("Pharmacist profile not found");
+    return profile;
+  }
+  private async getPharmacistProfile(userId: string) {
+    const profile = await this.prisma.pharmacistProfile.findUnique({
+      where: { userId },
+      select: { id: true ,areaId:true,address:true,pharmacyName:true},
     });
     if (!profile) throw new NotFoundException("Pharmacist profile not found");
     return profile;
@@ -48,140 +56,100 @@ export class OrdersService {
     return `ORD-${year}-${random}`;
   }
 
-  // تجميع الـ items حسب الشركة
-  private async groupItemsByCompany(items: CreateOrderDto["items"]) {
-    const groups = new Map<string, typeof items>();
-
-    for (const item of items) {
-      const product = await this.prisma.product.findUnique({
-        where: { id: item.productId },
-        select: {
-          id: true,
-          companyId: true,
-          distributorToPharmacistPrice: true,
-          nameAr: true,
-          status: true,
-        },
-        // select: { id: true, companyId: true, nameAr: true, status: true },
-      });
-      if (!product)
-        throw new NotFoundException(`Product ${item.productId} not found`);
-      if (product.status !== "active")
-        throw new BadRequestException(
-          `Product ${product.nameAr} is not active`,
-        );
-
-      const existing = groups.get(product.companyId) ?? [];
-      existing.push({ ...item, _product: product } as any);
-      groups.set(product.companyId, existing);
-    }
-
-    return groups;
-  }
-
-  // إيجاد الموزع المناسب
-  private async findDistributor(
-    companyId: string,
-    cityId: string,
-  ): Promise<string | null> {
-    const cd = await this.prisma.companyDistributor.findFirst({
-      where: { companyId, cityId, status: "active" },
-      select: { distributorId: true },
-    });
-    return cd?.distributorId ?? null;
-  }
-
   async create(userId: string, dto: CreateOrderDto) {
     const pharmacist = await this.getPharmacistProfile(userId);
-
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { cityId: true },
     });
     if (!user?.cityId) throw new BadRequestException("User city is not set");
 
-    const groups = await this.groupItemsByCompany(dto.items);
-    const createdOrders: any[] = [];
+    const distributorId = dto.distributorId;
 
-    for (const [companyId, items] of groups) {
-      const distributorId = await this.findDistributor(companyId, user.cityId);
-      if (!distributorId) {
-        throw new BadRequestException(
-          "No active distributor found for this company in user city",
-        );
-      }
-
-      // حساب الـ items مع الخصومات
-      const orderItemsData = (
-        await Promise.all(
-          items.map(async (item: any) => {
-            const unitPrice = Number(
-              item._product.distributorToPharmacistPrice,
-            );
-            const discountAmount = await this.calculatePercentageDiscount(
-              item.promotionProductId,
-              item.productId,
-              companyId,
-              distributorId,
-              unitPrice,
-              item.quantity,
+    // تجهيز البيانات لكل item مع جلب معلومات المنتج
+    const orderItemsData = (
+      await Promise.all(
+        dto.items.map(async (item) => {
+          const product = await this.prisma.product.findUnique({
+            where: { id: item.productId },
+            select: {
+              id: true,
+              companyId: true,
+              distributorToPharmacistPrice: true,
+              nameAr: true,
+              status: true,
+            },
+          });
+          if (!product)
+            throw new NotFoundException(`Product ${item.productId} not found`);
+          if (product.status !== "active")
+            throw new BadRequestException(
+              `Product ${product.nameAr} is not active`,
             );
 
-            const orderItem = {
-              productId: item.productId,
-              productName: item._product.nameAr,
-              quantity: item.quantity,
-              unitPrice,
-              promotionProductId: item.promotionProductId ?? null,
-              discountAmount,
-              subtotal: unitPrice * item.quantity - discountAmount,
-            };
+          const unitPrice = Number(product.distributorToPharmacistPrice);
+          const discountAmount = await this.calculatePercentageDiscount(
+            item.promotionProductId,
+            item.productId,
+            product.companyId,
+            distributorId,
+            unitPrice,
+            item.quantity,
+          );
 
-            const freeItem = await this.createBuyXGetYFreeItem(
-              item.promotionBuyXGetYId,
-              item.productId,
-              companyId,
-              distributorId,
-              item.quantity,
-            );
+          const orderItem = {
+            productId: item.productId,
+            productName: product.nameAr,
+            quantity: item.quantity,
+            unitPrice,
+            promotionProductId: item.promotionProductId ?? null,
+            discountAmount,
+            subtotal: unitPrice * item.quantity - discountAmount,
+          };
 
-            return freeItem ? [orderItem, freeItem] : [orderItem];
-          }),
-        )
-      ).flat();
+          const freeItem = await this.createBuyXGetYFreeItem(
+            item.promotionBuyXGetYId,
+            item.productId,
+            product.companyId,
+            distributorId,
+            item.quantity,
+          );
 
-      const totalAmount = orderItemsData.reduce(
-        (sum, i) => sum + i.subtotal,
-        0,
-      );
+          return freeItem ? [orderItem, freeItem] : [orderItem];
+        }),
+      )
+    ).flat();
 
-      await this.assertDistributorStockAvailable(distributorId, orderItemsData);
+    const totalAmount = orderItemsData.reduce(
+      (sum, i) => sum + i.subtotal,
+      0,
+    );
 
-      const order = await this.prisma.order.create({
-        data: {
-          orderNumber: this.generateOrderNumber(),
-          pharmacistId: pharmacist.id,
-          companyId,
-          distributorId,
-          cityId: user.cityId,
-          paymentMethod: dto.paymentMethod,
-          deliveryAddress: dto.deliveryAddress,
-          notes: dto.notes,
-          totalAmount,
-          orderItems: {
-            create: orderItemsData,
-          },
+    await this.assertDistributorStockAvailable(distributorId, orderItemsData);
+
+    const order = await this.prisma.order.create({
+      data: {
+        orderNumber: this.generateOrderNumber(),
+        pharmacistId: pharmacist.id,
+        cityId: user.cityId,
+        areaId: pharmacist.areaId,
+        deliveryAddress: pharmacist.address,
+        distributorId,
+        // areaId: dto.areaId,
+        paymentMethod: dto.paymentMethod,
+        notes: dto.notes,
+        totalAmount,
+        orderItems: {
+          create: orderItemsData,
         },
-        include: {
-          orderItems: true,
-          distributor: { select: { companyName: true } },
-        },
-      });
+      },
+      include: {
+        orderItems: true,
+        distributor: { select: { companyName: true } },
+      },
+    });
 
-      createdOrders.push(order);
-    }
-
-    return createdOrders.length === 1 ? createdOrders[0] : createdOrders;
+    return order;
   }
 
   private async assertDistributorStockAvailable(
@@ -338,7 +306,7 @@ export class OrdersService {
     const where: any = {};
 
     if (role === UserRole.pharmacist) {
-      const profile = await this.getPharmacistProfile(userId);
+      const profile = await this.getPharmacistProfileId(userId);
       where.pharmacistId = profile.id;
     } else if (role === UserRole.distributor) {
       const profile = await this.getDistributorProfile(userId);
@@ -369,7 +337,7 @@ export class OrdersService {
 
     // التحقق من الصلاحية
     if (role === UserRole.pharmacist) {
-      const profile = await this.getPharmacistProfile(userId);
+      const profile = await this.getPharmacistProfileId(userId);
       if (order.pharmacistId !== profile.id) throw new ForbiddenException();
     } else if (role === UserRole.distributor) {
       const profile = await this.getDistributorProfile(userId);
@@ -396,7 +364,7 @@ export class OrdersService {
     }
 
     if (role === UserRole.pharmacist) {
-      const profile = await this.getPharmacistProfile(userId);
+      const profile = await this.getPharmacistProfileId(userId);
       if (order.pharmacistId !== profile.id) throw new ForbiddenException();
     }
 

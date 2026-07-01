@@ -387,15 +387,15 @@ Table sample_quotas {
 }
 
 // ===== ORDERS =====
-// الصيدلاني يطلب من شركة معينة — يتعين الموزع تلقائياً بناءً على مدينة الصيدلاني
+// الصيدلاني يطلب من موزع معين — قد تشمل المنتجات من عدة شركات
 
 Table orders {
   id               uuid          [pk, default: `uuid_generate_v4()`]
   order_number     varchar(20)   [unique, not null, note: 'ORD-2025-00001']
   pharmacist_id    uuid          [not null, ref: > pharmacist_profiles.id]
-  company_id       uuid          [not null, ref: > company_profiles.id]
-  distributor_id   uuid          [ref: > distributor_profiles.id, note: 'Auto-assigned by city']
+  distributor_id   uuid          [ref: > distributor_profiles.id]
   city_id          uuid          [not null, ref: > cities.id]
+  area_id          uuid          [ref: > city_areas.id]
   status           order_status  [not null, default: 'pending']
   total_amount     decimal(10,2) [not null, default: 0]
   payment_method   payment_method [not null, default: 'cod']

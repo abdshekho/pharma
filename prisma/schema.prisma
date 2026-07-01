@@ -19,7 +19,6 @@ model City {
   orders              Order[]
   representatives     RepresentativeProfile[]
   users               User[]
-
   @@map("cities")
 }
 
@@ -33,7 +32,7 @@ model CityArea {
   city              City                      @relation(fields: [cityId], references: [id])
   distributorRoutes DistributorCoverageArea[]
   pharmacists       PharmacistProfile[]
-
+  orders              Order[]
   @@unique([cityId, nameAr])
   @@index([cityId, isActive])
   @@map("city_areas")
@@ -122,7 +121,6 @@ model CompanyProfile {
   inventories           Inventory[]               @relation("CompanyInventory")
   user                  User                      @relation("UserCompanyProfile", fields: [userId], references: [id])
   verifier              User?                     @relation("CompanyVerifier", fields: [verifiedBy], references: [id])
-  orders                Order[]
   products              Product[]
   promotions            Promotion[]
   representatives       RepresentativeProfile[]
@@ -401,10 +399,10 @@ model Order {
   id              String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   orderNumber     String                @unique @map("order_number") @db.VarChar(20)
   pharmacistId    String                @map("pharmacist_id") @db.Uuid
-  companyId       String                @map("company_id") @db.Uuid
   distributorId   String?               @map("distributor_id") @db.Uuid
   deliveryStaffId String?               @map("delivery_staff_id") @db.Uuid
   cityId          String                @map("city_id") @db.Uuid
+  areaId          String?               @map("area_id") @db.Uuid
   status          OrderStatus           @default(pending)
   totalAmount     Decimal               @default(0) @map("total_amount") @db.Decimal(10, 2)
   paymentMethod   PaymentMethod         @default(cod) @map("payment_method")
@@ -417,7 +415,7 @@ model Order {
   updatedAt       DateTime              @updatedAt @map("updated_at")
   orderItems      OrderItem[]
   city            City                  @relation(fields: [cityId], references: [id])
-  company         CompanyProfile        @relation(fields: [companyId], references: [id])
+  area            CityArea?             @relation(fields: [areaId], references: [id])
   distributor     DistributorProfile?   @relation(fields: [distributorId], references: [id])
   deliveryStaff   DeliveryStaffProfile? @relation(fields: [deliveryStaffId], references: [id])
   pharmacist      PharmacistProfile     @relation(fields: [pharmacistId], references: [id])

@@ -2687,7 +2687,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"paymentMethod\": \"cod\",\n  \"deliveryAddress\": \"test deliveryAddress\",\n  \"notes\": \"\",\n  \"items\": [\n    {\n        //productX id in promotionBuyXGetY\n      \"productId\": \"d3df4cf7-0d0d-4b57-b6e3-55a2126f3fc9\",\n      \"quantity\": 10,\n      // promotion_buyXgetY ->id\n      \"promotionBuyXGetYId\": \"b5eeb2dd-9711-41db-ac1d-10ba736e2366\"\n    },\n    {\n        // product id in discountPercent\n      \"productId\": \"da675394-3744-4b20-a580-24d07a5c1692\",\n      \"quantity\": 1,\n      //promotion_productId -> id\n      \"promotionProductId\": \"c43e1024-d649-4c26-a108-bda381ef9a40\"\n    },\n    {\n        //normal product\n      \"productId\": \"d3df4cf7-0d0d-4b57-b6e3-55a2126f3fc9\",\n      \"quantity\": 2\n    }\n  ]\n}",
+              "raw": "{\n  \"distributorId\": \"{{distributor_id}}\",\n  \"areaId\": \"{{area_id}}\",\n  \"paymentMethod\": \"cod\",\n  \"deliveryAddress\": \"test deliveryAddress\",\n  \"notes\": \"\",\n  \"items\": [\n    {\n      \"productId\": \"d3df4cf7-0d0d-4b57-b6e3-55a2126f3fc9\",\n      \"quantity\": 10,\n      \"promotionBuyXGetYId\": \"b5eeb2dd-9711-41db-ac1d-10ba736e2366\"\n    },\n    {\n      \"productId\": \"da675394-3744-4b20-a580-24d07a5c1692\",\n      \"quantity\": 1,\n      \"promotionProductId\": \"c43e1024-d649-4c26-a108-bda381ef9a40\"\n    },\n    {\n      \"productId\": \"d3df4cf7-0d0d-4b57-b6e3-55a2126f3fc9\",\n      \"quantity\": 2\n    }\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4898,6 +4898,14 @@
     },
     {
       "key": "sample_quota_id",
+      "value": ""
+    },
+    {
+      "key": "distributor_id",
+      "value": ""
+    },
+    {
+      "key": "area_id",
       "value": ""
     }
   ]

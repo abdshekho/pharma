@@ -38,12 +38,17 @@ export class CreateOrderDto {
   @IsEnum(PaymentMethod)
   paymentMethod: PaymentMethod = PaymentMethod.cod;
 
-  @IsString()
-  @IsNotEmpty()
-  deliveryAddress: string = "";
+  // @IsString()
+  // @IsNotEmpty()
+  // deliveryAddress: string = "";
 
   @IsUUID()
-  distributorId?: string = "";
+  @IsNotEmpty()
+  distributorId: string = "";
+
+  // @IsUUID()
+  // @IsNotEmpty()
+  // areaId: string = "";
 
   @IsOptional()
   @IsString()
