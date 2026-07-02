@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateProductDto } from "./dto/create-product.dto";
@@ -489,5 +490,61 @@ export class ProductsService {
     console.timeEnd("mapping");
 
     return data
+  }
+
+  async findByBarcodeForPharmacist(userId: string, barcode: string) {
+    const product = await this.prisma.product.findUnique({
+      where: { barcode },
+      select: {
+        id: true,
+        nameAr: true,
+        nameEn: true,
+        dosageForm: true,
+        packSize: true,
+        packUnit: true,
+        strength: true,
+        imageUrl: true,
+        distributorToPharmacistPrice: true,
+        status: true,
+        companyId: true,
+      },
+    });
+    if (!product) throw new NotFoundException('Product not found for this barcode');
+
+    const pharmacist = await this.prisma.pharmacistProfile.findUnique({
+      where: { userId },
+      select: { id: true, areaId: true },
+    });
+    if (!pharmacist) throw new NotFoundException('Pharmacist profile not found');
+    if (!pharmacist.areaId) throw new BadRequestException('Pharmacist area is not set');
+
+    // موزعين يغطون نفس المنطقة
+    const coveringDistributors = await this.prisma.distributorCoverageArea.findMany({
+      where: { areaId: pharmacist.areaId },
+      select: { distributorId: true },
+      distinct: ['distributorId'],
+    });
+
+    const coveringIds = coveringDistributors.map(c => c.distributorId);
+
+    const inventories = await this.prisma.inventory.findMany({
+      where: {
+        distributorId: { in: coveringIds },
+        productId: product.id,
+        quantityAvailable: { gt: 0 },
+      },
+      include: {
+        distributor: { select: { id: true, companyName: true } },
+      },
+    });
+
+    return {
+      ...product,
+      distributors: inventories.filter(inv => inv.distributor).map(inv => ({
+        id: inv.distributor!.id,
+        companyName: inv.distributor!.companyName,
+        quantityAvailable: inv.quantityAvailable,
+      })),
+    };
   }
 }

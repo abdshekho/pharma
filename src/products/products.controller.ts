@@ -42,26 +42,27 @@ export class ProductsController {
     });
   }
 
-  @Get('distributor/find')
+  @Get('pharmacist/deep-search')
   @Roles(UserRole.pharmacist)
   searchDistributorProducts(@CurrentUser() user: any, @Query() dto: SearchDistributorProductsDto) {
     return this.service.searchDistributorProducts(user.id, dto);
   }
-  @Get('distributor/fast-search')
+  @Get('pharmacist/fast-search')
   @Roles(UserRole.pharmacist)
   fastsearchDistributorProducts(@CurrentUser() user: any, @Query() dto: fastSearchDistributorProductsDto) {
     return this.service.fastsearchDistributorProducts(user.id, dto);
+  }
+
+  @Get('pharmacist/barcode')
+  @Roles(UserRole.pharmacist)
+  findByBarcodeForPharmacist(@CurrentUser() user: any, @Query('barcode') barcode: string) {
+    return this.service.findByBarcodeForPharmacist(user.id, barcode);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string, @CurrentUser() user: any, @Query('fields') fields?: string) {
     return this.service.findOne(id, fields);
   }
-
-  // @Get('barcode/:barcode')
-  // findByBarcode(@Param('barcode') barcode: string, @CurrentUser() user: any, @Query('fields') fields?: string) {
-  //   return this.service.findByBarcode(barcode, fields);
-  // }
 
   @Patch(':id')
   @Roles(UserRole.company, UserRole.admin)
