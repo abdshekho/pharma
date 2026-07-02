@@ -6,7 +6,7 @@ import {
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
-
+import { SearchDistributorProductsDto } from "./dto/search-distributor-products.dto";
 const ALLOWED_FIELDS = [
   "id",
   "nameAr",
@@ -279,5 +279,130 @@ export class ProductsService {
     });
     await this.prisma.product.delete({ where: { id } });
     return { message: "Product deleted successfully" };
+  }
+
+
+    async searchDistributorProducts(userId: string, dto: SearchDistributorProductsDto) {
+    const pharmacist = await this.prisma.pharmacistProfile.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+    if (!pharmacist) throw new NotFoundException('Pharmacist profile not found');
+
+    const page = Math.max(1, dto.page || 1);
+    const limit = Math.max(1, Math.min(100, dto.limit || 20));
+    const skip = (page - 1) * limit;
+
+    const distributorIdList = dto.distributorIds.split(',').map(id => id.trim()).filter(Boolean);
+    const drugGroupIdList = dto.drugGroupIds?.split(',').map(id => id.trim()).filter(Boolean);
+
+    const whereConditions: any[] = [
+      // { status: 'active' },
+      {
+        inventories: {
+          some: {
+            distributorId: { in: distributorIdList },
+            quantityAvailable: { gt: 0 },
+          },
+        },
+      },
+    ];
+
+    if (dto.search?.trim()) {
+      const term = dto.search.trim();
+      whereConditions.push({
+        OR: [
+          { nameAr: { contains: term, mode: 'insensitive' } },
+          { nameEn: { contains: term, mode: 'insensitive' } },
+          {
+            inventories: {
+              some: {
+                distributor: {
+                  companyName: { contains: term, mode: 'insensitive' },
+                },
+              },
+            },
+          },
+          {
+        productDrugGroups: {
+          some: {
+            drugGroup: {
+              OR: [
+                { nameAr: { contains: term, mode: "insensitive" } },
+                { nameEn: { contains: term, mode: "insensitive" } },
+              ],
+            },
+          },
+        },
+      }
+        ],
+        
+      });
+    }
+
+    if (drugGroupIdList?.length) {
+      whereConditions.push({
+        productDrugGroups: {
+          some: {
+            drugGroupId: { in: drugGroupIdList },
+          },
+        },
+      });
+    }
+
+    const where = whereConditions.length > 0 ? { AND: whereConditions } : {};
+
+    const [items, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where,
+        include: {
+          productDrugGroups: {
+            include: { drugGroup: true },
+          },
+          inventories: {
+            where: {
+              distributorId: { in: distributorIdList },
+              quantityAvailable: { gt: 0 },
+            },
+            include: {
+              distributor: { select: { id: true, companyName: true } },
+            },
+          },
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.product.count({ where }),
+    ]);
+
+    const data = items.map(item => ({
+      id: item.id,
+      nameAr: item.nameAr,
+      nameEn: item.nameEn,
+      dosageForm: item.dosageForm,
+      packSize: item.packSize,
+      packUnit: item.packUnit,
+      strength: item.strength,
+      imageUrl: item.imageUrl,
+      distributorToPharmacistPrice: item.distributorToPharmacistPrice,
+      drugGroups: item.productDrugGroups.map(pdg => pdg.drugGroup),
+      distributors: item.inventories.filter(inv => inv.distributor).map(inv => ({
+        id: inv.distributor!.id,
+        companyName: inv.distributor!.companyName,
+        quantityAvailable: inv.quantityAvailable,
+      })),
+    }));
+
+    return {
+      data,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page < Math.ceil(total / limit),
+        hasPrevPage: page > 1,
+      },
+    };
   }
 }

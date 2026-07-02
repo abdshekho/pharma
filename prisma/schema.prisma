@@ -246,6 +246,9 @@ model DrugGroup {
   productDrugGroups            ProductDrugGroup[]
   productTargetSpecializations ProductTargetSpecialization[]
 
+  @@index([nameAr])
+  @@index([nameEn])
+
   @@map("drug_groups")
 }
 
@@ -293,6 +296,9 @@ model Product {
   sampleQuotas                 SampleQuota[]
   sampleRequests               SampleRequest[]
 
+
+  @@index([nameAr])
+  @@index([nameEn])
   @@map("products")
 }
 
@@ -302,6 +308,9 @@ model ProductDrugGroup {
   drugGroup   DrugGroup @relation(fields: [drugGroupId], references: [id])
   product     Product   @relation(fields: [productId], references: [id])
 
+  @@index([drugGroupId])
+  @@index([productId])
+  @@index([drugGroupId, productId])
   @@id([productId, drugGroupId])
   @@map("product_drug_groups")
 }
@@ -542,6 +551,11 @@ model Inventory {
   @@unique([distributorId, productId])
   @@unique([pharmacistId, productId])
   @@index([ownerType])
+  @@index([distributorId])
+  @@index([productId])
+  @@index([quantityAvailable])
+  @@index([distributorId, quantityAvailable])
+  @@index([productId, distributorId])
   @@map("inventories")
 }
 
