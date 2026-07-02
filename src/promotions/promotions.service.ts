@@ -98,13 +98,24 @@ export class PromotionsService {
     });
   }
 
-  async findAll(filters: { companyId?: string; distributorId?: string; level?: string; type?: string }) {
+  async findAll(filters: { companyId?: string; distributorId?: string; level?: string; type?: string; productId?: string }) {
+    const productFilter = filters.productId
+      ? {
+          OR: [
+            { promotionProducts: { some: { productId: filters.productId } } },
+            { buyXgetY: { buyProductId: filters.productId } },
+            { buyXgetY: { freeProductId: filters.productId } },
+          ],
+        }
+      : {};
+
     return this.prisma.promotion.findMany({
       where: {
         ...(filters.companyId && { companyId: filters.companyId }),
         ...(filters.distributorId && { distributorId: filters.distributorId }),
         ...(filters.level && { level: filters.level as any }),
         ...(filters.type && { type: filters.type as any }),
+        ...productFilter,
       },
       include: { promotionProducts: true, buyXgetY: true, childPromotions: { select: { id: true, title: true, distributorId: true } } },
       orderBy: { createdAt: 'desc' },

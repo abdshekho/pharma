@@ -24,8 +24,9 @@ export class PromotionsController {
     @Query('distributorId') distributorId?: string,
     @Query('level') level?: string,
     @Query('type') type?: string,
+    @Query('productId') productId?: string,
   ) {
-    return this.service.findAll({ companyId, distributorId, level, type });
+    return this.service.findAll({ companyId, distributorId, level, type, productId });
   }
 
   @Get(':id')
