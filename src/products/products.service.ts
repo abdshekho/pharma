@@ -352,6 +352,13 @@ export class ProductsService {
       });
     }
 
+    const companyIdList = dto.companyIds?.split(',').map(id => id.trim()).filter(Boolean);
+    if (companyIdList?.length) {
+      whereConditions.push({
+        companyId: { in: companyIdList },
+      });
+    }
+
     const where = whereConditions.length > 0 ? { AND: whereConditions } : {};
 
     const [items, total] = await Promise.all([

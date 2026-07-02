@@ -15,6 +15,10 @@ export class SearchDistributorProductsDto {
   drugGroupIds?: string;
 
   @IsOptional()
+  @IsString()
+  companyIds?: string;
+
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)
