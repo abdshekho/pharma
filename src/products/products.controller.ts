@@ -59,6 +59,12 @@ export class ProductsController {
     return this.service.findByBarcodeForPharmacist(user.id, barcode);
   }
 
+  @Get('pharmacist/relation/:productId')
+  @Roles(UserRole.pharmacist)
+  findRelatedByDrugGroup(@CurrentUser() user: any, @Param('productId') productId: string) {
+    return this.service.findRelatedByDrugGroup(user.id, productId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string, @CurrentUser() user: any, @Query('fields') fields?: string) {
     return this.service.findOne(id, fields);

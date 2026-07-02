@@ -547,4 +547,83 @@ export class ProductsService {
       })),
     };
   }
+
+  async findRelatedByDrugGroup(userId: string, productId: string) {
+    const product = await this.prisma.product.findUnique({
+      where: { id: productId },
+      select: { id: true },
+    });
+    if (!product) throw new NotFoundException('Product not found');
+
+    const pharmacist = await this.prisma.pharmacistProfile.findUnique({
+      where: { userId },
+      select: { id: true, areaId: true },
+    });
+    if (!pharmacist) throw new NotFoundException('Pharmacist profile not found');
+    if (!pharmacist.areaId) throw new BadRequestException('Pharmacist area is not set');
+
+    const coveringDistributors = await this.prisma.distributorCoverageArea.findMany({
+      where: { areaId: pharmacist.areaId },
+      select: { distributorId: true },
+      distinct: ['distributorId'],
+    });
+    const distributorIds = coveringDistributors.map(c => c.distributorId);
+
+    const drugGroupIds = await this.prisma.productDrugGroup.findMany({
+      where: { productId },
+      select: { drugGroupId: true },
+    });
+
+    const ids = drugGroupIds.map(dg => dg.drugGroupId);
+    if (!ids.length) return [];
+
+    const related = await this.prisma.product.findMany({
+      where: {
+        id: { not: productId },
+        status: 'active',
+        productDrugGroups: {
+          some: { drugGroupId: { in: ids } },
+        },
+        inventories: {
+          some: {
+            distributorId: { in: distributorIds },
+            quantityAvailable: { gt: 0 },
+          },
+        },
+      },
+      include: {
+        productDrugGroups: {
+          include: { drugGroup: true },
+        },
+        inventories: {
+          where: {
+            distributorId: { in: distributorIds },
+            quantityAvailable: { gt: 0 },
+          },
+          include: {
+            distributor: { select: { id: true, companyName: true } },
+          },
+        },
+      },
+    });
+
+    return related.map(item => ({
+      id: item.id,
+      nameAr: item.nameAr,
+      nameEn: item.nameEn,
+      dosageForm: item.dosageForm,
+      packSize: item.packSize,
+      packUnit: item.packUnit,
+      strength: item.strength,
+      imageUrl: item.imageUrl,
+      distributorToPharmacistPrice: item.distributorToPharmacistPrice,
+      drugGroups: item.productDrugGroups.map(pdg => pdg.drugGroup),
+      distributors: item.inventories.filter(inv => inv.distributor).map(inv => ({
+        id: inv.distributor!.id,
+        companyName: inv.distributor!.companyName,
+        quantityAvailable: inv.quantityAvailable,
+      })),
+    }));
+  }
+
 }
