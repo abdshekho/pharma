@@ -8,6 +8,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserRole } from '@prisma/client';
 import { SearchDistributorProductsDto } from './dto/search-distributor-products.dto';
+import { fastSearchDistributorProductsDto } from './dto/fastSearch.dto';
 
 @Controller('products')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -45,6 +46,11 @@ export class ProductsController {
   @Roles(UserRole.pharmacist)
   searchDistributorProducts(@CurrentUser() user: any, @Query() dto: SearchDistributorProductsDto) {
     return this.service.searchDistributorProducts(user.id, dto);
+  }
+  @Get('distributor/fast-search')
+  @Roles(UserRole.pharmacist)
+  fastsearchDistributorProducts(@CurrentUser() user: any, @Query() dto: fastSearchDistributorProductsDto) {
+    return this.service.fastsearchDistributorProducts(user.id, dto);
   }
 
   @Get(':id')

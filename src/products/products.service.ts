@@ -7,6 +7,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { SearchDistributorProductsDto } from "./dto/search-distributor-products.dto";
+import { fastSearchDistributorProductsDto } from "./dto/fastSearch.dto";
 const ALLOWED_FIELDS = [
   "id",
   "nameAr",
@@ -314,15 +315,15 @@ export class ProductsService {
         OR: [
           { nameAr: { contains: term, mode: 'insensitive' } },
           { nameEn: { contains: term, mode: 'insensitive' } },
-          {
-            inventories: {
-              some: {
-                distributor: {
-                  companyName: { contains: term, mode: 'insensitive' },
-                },
-              },
-            },
-          },
+          // {
+          //   inventories: {
+          //     some: {
+          //       distributor: {
+          //         companyName: { contains: term, mode: 'insensitive' },
+          //       },
+          //     },
+          //   },
+          // },
           {
         productDrugGroups: {
           some: {
@@ -404,5 +405,89 @@ export class ProductsService {
         hasPrevPage: page > 1,
       },
     };
+  }
+    async fastsearchDistributorProducts(userId: string, dto: fastSearchDistributorProductsDto) {
+    const distributorIdList = dto.distributorIds.split(',').map(id => id.trim()).filter(Boolean);
+
+    const whereConditions: any[] = [
+      {
+        inventories: {
+          some: {
+            distributorId: { in: distributorIdList },
+            quantityAvailable: { gt: 0 },
+          },
+        },
+      },
+    ];
+
+    if (dto.search?.trim()) {
+      const term = dto.search.trim();
+      whereConditions.push({
+        OR: [
+          { nameAr: { contains: term, mode: 'insensitive' } },
+          { nameEn: { contains: term, mode: 'insensitive' } },
+        ],
+        
+      });
+    }
+
+
+    const where = whereConditions.length > 0 ? { AND: whereConditions } : {};
+    console.time("query");
+  const items = await this.prisma.product.findMany({
+  where,
+  take: 6,
+  orderBy: {
+    nameAr: "asc",
+  },
+  select: {
+    id: true,
+    nameAr: true,
+    nameEn: true,
+    dosageForm: true,
+    packSize: true,
+    strength: true,
+
+    inventories: {
+      where: {
+        distributorId: {
+          in: distributorIdList,
+        },
+        quantityAvailable: {
+          gt: 0,
+        },
+      },
+      select: {
+        quantityAvailable: true,
+        distributor: {
+          select: {
+            id: true,
+            companyName: true,
+          },
+        },
+      },
+    },
+  },
+});
+    console.timeEnd("query");
+
+    console.time("mapping");
+
+    const data = items.map(item => ({
+      id: item.id,
+      nameAr: item.nameAr,
+      nameEn: item.nameEn,
+      dosageForm: item.dosageForm,
+      packSize: item.packSize,
+      strength: item.strength,
+      distributors: item.inventories.filter(inv => inv.distributor).map(inv => ({
+        id: inv.distributor!.id,
+        companyName: inv.distributor!.companyName,
+        quantityAvailable: inv.quantityAvailable,
+      })),
+    }));
+    console.timeEnd("mapping");
+
+    return data
   }
 }
