@@ -476,14 +476,16 @@ export class OrdersService {
       saturday: 'السبت',
     };
 
+    const companyIdList = dto.companyIds?.split(',').map(id => id.trim()).filter(Boolean);
+
     const coverages = await this.prisma.distributorCoverageArea.findMany({
       where: { areaId: pharmacist.areaId },
       include: {
         distributor: {
           include: {
             companyDistributors: {
-              where: dto.companyId
-                ? { companyId: dto.companyId, status: 'active' }
+              where: companyIdList?.length
+                ? { companyId: { in: companyIdList }, status: 'active' }
                 : { status: 'active' },
               include: {
                 company: { select: { id: true, companyName: true } },

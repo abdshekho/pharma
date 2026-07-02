@@ -2977,40 +2977,6 @@
             }
           },
           "response": []
-        },
-        {
-          "name": "Get All  distributor for me(pharmacist)",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/orders/available-distributors?companyId=c80d5719-8814-488c-8b53-f70d33fc54f2",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "orders",
-                "available-distributors"
-              ],
-              "query": [
-                {
-                  "key": "companyId",
-                  "value": "c80d5719-8814-488c-8b53-f70d33fc54f2"
-                }
-              ]
-            }
-          },
-          "response": []
         }
       ]
     },
@@ -3796,97 +3762,195 @@
       "name": "products",
       "item": [
         {
+          "name": "pharmacy",
+          "item": [
+            {
+              "name": "fast search products by distributor (pharmacist)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/products/pharmacist/fast-search?distributorIds=3479c7c1-cfb9-4aa8-a806-8203fe9933c0&search=أمو",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "products",
+                    "pharmacist",
+                    "fast-search"
+                  ],
+                  "query": [
+                    {
+                      "key": "distributorIds",
+                      "value": "3479c7c1-cfb9-4aa8-a806-8203fe9933c0"
+                    },
+                    {
+                      "key": "search",
+                      "value": "أمو"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "deep search products by distributor (pharmacist)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/products?companyId=3293e899-88da-4e5e-951b-0b70aace9724&dosageForm=capsule&&search=amo",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "products"
+                  ],
+                  "query": [
+                    {
+                      "key": "companyId",
+                      "value": "3293e899-88da-4e5e-951b-0b70aace9724"
+                    },
+                    {
+                      "key": "dosageForm",
+                      "value": "capsule"
+                    },
+                    {
+                      "key": null,
+                      "value": null
+                    },
+                    {
+                      "key": "search",
+                      "value": "amo"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "products by barcode (pharmacist)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/products/pharmacist/barcode?barcode=321",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "products",
+                    "pharmacist",
+                    "barcode"
+                  ],
+                  "query": [
+                    {
+                      "key": "barcode",
+                      "value": "321"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "relational product by id (pharmacist)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/products/pharmacist/relation/da675394-3744-4b20-a580-24d07a5c1692",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "products",
+                    "pharmacist",
+                    "relation",
+                    "da675394-3744-4b20-a580-24d07a5c1692"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All  distributor for me(pharmacist)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/orders/available-distributors?companyIds=c80d5719-8814-488c-8b53-f70d33fc54f2,77916a89-311d-4754-bc89-2f49cccd3522",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "available-distributors"
+                  ],
+                  "query": [
+                    {
+                      "key": "companyIds",
+                      "value": "c80d5719-8814-488c-8b53-f70d33fc54f2,77916a89-311d-4754-bc89-2f49cccd3522"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
           "name": "Get all products",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/products?companyId=3293e899-88da-4e5e-951b-0b70aace9724&dosageForm=capsule&&search=amo",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "products"
-              ],
-              "query": [
-                {
-                  "key": "companyId",
-                  "value": "3293e899-88da-4e5e-951b-0b70aace9724"
-                },
-                {
-                  "key": "dosageForm",
-                  "value": "capsule"
-                },
-                {
-                  "key": null,
-                  "value": null
-                },
-                {
-                  "key": "search",
-                  "value": "amo"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "deep search products by distributor (pharmacist)",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/products?companyId=3293e899-88da-4e5e-951b-0b70aace9724&dosageForm=capsule&&search=amo",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "products"
-              ],
-              "query": [
-                {
-                  "key": "companyId",
-                  "value": "3293e899-88da-4e5e-951b-0b70aace9724"
-                },
-                {
-                  "key": "dosageForm",
-                  "value": "capsule"
-                },
-                {
-                  "key": null,
-                  "value": null
-                },
-                {
-                  "key": "search",
-                  "value": "amo"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "fast search products by distributor (pharmacist)",
           "request": {
             "auth": {
               "type": "bearer",
