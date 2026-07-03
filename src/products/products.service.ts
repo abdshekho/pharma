@@ -64,9 +64,9 @@ export class ProductsService {
           productDrugGroups: {
             include: {
               drugGroup: {
-                include: {
-                  drugGroupCategories: { include: { category: true } },
-                },
+                select: {
+                  id:true ,nameAr : true,nameEn:true
+                }
               },
             },
           },
@@ -88,9 +88,9 @@ export class ProductsService {
       ...(productDrugGroups !== undefined && {
         drugGroups: productDrugGroups.map((r: any) => ({
           ...r.drugGroup,
-          categories:
-            r.drugGroup.drugGroupCategories?.map((c: any) => c.category) ?? [],
-          drugGroupCategories: undefined,
+          // categories:
+          //   r.drugGroup.drugGroupCategories?.map((c: any) => c.category) ?? [],
+          // drugGroupCategories: undefined,
         })),
       }),
       ...(productSpecializations !== undefined && {
