@@ -140,6 +140,7 @@ export class ProductsService {
     search?: string;
     companyId?: string;
     dosageForm?: string;
+    status?: string;
     page?: number;
     limit?: number;
     fields?: string;
@@ -162,6 +163,11 @@ export class ProductsService {
     // Dosage form filter
     if (filters?.dosageForm) {
       whereConditions.push({ dosageForm: filters.dosageForm });
+    }
+
+    // Status filter
+    if (filters?.status) {
+      whereConditions.push({ status: filters.status });
     }
 
     // Text search across name fields and drug groups
