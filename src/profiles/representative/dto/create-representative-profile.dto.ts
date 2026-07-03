@@ -2,8 +2,8 @@ import { IsUUID } from 'class-validator';
 
 export class CreateRepresentativeProfileDto {
   @IsUUID()
-  companyId: string;
+  companyId: string ='';
 
   @IsUUID()
-  cityId: string;
+  cityId: string='';
 }

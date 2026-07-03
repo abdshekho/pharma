@@ -496,6 +496,7 @@ model RepresentativeProfile {
   companyId      String          @map("company_id") @db.Uuid
   cityId         String          @map("city_id") @db.Uuid
   verifiedAt     DateTime?       @map("verified_at")
+  isActive       Boolean         @default(true) @map("is_active")
   verifiedBy     String?         @map("verified_by") @db.Uuid
   createdAt      DateTime        @default(now()) @map("created_at")
   city           City            @relation(fields: [cityId], references: [id])

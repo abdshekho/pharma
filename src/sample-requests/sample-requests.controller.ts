@@ -7,6 +7,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserRole } from '@prisma/client';
+import { assignSampleRequestDto } from './dto/assign-Sample-RequestDto.dto copy';
 
 @Controller('sample-requests')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -35,5 +36,10 @@ export class SampleRequestsController {
   @Roles(UserRole.company, UserRole.representative, UserRole.doctor, UserRole.admin)
   updateStatus(@Param('id') id: string, @Body() dto: UpdateSampleRequestStatusDto, @CurrentUser() user: any) {
     return this.service.updateStatus(id, user.id, user.role, dto);
+  }
+  @Patch(':id/assign')
+  @Roles(UserRole.company, UserRole.representative, UserRole.doctor, UserRole.admin)
+  assignRepresentative(@Param('id') id: string, @Body() dto: assignSampleRequestDto, @CurrentUser() user: any) {
+    return this.service.assignRepresentative(id, user.id, user.role, dto);
   }
 }

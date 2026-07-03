@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Patch, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Patch, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { RepresentativeProfileService } from './representative-profile.service';
 import { CreateRepresentativeProfileDto } from './dto/create-representative-profile.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
@@ -19,9 +19,9 @@ export class RepresentativeProfileController {
   }
 
   @Get()
-  @Roles(UserRole.admin)
-  findAll() {
-    return this.service.findAll();
+  @Roles(UserRole.admin, UserRole.company)
+  findAll(@CurrentUser() user: any, @Query('isActive') isActive?: string) {
+    return this.service.findAll(user.id, user.role, isActive);
   }
 
   @Get('me')

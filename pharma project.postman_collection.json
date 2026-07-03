@@ -1383,34 +1383,6 @@
               "response": []
             },
             {
-              "name": "Get All Representative Profiles (Admin)",
-              "request": {
-                "auth": {
-                  "type": "bearer",
-                  "bearer": [
-                    {
-                      "key": "token",
-                      "value": "{{access_token}}",
-                      "type": "string"
-                    }
-                  ]
-                },
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{base_url}}/profiles/representative",
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "path": [
-                    "profiles",
-                    "representative"
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
               "name": "Get Representative Profile by ID",
               "request": {
                 "auth": {
@@ -1434,6 +1406,40 @@
                     "profiles",
                     "representative",
                     "{{representative_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Representative Profiles (Admin Company)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/profiles/representative?isActive=true",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "representative"
+                  ],
+                  "query": [
+                    {
+                      "key": "isActive",
+                      "value": "true"
+                    }
                   ]
                 }
               },
@@ -3379,6 +3385,40 @@
           "response": []
         },
         {
+          "name": "Get All Representative Profiles (Admin Company)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/profiles/representative?isActive=true",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profiles",
+                "representative"
+              ],
+              "query": [
+                {
+                  "key": "isActive",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Get All Sample Requests (Admin Company Representative Doctor)",
           "request": {
             "auth": {
@@ -3472,7 +3512,45 @@
           "response": []
         },
         {
-          "name": "Approve Sample Request (Company)",
+          "name": "assign representative to Sample Request (Company)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"cancelled\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sample-requests",
+                "{{sample_request_id}}",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Sample Request (Company Representative)",
           "request": {
             "auth": {
               "type": "bearer",
@@ -4561,7 +4639,7 @@
       "name": "company-order",
       "item": [
         {
-          "name": "get all order(A C D)",
+          "name": "get all order(A C Distirbutor)",
           "request": {
             "auth": {
               "type": "bearer",
@@ -4588,7 +4666,7 @@
           "response": []
         },
         {
-          "name": "get order By id(A C D)",
+          "name": "get order By id(A C Distributor)",
           "request": {
             "auth": {
               "type": "bearer",

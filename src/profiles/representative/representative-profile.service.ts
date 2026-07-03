@@ -12,7 +12,7 @@ export class RepresentativeProfileService {
     if (existing) throw new ConflictException('Representative profile already exists');
 
     return this.prisma.representativeProfile.create({
-      data: { userId, ...dto },
+      data: { userId, ...dto ,isActive:false},
       include: {
         company: { select: { companyName: true } },
         city: { select: { nameAr: true } },
@@ -20,8 +20,32 @@ export class RepresentativeProfileService {
     });
   }
 
-  async findAll() {
+  async findAll(userId?: string, role?: UserRole, isActive?: string) {
+    const where: any = {};
+
+
+
+    if (isActive === 'true') where.isActive = true;
+    else if (isActive === 'false') where.isActive = false;
+
+      if (role === UserRole.company && userId) {
+      const company = await this.prisma.companyProfile.findUnique({
+        where: { userId },
+        select: { id: true },
+      });
+      if (!company) throw new NotFoundException('Company profile not found');
+      where.companyId = company.id;
+      return this.prisma.representativeProfile.findMany({
+      where,
+      include: {
+        user: { select: { id: true, email: true, fullName: true, status: true } },
+        city: { select: { nameAr: true } },
+      },
+    });
+    }
+
     return this.prisma.representativeProfile.findMany({
+      where,
       include: {
         user: { select: { id: true, email: true, fullName: true, status: true } },
         company: { select: { companyName: true } },

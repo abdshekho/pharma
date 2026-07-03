@@ -8,6 +8,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateSampleRequestDto } from "./dto/create-sample-request.dto";
 import { UpdateSampleRequestStatusDto } from "./dto/update-sample-request-status.dto";
 import { SampleRequestStatus, UserRole } from "@prisma/client";
+import { assignSampleRequestDto } from "./dto/assign-Sample-RequestDto.dto copy";
 
 @Injectable()
 export class SampleRequestsService {
@@ -186,6 +187,7 @@ export class SampleRequestsService {
     return req;
   }
 
+
   async updateStatus(
     id: string,
     userId: string,
@@ -205,7 +207,7 @@ export class SampleRequestsService {
       if (req.companyId !== company?.id) throw new ForbiddenException();
     } else if (role === UserRole.representative) {
       const rep = await this.getRepresentativeProfile(userId);
-      if (req.representativeId !== rep.id) throw new ForbiddenException();
+      if (req.representativeId !== rep.id) throw new ForbiddenException('this is not your request');
     } else if (role === UserRole.doctor) {
       const doctor = await this.getDoctorProfile(userId);
       if (req.doctorId !== doctor.id) throw new ForbiddenException();
@@ -236,6 +238,37 @@ export class SampleRequestsService {
           ...(dto.status === SampleRequestStatus.delivered && {
             deliveredAt: new Date(),
           }),
+        },
+      });
+    });
+  }
+
+
+    async assignRepresentative(
+    id: string,
+    userId: string,
+    role: UserRole,
+    dto: assignSampleRequestDto,
+  ) {
+    const req = await this.prisma.sampleRequest.findUnique({ where: { id } });
+    if (!req) throw new NotFoundException("Sample request not found");
+
+    if (role === UserRole.company) {
+      const company = await this.prisma.companyProfile.findUnique({
+        where: { userId },
+        select: { id: true },
+      });
+      if (req.companyId !== company?.id) throw new ForbiddenException();
+    }
+    if(req.status === 'delivered') throw new BadRequestException('Sample request is already delivered');
+    if(req.status == 'rejected') throw new BadRequestException('Sample request is rejected');
+    if(req.status == 'cancelled') throw new BadRequestException('Sample request is cancelled');
+    
+    return this.prisma.$transaction(async (tx) => {
+      return tx.sampleRequest.update({
+        where: { id },
+        data: {
+          representativeId: dto.representativeId,
         },
       });
     });
@@ -322,7 +355,9 @@ export class SampleRequestsService {
         [SampleRequestStatus.in_delivery]: [SampleRequestStatus.delivered],
       },
       [UserRole.representative]: {
+        [SampleRequestStatus.pending]: [SampleRequestStatus.approved],
         [SampleRequestStatus.in_delivery]: [SampleRequestStatus.delivered],
+        [SampleRequestStatus.approved]: [SampleRequestStatus.in_delivery],
       },
       [UserRole.doctor]: {
         [SampleRequestStatus.pending]: [SampleRequestStatus.cancelled], // cancelled
