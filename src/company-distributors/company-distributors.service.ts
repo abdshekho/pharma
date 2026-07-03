@@ -3,6 +3,7 @@ import {
   NotFoundException,
   ForbiddenException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCompanyDistributorDto, CreateRequestCompanyDistributorDto, UpdateCompanyDistributorDto, FindAvailableCompaniesDto } from './dto/company-distributor.dto';
@@ -41,7 +42,7 @@ export class CompanyDistributorsService {
     if (existing) throw new ConflictException('Distributor already assigned to this city');
 
     return this.prisma.companyDistributor.create({
-      data: { companyId, distributorId: dto.distributorProfileId, cityId: dto.cityId ,status:'inactive'},
+      data: { companyId, distributorId: dto.distributorProfileId, cityId: dto.cityId ,status:'pending'},
       include: {
         distributor: { select: { companyName: true, user: { select: { fullName: true, email: true } } } },
         city: { select: { nameAr: true } },
@@ -122,6 +123,7 @@ export class CompanyDistributorsService {
   }
 
   async updateStatus(id: string, userId: string, dto: UpdateCompanyDistributorDto) {
+    if(dto.status === 'pending') throw new BadRequestException('Pending status is not allowed');
     const companyId = await this.resolveCompanyId(userId);
 
     // Accept either the link's own id or the distributor profile id
