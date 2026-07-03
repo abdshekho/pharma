@@ -86,7 +86,7 @@ export class CompanyDistributorsService {
       }
     });
   }
-  async findAll(userId: string, role: UserRole) {
+  async findAll(userId: string, role: UserRole, status?: string) {
     const where: any = {};
 
     if (role === UserRole.company) {
@@ -98,12 +98,24 @@ export class CompanyDistributorsService {
       where.distributorId = p.id;
     }
 
+    if (status) {
+      where.status = status;
+    }
+
     return this.prisma.companyDistributor.findMany({
       where,
       include: {
         company: { select: { companyName: true } },
-        distributor: { select: {  user: { select: { fullName: true, email: true } } } },
-        city: { select: { nameAr: true } },
+        distributor: {
+          select: {
+            id: true,
+            companyName: true,
+            licenseDocUrl: true,
+            verifiedAt: true,
+            user: { select: { id: true, fullName: true, email: true, phone: true } },
+          },
+        },
+        city: { select: { id: true, nameAr: true } },
       },
       orderBy: { assignedAt: 'desc' },
     });

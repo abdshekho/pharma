@@ -664,6 +664,7 @@ enum WeekDay {
 }
 
 enum CompanyDistributorStatus {
+  pending
   active
   inactive
 }

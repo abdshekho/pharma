@@ -28,8 +28,8 @@ export class CompanyDistributorsController {
 
   @Get()
   @Roles(UserRole.company, UserRole.distributor, UserRole.admin)
-  findAll(@CurrentUser() user: any) {
-    return this.service.findAll(user.id, user.role);
+  findAll(@CurrentUser() user: any, @Query('status') status?: string) {
+    return this.service.findAll(user.id, user.role, status);
   }
   @Get('inactive')
   @Roles(UserRole.company)

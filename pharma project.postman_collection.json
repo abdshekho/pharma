@@ -4188,47 +4188,18 @@
               "raw": ""
             },
             "url": {
-              "raw": "{{base_url}}/company-distributors",
+              "raw": "{{base_url}}/company-distributors?status=pending",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "company-distributors"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "get my inactive distributors(company)",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": ""
-            },
-            "url": {
-              "raw": "{{base_url}}/company-distributors/inactive",
-              "host": [
-                "{{base_url}}"
               ],
-              "path": [
-                "company-distributors",
-                "inactive"
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
               ]
             }
           },
