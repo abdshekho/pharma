@@ -196,7 +196,6 @@ export class SampleRequestsService {
   ) {
     const req = await this.prisma.sampleRequest.findUnique({ where: { id } });
     if (!req) throw new NotFoundException("Sample request not found");
-
     this.validateTransition(req.status, dto.status, role);
 
     if (role === UserRole.company) {
@@ -272,6 +271,32 @@ export class SampleRequestsService {
         },
       });
     });
+  }
+    async feedback(
+    id: string,
+    userId: string,
+    feedback: string,
+  ) {
+    const doctorProfile = await this.prisma.doctorProfile.findUnique({
+      where: { userId },
+    })
+    if(!doctorProfile) throw new NotFoundException("Doctor profile not found"); 
+
+    const req = await this.prisma.sampleRequest.findUnique({ where: { id,doctorId:doctorProfile.id } });
+    if (!req) throw new NotFoundException("Sample request not found");
+
+    if(req.status !== 'delivered') throw new BadRequestException('cannot give feedback for this request becuse it is not delivered');
+
+
+      return this.prisma.$transaction(async (tx) => {
+      return tx.sampleRequest.update({
+        where: { id },
+        data: {
+          feedback
+        },
+      });
+    });
+
   }
 
   private assertDoctorCanRequestProduct(

@@ -523,6 +523,7 @@ model SampleRequest {
   rejectionReason  String?                @map("rejection_reason")
   approvedAt       DateTime?              @map("approved_at")
   deliveredAt      DateTime?              @map("delivered_at")
+  feedback         String?                @map("feedback")
   createdAt        DateTime               @default(now()) @map("created_at")
   updatedAt        DateTime               @updatedAt @map("updated_at")
   company          CompanyProfile         @relation(fields: [companyId], references: [id])

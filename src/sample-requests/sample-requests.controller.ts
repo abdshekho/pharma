@@ -42,4 +42,9 @@ export class SampleRequestsController {
   assignRepresentative(@Param('id') id: string, @Body() dto: assignSampleRequestDto, @CurrentUser() user: any) {
     return this.service.assignRepresentative(id, user.id, user.role, dto);
   }
+  @Patch(':id/feedback')
+  @Roles(UserRole.doctor)
+  feedback(@Param('id') id: string,  @Body() dto, @CurrentUser() user: any) {
+    return this.service.feedback(id, user.id, dto.feedback);
+  }
 }
