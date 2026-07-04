@@ -228,8 +228,20 @@ export class CompanyOrdersService {
       });
 
       if (dto.status === OrderStatus.approved) {
-        await this.inventoryService.transferForOrder(
+        await this.inventoryService.decreaseForOrder(
           { ownerType: InventoryOwnerType.company, ownerId: order.companyId },
+          id,
+          updated.orderItems.map((i) => ({
+            productId: i.productId,
+            quantity: i.quantity,
+          })),
+          userId,
+          tx,
+        );
+      }
+
+      if (dto.status === OrderStatus.delivered) {
+        await this.inventoryService.increaseForOrder(
           {
             ownerType: InventoryOwnerType.distributor,
             ownerId: order.distributorId,
@@ -248,11 +260,7 @@ export class CompanyOrdersService {
         dto.status === OrderStatus.cancelled &&
         order.status === OrderStatus.approved
       ) {
-        await this.inventoryService.transferForOrder(
-          {
-            ownerType: InventoryOwnerType.distributor,
-            ownerId: order.distributorId,
-          },
+        await this.inventoryService.increaseForOrder(
           { ownerType: InventoryOwnerType.company, ownerId: order.companyId },
           id,
           updated.orderItems.map((i) => ({

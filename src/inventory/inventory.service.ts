@@ -134,6 +134,47 @@ export class InventoryService {
     }
   }
 
+  async decreaseForOrder(
+    from: InventoryOwner,
+    orderId: string,
+    items: { productId: string; quantity: number }[],
+    createdBy: string,
+    tx: any,
+  ) {
+    for (const item of items) {
+      await this.decreaseStock(
+        from,
+        item.productId,
+        item.quantity,
+        createdBy,
+        InventoryReferenceType.order,
+        orderId,
+        tx,
+      );
+    }
+  }
+
+  async increaseForOrder(
+    to: InventoryOwner,
+    orderId: string,
+    items: { productId: string; quantity: number }[],
+    createdBy: string,
+    tx: any,
+  ) {
+    for (const item of items) {
+      await this.increaseStock(
+        to,
+        item.productId,
+        item.quantity,
+        createdBy,
+        InventoryReferenceType.order,
+        orderId,
+        undefined,
+        tx,
+      );
+    }
+  }
+
   async increaseStock(
     owner: InventoryOwner,
     productId: string,
