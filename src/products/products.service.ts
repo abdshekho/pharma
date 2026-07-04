@@ -433,7 +433,26 @@ export class ProductsService {
     };
   }
     async fastsearchDistributorProducts(userId: string, dto: fastSearchDistributorProductsDto) {
-    const distributorIdList = dto.distributorIds.split(',').map(id => id.trim()).filter(Boolean);
+    const pharmacist = await this.prisma.pharmacistProfile.findUnique({
+      where: { userId },
+      select: { areaId: true },
+    });
+    if (!pharmacist) throw new NotFoundException('Pharmacist profile not found');
+    if (!pharmacist.areaId) throw new BadRequestException('Pharmacist area is not set');
+
+    const coverages = await this.prisma.distributorCoverageArea.findMany({
+      where: { areaId: pharmacist.areaId },
+      select: { distributorId: true },
+      distinct: ['distributorId'],
+    });
+    let distributorIdList = coverages.map(c => c.distributorId);
+
+    if (dto.distributorIds?.trim()) {
+      const requestedIds = dto.distributorIds.split(',').map(id => id.trim()).filter(Boolean);
+      distributorIdList = distributorIdList.filter(id => requestedIds.includes(id));
+    }
+
+    if (!distributorIdList.length) return [];
 
     const whereConditions: any[] = [
       {
@@ -453,13 +472,12 @@ export class ProductsService {
           { nameAr: { contains: term, mode: 'insensitive' } },
           { nameEn: { contains: term, mode: 'insensitive' } },
         ],
-        
+
       });
     }
 
 
     const where = whereConditions.length > 0 ? { AND: whereConditions } : {};
-    console.time("query");
   const items = await this.prisma.product.findMany({
   where,
   take: 6,
@@ -495,26 +513,27 @@ export class ProductsService {
     },
   },
 });
-    console.timeEnd("query");
 
-    console.time("mapping");
+    const groups = new Map<string, { distributor: { id: string; companyName: string }; products: any[] }>();
 
-    const data = items.map(item => ({
-      id: item.id,
-      nameAr: item.nameAr,
-      nameEn: item.nameEn,
-      dosageForm: item.dosageForm,
-      packSize: item.packSize,
-      strength: item.strength,
-      distributors: item.inventories.filter(inv => inv.distributor).map(inv => ({
-        id: inv.distributor!.id,
-        companyName: inv.distributor!.companyName,
-        quantityAvailable: inv.quantityAvailable,
-      })),
-    }));
-    console.timeEnd("mapping");
+    for (const item of items) {
+      const { inventories, ...productBase } = item;
+      for (const inv of inventories) {
+        if (!inv.distributor) continue;
+        if (!groups.has(inv.distributor.id)) {
+          groups.set(inv.distributor.id, {
+            distributor: { id: inv.distributor.id, companyName: inv.distributor.companyName },
+            products: [],
+          });
+        }
+        groups.get(inv.distributor.id)!.products.push({
+          ...productBase,
+          quantityAvailable: inv.quantityAvailable,
+        });
+      }
+    }
 
-    return data
+    return Array.from(groups.values());
   }
 
   async findByBarcodeForPharmacist(userId: string, barcode: string) {
