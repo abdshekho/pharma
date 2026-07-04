@@ -483,6 +483,16 @@ export class OrdersService {
       include: {
         distributor: {
           include: {
+            user: {
+              select: {
+                id: true,
+                fullName: true,
+                email: true,
+                phone: true,
+                avatarUrl: true,
+                city: { select: { id: true, nameAr: true, nameEn: true } },
+              },
+            },
             companyDistributors: {
               where: companyIdList?.length
                 ? { companyId: { in: companyIdList }, status: 'active' }
@@ -499,6 +509,16 @@ export class OrdersService {
     const distributorMap = new Map<string, {
       id: string;
       companyName: string;
+      licenseDocUrl: string | null;
+      verifiedAt: Date | null;
+      user: {
+        id: string;
+        fullName: string | null;
+        email: string;
+        phone: string | null;
+        avatarUrl: string | null;
+        city: { id: string; nameAr: string; nameEn: string | null } | null;
+      };
       deliveryDays: { day: WeekDay; dayName: string; offset: number }[];
       nearestOffset: number;
       companies: { id: string; companyName: string }[];
@@ -510,6 +530,9 @@ export class OrdersService {
         distributorMap.set(dist.id, {
           id: dist.id,
           companyName: dist.companyName,
+          licenseDocUrl: dist.licenseDocUrl,
+          verifiedAt: dist.verifiedAt,
+          user: dist.user,
           deliveryDays: [],
           nearestOffset: Infinity,
           companies: dist.companyDistributors.map(cd => cd.company),
