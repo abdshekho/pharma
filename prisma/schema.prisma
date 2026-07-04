@@ -200,6 +200,7 @@ model DeliveryStaffProfile {
   user          User               @relation("UserDeliveryStaffProfile", fields: [userId], references: [id])
   distributor   DistributorProfile @relation(fields: [distributorId], references: [id])
   orders        Order[]
+  CompanyDistributorOrders  CompanyDistributorOrder[]
 
   @@map("delivery_staff_profiles")
 }
@@ -454,6 +455,7 @@ model CompanyDistributorOrder {
   orderNumber     String                        @unique @map("order_number") @db.VarChar(24)
   companyId       String                        @map("company_id") @db.Uuid
   distributorId   String                        @map("distributor_id") @db.Uuid
+  deliveryStaffId String?                       @map("delivery_staff_id") @db.Uuid
   status          OrderStatus                   @default(pending)
   totalAmount     Decimal                       @default(0) @map("total_amount") @db.Decimal(10, 2)
   paymentMethod   PaymentMethod                 @default(bank_transfer) @map("payment_method")
@@ -466,6 +468,7 @@ model CompanyDistributorOrder {
   updatedAt       DateTime                      @updatedAt @map("updated_at")
   company         CompanyProfile                @relation(fields: [companyId], references: [id])
   distributor     DistributorProfile            @relation(fields: [distributorId], references: [id])
+  deliveryStaff   DeliveryStaffProfile?         @relation(fields: [deliveryStaffId], references: [id])
   orderItems      CompanyDistributorOrderItem[]
 
   @@index([companyId, status])

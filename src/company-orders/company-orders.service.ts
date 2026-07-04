@@ -275,6 +275,42 @@ export class CompanyOrdersService {
       return updated;
     });
   }
+  async updateAssign(
+    id: string,
+    userId: string,
+    role: UserRole,
+    deliveryStaffId?: string,
+  ) {
+    const order = await this.prisma.companyDistributorOrder.findUnique({
+      where: { id },
+    });
+
+    if(order?.status !== OrderStatus.approved) {
+      throw new BadRequestException("Order should be approved first to assign delivery staff");
+    }
+    const profileStaffValid = await this.prisma.deliveryStaffProfile.findUnique({
+      where: { id: deliveryStaffId ,distributorId:order?.distributorId },
+    })
+
+      await this.assertOrderAccess(
+      order.companyId,
+      order.distributorId,
+      userId,
+      role,
+    );
+    if(!profileStaffValid) {
+      throw new BadRequestException("Delivery staff not found");
+    }
+    if (!order) throw new NotFoundException("Company order not found");
+
+
+    return this.prisma.companyDistributorOrder.update({
+      where: { id },
+      data: {
+        deliveryStaffId,
+      },
+    });
+  }
 
   private async assertCompanyStockAvailable(
     companyId: string,

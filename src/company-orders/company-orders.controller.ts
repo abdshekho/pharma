@@ -40,4 +40,17 @@ export class CompanyOrdersController {
   ) {
     return this.service.updateStatus(id, user.id, user.role, dto);
   }
+
+
+  @Patch(':id/assign')
+  @Roles(UserRole.distributor)
+  updateAssign(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+    @Body('deliveryStaffId') deliveryStaffId?: string,
+  ) {
+    return this.service.updateAssign(id, user.id, user.role, deliveryStaffId);
+  }
+
+
 }
