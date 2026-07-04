@@ -491,6 +491,8 @@ export class ProductsService {
     dosageForm: true,
     packSize: true,
     strength: true,
+    imageUrl: true,
+    distributorToPharmacistPrice: true,
 
     inventories: {
       where: {
