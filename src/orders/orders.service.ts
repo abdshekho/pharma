@@ -362,6 +362,42 @@ export class OrdersService {
     return order;
   }
 
+
+    async updateAssign(
+    id: string,
+    userId: string,
+    role: UserRole,
+    deliveryStaffId?: string,
+  ) {
+    const order = await this.prisma.order.findUnique({
+      where: { id },
+    });
+    if(!order) throw new NotFoundException("Order not found");
+    if(order?.status !== OrderStatus.approved) {
+      throw new BadRequestException("Order should be approved first to assign delivery staff");
+    }
+
+      const distributorProfile = await this.getDistributorProfile(userId);
+      if (order.distributorId !== distributorProfile.id) throw new ForbiddenException('Distributor profile not found');
+
+
+    const profileStaffValid = await this.prisma.deliveryStaffProfile.findUnique({
+      where: { id: deliveryStaffId ,distributorId:order?.distributorId },
+    })
+    if(!profileStaffValid) {
+      throw new BadRequestException("Delivery staff not found");
+    }
+    if (!order) throw new NotFoundException("Company order not found");
+
+
+    return this.prisma.order.update({
+      where: { id },
+      data: {
+        deliveryStaffId,
+      },
+    });
+  }
+
   async updateStatus(
     id: string,
     userId: string,

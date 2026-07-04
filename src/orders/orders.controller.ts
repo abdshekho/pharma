@@ -39,9 +39,19 @@ export class OrdersController {
   }
 
   @Patch(':id/status')
-  @Roles(UserRole.distributor, UserRole.pharmacist, UserRole.admin)
+  @Roles(UserRole.distributor, UserRole.pharmacist, UserRole.admin,UserRole.delivery_staff)
   updateStatus(@Param('id') id: string, @Body() dto: UpdateOrderStatusDto, @CurrentUser() user: any) {
     return this.service.updateStatus(id, user.id, user.role, dto);
+  }
+
+  @Patch(':id/assign')
+  @Roles(UserRole.distributor)
+  updateAssign(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+    @Body('deliveryStaffId') deliveryStaffId?: string,
+  ) {
+    return this.service.updateAssign(id, user.id, user.role, deliveryStaffId);
   }
     
 }

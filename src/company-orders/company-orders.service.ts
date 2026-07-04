@@ -512,7 +512,10 @@ export class CompanyOrdersService {
       [UserRole.pharmacist]: {},
       [UserRole.doctor]: {},
       [UserRole.representative]: {},
-      [UserRole.delivery_staff]: {},
+      [UserRole.delivery_staff]: {
+        [OrderStatus.approved]: [OrderStatus.in_delivery],
+        [OrderStatus.in_delivery]: [OrderStatus.delivered],
+      },
     };
 
     const allowedNext = allowed[role]?.[current] ?? [];

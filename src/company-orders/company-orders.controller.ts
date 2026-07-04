@@ -32,7 +32,7 @@ export class CompanyOrdersController {
   }
 
   @Patch(':id/status')
-  @Roles(UserRole.company, UserRole.distributor, UserRole.admin)
+  @Roles(UserRole.company, UserRole.distributor, UserRole.admin,UserRole.delivery_staff)
   updateStatus(
     @Param('id') id: string,
     @Body() dto: UpdateCompanyOrderStatusDto,
