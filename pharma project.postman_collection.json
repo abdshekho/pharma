@@ -1505,6 +1505,151 @@
               "response": []
             }
           ]
+        },
+        {
+          "name": "profiles/delivery-staff",
+          "item": [
+            {
+              "name": "Create Delivery Staff",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\": \"driver@example.com\",\n    \"password\": \"password123\",\n    \"fullName\": \"Ahmed Ali\",\n    \"phone\": \"0912345678\",\n    \"licensePlate\": \"123-AB\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/delivery-staff",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "delivery-staff"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get All Delivery Staff",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/delivery-staff",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "delivery-staff"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Delivery Staff by ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/delivery-staff/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "delivery-staff",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Delivery Staff",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"fullName\": \"Ahmed Ali Updated\",\n    \"phone\": \"0987654321\",\n    \"licensePlate\": \"456-CD\",\n    \"isActive\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/delivery-staff/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "delivery-staff",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
         }
       ]
     },
@@ -2833,6 +2978,44 @@
           "response": []
         },
         {
+          "name": "assign delivery staff to Order (Distributor)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deliveryStaffId\": \"ba7d55e0-1cde-40b1-9649-ba710c12f984\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/orders/{{order_id}}/assign",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "orders",
+                "{{order_id}}",
+                "assign"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Mark In Delivery (Distributor)",
           "request": {
             "auth": {
@@ -3528,7 +3711,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"status\": \"cancelled\"\n}",
+              "raw": "{\n  \"representativeId\": \"\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3536,21 +3719,21 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/status",
+              "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/assign",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "sample-requests",
                 "{{sample_request_id}}",
-                "status"
+                "assign"
               ]
             }
           },
           "response": []
         },
         {
-          "name": "Approve Sample Request (Company Representative)",
+          "name": "Approve Sample Request (Company, Representative if assign)",
           "request": {
             "auth": {
               "type": "bearer",
@@ -3658,6 +3841,44 @@
                 "sample-requests",
                 "{{sample_request_id}}",
                 "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add feedback to sample request (Doctor)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"feedback\": \"test feedback from doctor when is deliverd\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/sample-requests/{{sample_request_id}}/feedback",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "sample-requests",
+                "{{sample_request_id}}",
+                "feedback"
               ]
             }
           },
@@ -4746,7 +4967,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"status\":\"approved\"\r\n}\r\n",
+              "raw": "{\r\n    \"status\":\"approved\"\r\n    \r\n}\r\n",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4754,14 +4975,128 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/company-orders/26771150-31a6-4c78-b104-440eede03ec6/status",
+              "raw": "{{base_url}}/company-orders/5cbb56ba-6a46-46f3-822a-6b2ce750eea3/status",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "company-orders",
-                "26771150-31a6-4c78-b104-440eede03ec6",
+                "5cbb56ba-6a46-46f3-822a-6b2ce750eea3",
                 "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update status rejected(A C)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"status\":\"rejected\",\r\n    \"rejectionReason\":\"test rejection Reason\"\r\n    \r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/company-orders/5cbb56ba-6a46-46f3-822a-6b2ce750eea3/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "company-orders",
+                "5cbb56ba-6a46-46f3-822a-6b2ce750eea3",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update status cancelled ( distributor )",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"status\":\"cancelled\"\r\n// should be order status is  pending to cancele it    \r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/company-orders/5cbb56ba-6a46-46f3-822a-6b2ce750eea3/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "company-orders",
+                "5cbb56ba-6a46-46f3-822a-6b2ce750eea3",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "assign delivery staff when approved (distributor)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"deliveryStaffId\":\"ba7d55e0-1cde-40b1-9649-ba710c12f984\"\r\n    // should be approved to assign delivery staff\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/company-orders/5cbb56ba-6a46-46f3-822a-6b2ce750eea3/assign",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "company-orders",
+                "5cbb56ba-6a46-46f3-822a-6b2ce750eea3",
+                "assign"
               ]
             }
           },
@@ -4830,13 +5165,13 @@
               }
             },
             "url": {
-              "raw": "{{base_url}}/company-orders/98be9b54-0db8-42da-b6c0-4ff1892dfbce/status",
+              "raw": "{{base_url}}/company-orders/5cbb56ba-6a46-46f3-822a-6b2ce750eea3/status",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "company-orders",
-                "98be9b54-0db8-42da-b6c0-4ff1892dfbce",
+                "5cbb56ba-6a46-46f3-822a-6b2ce750eea3",
                 "status"
               ]
             }
@@ -4846,46 +5181,10 @@
       ]
     },
     {
-      "name": "delivery-staff",
+      "name": "statistics",
       "item": [
         {
-          "name": "Create Delivery Staff",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{access_token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"email\": \"driver@example.com\",\n    \"password\": \"password123\",\n    \"fullName\": \"Ahmed Ali\",\n    \"phone\": \"0912345678\",\n    \"licensePlate\": \"123-AB\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/delivery-staff",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "delivery-staff"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Get All Delivery Staff",
+          "name": "admin statistics (Admin)",
           "request": {
             "auth": {
               "type": "bearer",
@@ -4900,19 +5199,30 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/delivery-staff",
+              "raw": "{{base_url}}/statistics/admin?startDate=2026-01-01T00:00:00.000Z&endDate=2026-06-30T23:59:59.999Z",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "delivery-staff"
+                "statistics",
+                "admin"
+              ],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2026-01-01T00:00:00.000Z"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-06-30T23:59:59.999Z"
+                }
               ]
             }
           },
           "response": []
         },
         {
-          "name": "Get Delivery Staff by ID",
+          "name": "company statistics(Admin Company)",
           "request": {
             "auth": {
               "type": "bearer",
@@ -4927,18 +5237,29 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/delivery-staff/:id",
+              "raw": "{{base_url}}/statistics/company/:companyId?startDate=2026-01-01T00:00:00.000Z&endDate=2026-06-30T23:59:59.999Z",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "delivery-staff",
-                ":id"
+                "statistics",
+                "company",
+                ":companyId"
+              ],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2026-01-01T00:00:00.000Z"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-06-30T23:59:59.999Z"
+                }
               ],
               "variable": [
                 {
-                  "key": "id",
-                  "value": ""
+                  "key": "companyId",
+                  "value": "ce73a328-3d01-417e-a10b-5a3f07722964"
                 }
               ]
             }
@@ -4946,7 +5267,7 @@
           "response": []
         },
         {
-          "name": "Update Delivery Staff",
+          "name": "distributor statistics(Admin Company)",
           "request": {
             "auth": {
               "type": "bearer",
@@ -4958,30 +5279,32 @@
                 }
               ]
             },
-            "method": "PATCH",
+            "method": "GET",
             "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"fullName\": \"Ahmed Ali Updated\",\n    \"phone\": \"0987654321\",\n    \"licensePlate\": \"456-CD\",\n    \"isActive\": false\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
             "url": {
-              "raw": "{{base_url}}/delivery-staff/:id",
+              "raw": "{{base_url}}/statistics/distributor/:distributorId?startDate=2026-01-01T00:00:00.000Z&endDate=2026-06-30T23:59:59.999Z",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
-                "delivery-staff",
-                ":id"
+                "statistics",
+                "distributor",
+                ":distributorId"
+              ],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2026-01-01T00:00:00.000Z"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-06-30T23:59:59.999Z"
+                }
               ],
               "variable": [
                 {
-                  "key": "id",
-                  "value": ""
+                  "key": "distributorId",
+                  "value": "3479c7c1-cfb9-4aa8-a806-8203fe9933c0"
                 }
               ]
             }
