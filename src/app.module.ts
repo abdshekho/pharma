@@ -25,6 +25,7 @@ import { SampleQuotasModule } from './sample-quotas/sample-quotas.module';
 import { DeliveryStaffModule } from './delivery-staff/delivery-staff.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { CompanyOrdersModule } from './company-orders/company-orders.module';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
   imports: [
@@ -50,7 +51,8 @@ import { CompanyOrdersModule } from './company-orders/company-orders.module';
     SampleQuotasModule,
     DeliveryStaffModule,
     InventoryModule,
-    CompanyOrdersModule
+    CompanyOrdersModule,
+    StatisticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

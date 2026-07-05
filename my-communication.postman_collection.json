@@ -1,0 +1,2200 @@
+{
+  "info": {
+    "_postman_id": "2ba4058a-5501-427d-965f-da43faa72916",
+    "name": "my-communication",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "25845278"
+  },
+  "item": [
+    {
+      "name": "categories",
+      "item": [
+        {
+          "name": "getAllCategories",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getAllCategories",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getAllCategories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "createCategory",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"value\":\"one\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/createCategory",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "createCategory"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "UpdateCategory",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"value\":\"afte PUT\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/updateCategory/2",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "updateCategory",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "UpdateCategory Copy",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"value\":\"afte PUT\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/deleteCategory/6",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "deleteCategory",
+                "6"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "createEmployee",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "employ@gmail.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "123123123",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}/api/createEmployee",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "createEmployee"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.environment.set(\"JWT\", pm.response.json().authorisation.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\":\"one@gmail.com\",\r\n    \"password\":\"12345678\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL}}/api/login",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "one@gmail.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "12345678",
+                  "type": "text"
+                },
+                {
+                  "key": "first_name",
+                  "value": "one",
+                  "type": "text"
+                },
+                {
+                  "key": "last_name",
+                  "value": "two",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}/api/register",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "register"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "login Copy",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "one@gmail.com",
+                      "type": "text"
+                    },
+                    {
+                      "key": "password",
+                      "value": "12345678",
+                      "type": "text"
+                    },
+                    {
+                      "key": "first_name",
+                      "value": "one",
+                      "type": "text"
+                    },
+                    {
+                      "key": "last_name",
+                      "value": "two",
+                      "type": "text"
+                    }
+                  ],
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL}}/api/register",
+                  "host": [
+                    "{{URL}}"
+                  ],
+                  "path": [
+                    "api",
+                    "register"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Host",
+                  "value": "26.172.97.48:8000"
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 30 Sep 2023 13:56:57 GMT"
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 30 Sep 2023 13:56:57 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "close"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.2.0"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "X-RateLimit-Limit",
+                  "value": "60"
+                },
+                {
+                  "key": "X-RateLimit-Remaining",
+                  "value": "59"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": \"success\",\n    \"message\": \"User created successfully\",\n    \"user\": {\n        \"email\": \"one@gmail.com\",\n        \"role_id\": 5,\n        \"updated_at\": \"2023-09-30T13:56:56.000000Z\",\n        \"created_at\": \"2023-09-30T13:56:56.000000Z\",\n        \"id\": 7,\n        \"role\": {\n            \"id\": 5,\n            \"name\": \"student\",\n            \"created_at\": \"2023-09-30T13:56:56.000000Z\",\n            \"updated_at\": \"2023-09-30T13:56:56.000000Z\"\n        }\n    },\n    \"role\": {\n        \"id\": 5,\n        \"name\": \"student\",\n        \"created_at\": \"2023-09-30T13:56:56.000000Z\",\n        \"updated_at\": \"2023-09-30T13:56:56.000000Z\"\n    },\n    \"authorisation\": {\n        \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMjYuMTcyLjk3LjQ4OjgwMDAvYXBpL3JlZ2lzdGVyIiwiaWF0IjoxNjk2MDgyMjE3LCJleHAiOjE2OTYwODU4MTcsIm5iZiI6MTY5NjA4MjIxNywianRpIjoiNGRpY3hmcmVpRkNMdHg2UCIsInN1YiI6IjciLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.vRUajFN8GZrqq_8t81fVAKEHiPZwaTx2DqiExuEDJ-o\"\n    }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "techer",
+      "item": [
+        {
+          "name": "getAllTecher",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/getTeachers",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getTeachers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "createTeacher",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "firstTecher@gmail.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "12345678",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}/api/createTeacher",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "createTeacher"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getTechersById",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/getTeacherById/1",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getTeacherById",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getTecherCourse",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/getTeacherCourse/1",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getTeacherCourse",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getTeacherById",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/getTeacherById/",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getTeacherById",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "deleteTeacher",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/deleteTeacher/1",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "deleteTeacher",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "student",
+      "item": [
+        {
+          "name": "getAllStudent",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/getAllStudent",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getAllStudent"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateStudentProfile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "email",
+                  "value": "firstTecher@gmail.com",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "12345678",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}/api/updateStudentProfile",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "updateStudentProfile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getStudentById",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/getStudentById/1",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getStudentById",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getMyInformation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/getMyInformation",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getMyInformation"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getStudentsByCourseId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/getStudentsByCourseId/id",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getStudentsByCourseId",
+                "id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "deleteTeacher",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{URL}}/api/deleteTeacher/1",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "deleteTeacher",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "courses",
+      "item": [
+        {
+          "name": "createCourse",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "first course",
+                  "type": "text"
+                },
+                {
+                  "key": "cost",
+                  "value": "1000",
+                  "type": "text"
+                },
+                {
+                  "key": "studey_hour",
+                  "value": "21",
+                  "description": "مادخل الفرونت فيه",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "level",
+                  "value": "high",
+                  "description": "غير متخصص ",
+                  "type": "text"
+                },
+                {
+                  "key": "teacher_id",
+                  "value": "1",
+                  "description": "user_id",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "description for first course",
+                  "description": "alt",
+                  "type": "text"
+                },
+                {
+                  "key": "category_id",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "discount",
+                  "value": "800",
+                  "description": "الخصم",
+                  "type": "text"
+                },
+                {
+                  "key": "overview",
+                  "value": "overViiew value should be string",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}/api/createCourse",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "createCourse"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateCourse",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "first course",
+                  "type": "text"
+                },
+                {
+                  "key": "cost",
+                  "value": "1000",
+                  "type": "text"
+                },
+                {
+                  "key": "studey_hour",
+                  "value": "21",
+                  "description": "مادخل الفرونت فيه",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "level",
+                  "value": "high",
+                  "description": "غير متخصص ",
+                  "type": "text"
+                },
+                {
+                  "key": "teacher_id",
+                  "value": "1",
+                  "description": "user_id",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "description for first course",
+                  "description": "alt",
+                  "type": "text"
+                },
+                {
+                  "key": "category_id",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "discount",
+                  "value": "800",
+                  "description": "الخصم",
+                  "type": "text"
+                },
+                {
+                  "key": "overview",
+                  "value": "overViiew value should be string",
+                  "type": "text"
+                },
+                {
+                  "key": "image",
+                  "value": "",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}/api/updateCourse/",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "updateCourse",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAllCourses",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getAllCourses",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getAllCourses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAllCourses Copy",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/deletCourse/",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "deletCourse",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "video",
+      "item": [
+        {
+          "name": "New Request",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://26.172.97.48:8000/api/testVedio",
+              "protocol": "http",
+              "host": [
+                "26",
+                "172",
+                "97",
+                "48"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "testVedio"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Viedo",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/streamVedio/24",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "streamVedio",
+                "24"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "article",
+      "item": [
+        {
+          "name": "createArticle",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "tiltle",
+                  "value": "من بوستمان",
+                  "type": "text"
+                },
+                {
+                  "key": "category",
+                  "value": "أحداث مهمة في هندسة الاتصالات",
+                  "type": "text"
+                },
+                {
+                  "key": "content",
+                  "value": "لا يوجد",
+                  "type": "text"
+                },
+                {
+                  "key": "imgae",
+                  "type": "file",
+                  "src": "/C:/Users/asus/Desktop/678.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}/api/createArticle",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "createArticle"
+              ],
+              "query": [
+                {
+                  "key": "title",
+                  "value": null,
+                  "description": "required|string",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": null,
+                  "description": "required|string",
+                  "disabled": true
+                },
+                {
+                  "key": "content",
+                  "value": null,
+                  "description": "required|string",
+                  "disabled": true
+                },
+                {
+                  "key": "image",
+                  "value": null,
+                  "type": "text",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateArticle",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "tiltle",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "content",
+                  "value": "",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": "pngwing.com.png"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}/api/updateArticle/11",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "updateArticle",
+                "11"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "createArticleCategory",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/createArticleCategory",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "createArticleCategory"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getArticleById",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getArticleById/11",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getArticleById",
+                "11"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "deleteArticle",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/deleteArticle/{id}",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "deleteArticle",
+                "{id}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "deleteArticleCategory",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/deleteArticleCategory/{id}",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "deleteArticleCategory",
+                "{id}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getRelatedArticle",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getRelatedArticle/1",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getRelatedArticle",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getRelatedArticle Copy",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/updateArticle/1",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "updateArticle",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getArticles",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getArticles",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getArticles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getRelatedArticle",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getArticles",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getArticles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getArticleByCategoryId",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getArticles",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getArticles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAllArticleCategory",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getAllArticleCategory",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getAllArticleCategory"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Achievement",
+      "item": [
+        {
+          "name": "createAchievement",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "من بوستمان",
+                  "type": "text"
+                },
+                {
+                  "key": "content",
+                  "value": "لا يوجد",
+                  "type": "text"
+                },
+                {
+                  "key": "imgae",
+                  "type": "file",
+                  "fileNotInWorkingDirectoryWarning": "This file isn't in your working directory. Teammates you share this request with won't be able to use this file. To make collaboration easier you can setup your working directory in Settings.",
+                  "src": "/C:/Users/asus/Desktop/678.jpg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}/api/createAchievement",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "createAchievement"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAllAchievementById",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getAllAchievementById/4",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getAllAchievementById",
+                "4"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "deleteAchievement",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/deleteAchievement/{id}",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "deleteAchievement",
+                "{id}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "updateAchievement",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/updateAchievement/{id}",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "updateAchievement",
+                "{id}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAllAchievement",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getAllAchievement",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getAllAchievement"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "employ",
+      "item": [
+        {
+          "name": "getAllStudent",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMjYuMTcyLjk3LjQ4OjgwMDAvYXBpL2NyZWF0ZUVtcGxveWVlIiwiaWF0IjoxNjk2Nzk0OTUxLCJleHAiOjE4NTQ0NzQ5NTEsIm5iZiI6MTY5Njc5NDk1MSwianRpIjoiekNFaVQ2Mk85Y2ZLb1JteSIsInN1YiI6IjEzIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.BHyik4tBXETJ4rmNx6SGwLeQJ4HkEqatLn10r2QO2rY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getAllStudent",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getAllStudent"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "addMoneyManual",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMjYuMTcyLjk3LjQ4OjgwMDAvYXBpL2NyZWF0ZUVtcGxveWVlIiwiaWF0IjoxNjk2Nzk0OTUxLCJleHAiOjE4NTQ0NzQ5NTEsIm5iZiI6MTY5Njc5NDk1MSwianRpIjoiekNFaVQ2Mk85Y2ZLb1JteSIsInN1YiI6IjEzIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.BHyik4tBXETJ4rmNx6SGwLeQJ4HkEqatLn10r2QO2rY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/addMoneyManual",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "addMoneyManual"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAllEmployee",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getAllEmployee",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getAllEmployee"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAllEmployee Copy",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getAllEmployee",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getAllEmployee"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getEmployeeById/{id}",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getMarketerById/1",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getMarketerById",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getStudentById",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMjYuMTcyLjk3LjQ4OjgwMDAvYXBpL2NyZWF0ZUVtcGxveWVlIiwiaWF0IjoxNjk2Nzk0OTUxLCJleHAiOjE4NTQ0NzQ5NTEsIm5iZiI6MTY5Njc5NDk1MSwianRpIjoiekNFaVQ2Mk85Y2ZLb1JteSIsInN1YiI6IjEzIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.BHyik4tBXETJ4rmNx6SGwLeQJ4HkEqatLn10r2QO2rY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getStudentById/1",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getStudentById",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAllStudentMoneyInfo",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMjYuMTcyLjk3LjQ4OjgwMDAvYXBpL2NyZWF0ZUVtcGxveWVlIiwiaWF0IjoxNjk2Nzk0OTUxLCJleHAiOjE4NTQ0NzQ5NTEsIm5iZiI6MTY5Njc5NDk1MSwianRpIjoiekNFaVQ2Mk85Y2ZLb1JteSIsInN1YiI6IjEzIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.BHyik4tBXETJ4rmNx6SGwLeQJ4HkEqatLn10r2QO2rY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getAllStudentMoneyInfo/1",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getAllStudentMoneyInfo",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Question",
+      "item": [
+        {
+          "name": "createQuestion",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "student 2",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "student1@gmai.com",
+                  "type": "text"
+                },
+                {
+                  "key": "phone",
+                  "value": "123123123",
+                  "type": "text"
+                },
+                {
+                  "key": "message",
+                  "value": "message 2",
+                  "description": "65,535 max size of message",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL}}/api/createQuestion",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "createQuestion"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "accebtQuestion",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/accebtQuestion/1",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "accebtQuestion",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getAllQuestion",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMjYuMTcyLjk3LjQ4OjgwMDAvYXBpL2NyZWF0ZUVtcGxveWVlIiwiaWF0IjoxNjk2Nzk0OTUxLCJleHAiOjE4NTQ0NzQ5NTEsIm5iZiI6MTY5Njc5NDk1MSwianRpIjoiekNFaVQ2Mk85Y2ZLb1JteSIsInN1YiI6IjEzIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.BHyik4tBXETJ4rmNx6SGwLeQJ4HkEqatLn10r2QO2rY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getAllQuestion",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getAllQuestion"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "getQuestionById/",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMjYuMTcyLjk3LjQ4OjgwMDAvYXBpL2NyZWF0ZUVtcGxveWVlIiwiaWF0IjoxNjk2Nzk0OTUxLCJleHAiOjE4NTQ0NzQ5NTEsIm5iZiI6MTY5Njc5NDk1MSwianRpIjoiekNFaVQ2Mk85Y2ZLb1JteSIsInN1YiI6IjEzIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.BHyik4tBXETJ4rmNx6SGwLeQJ4HkEqatLn10r2QO2rY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{URL}}/api/getAllQuestion",
+              "host": [
+                "{{URL}}"
+              ],
+              "path": [
+                "api",
+                "getAllQuestion"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "test",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{JWT}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "{{URL}}/api/test",
+          "host": [
+            "{{URL}}"
+          ],
+          "path": [
+            "api",
+            "test"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
