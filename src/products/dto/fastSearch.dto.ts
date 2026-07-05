@@ -1,14 +1,9 @@
-import { IsNotEmpty, IsOptional, IsString} from 'class-validator';
+import { IsOptional, IsString} from 'class-validator';
 
 export class fastSearchDistributorProductsDto {
+  @IsOptional()
   @IsString()
-  // @IsNotEmpty()
-  areaId?: string='';
-
-  @IsString()
-  @IsNotEmpty()
-  distributorIds: string='';
-
+  distributorIds?: string;
 
   @IsOptional()
   @IsString()
