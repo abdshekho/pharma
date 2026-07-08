@@ -6,6 +6,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AddInventoryStockDto } from './dto/add-inventory-stock.dto';
 import { AdjustInventoryStockDto } from './dto/adjust-inventory-stock.dto';
+import { IncreaseFreeQuantityDto } from './dto/increase-free-quantity.dto';
 import { InventoryService } from './inventory.service';
 
 @Controller('inventory')
@@ -22,6 +23,18 @@ export class InventoryController {
   @Post('adjust')
   adjustStock(@Body() dto: AdjustInventoryStockDto, @CurrentUser() user: any) {
     return this.service.adjustStockForUser(user.id, user.role, dto);
+  }
+
+  @Post('free-quantity/increase')
+  @Roles(UserRole.company)
+  increaseFreeQuantity(@Body() dto: IncreaseFreeQuantityDto, @CurrentUser() user: any) {
+    return this.service.increaseFreeQuantity(user.id, user.role, dto);
+  }
+
+  @Post('free-quantity/decrease')
+  @Roles(UserRole.company)
+  decreaseFreeQuantity(@Body() dto: IncreaseFreeQuantityDto, @CurrentUser() user: any) {
+    return this.service.decreaseFreeQuantity(user.id, user.role, dto);
   }
 
   @Get()

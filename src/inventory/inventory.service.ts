@@ -13,6 +13,7 @@ import {
 import { PrismaService } from "../prisma/prisma.service";
 import { AddInventoryStockDto } from "./dto/add-inventory-stock.dto";
 import { AdjustInventoryStockDto } from "./dto/adjust-inventory-stock.dto";
+import { IncreaseFreeQuantityDto } from "./dto/increase-free-quantity.dto";
 
 type InventoryOwner = {
   ownerType: InventoryOwnerType;
@@ -70,6 +71,109 @@ export class InventoryService {
         dto.freeQuantity,
       ),
     );
+  }
+
+  async increaseFreeQuantity(
+    userId: string,
+    role: UserRole,
+    dto: IncreaseFreeQuantityDto,
+  ) {
+    if (role !== UserRole.company) {
+      throw new ForbiddenException("Only companies can manage free samples");
+    }
+
+    const owner = await this.resolveOwner(userId, role);
+    await this.validateProductAccess(owner, dto.productId);
+
+    return this.prisma.$transaction(async (tx) => {
+      const inventory = await tx.inventory.findUnique({
+        where: this.ownerProductUnique(owner, dto.productId),
+      });
+
+      if (!inventory) {
+        return tx.inventory.create({
+          data: {
+            ownerType: owner.ownerType,
+            ...this.ownerData(owner),
+            productId: dto.productId,
+            quantityAvailable: 0,
+            freeQuantity: dto.quantity,
+            lowStockThreshold: 10,
+          },
+        });
+      }
+
+      const updated = await tx.inventory.update({
+        where: { id: inventory.id },
+        data: {
+          freeQuantity: { increment: dto.quantity },
+          lastUpdated: new Date(),
+        },
+      });
+
+      await this.createMovement(
+        inventory.id,
+        owner.ownerType,
+        dto.productId,
+        InventoryMovementType.in,
+        dto.quantity,
+        userId,
+        InventoryReferenceType.manual,
+        undefined,
+        dto.note ?? "Increase free samples",
+        tx,
+      );
+
+      return updated;
+    });
+  }
+  async decreaseFreeQuantity(
+    userId: string,
+    role: UserRole,
+    dto: IncreaseFreeQuantityDto,
+  ) {
+    if (role !== UserRole.company) {
+      throw new ForbiddenException("Only companies can manage free samples");
+    }
+
+    const owner = await this.resolveOwner(userId, role);
+    await this.validateProductAccess(owner, dto.productId);
+
+    return this.prisma.$transaction(async (tx) => {
+      const inventory = await tx.inventory.findUnique({
+        where: this.ownerProductUnique(owner, dto.productId),
+      });
+
+      if (!inventory) {
+      throw new BadRequestException("Inventory record not found");
+      }
+      if(inventory.freeQuantity < dto.quantity){
+        throw new BadRequestException(`the current free quantity is ${inventory.freeQuantity} and you want to decrease ${dto.quantity}`);
+      }
+
+      const updated = await tx.inventory.update({
+        where: { id: inventory.id },
+        data: {
+          freeQuantity: { decrement: dto.quantity },
+          lastUpdated: new Date(),
+        },
+      });
+
+      await this.createMovement(
+        inventory.id,
+        owner.ownerType,
+        dto.productId,
+        InventoryMovementType.out,
+        dto.quantity,
+        userId,
+        InventoryReferenceType.manual,
+        undefined,
+        dto.note ?? "decrement free samples",
+        tx,
+      );
+
+      return updated;
+    });
   }
 
   async findAllForUser(userId: string, role: UserRole) {
