@@ -10,11 +10,11 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
 
 @Controller('cities')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class CitiesController {
   constructor(private readonly service: CitiesService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.admin)
   create(@Body() dto: CreateCityDto) {
     return this.service.create(dto);
@@ -27,6 +27,7 @@ export class CitiesController {
   }
 
   @Post(':cityId/areas')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.admin)
   createArea(@Param('cityId') cityId: string, @Body() dto: CreateCityAreaDto) {
     return this.service.createArea(cityId, dto);
@@ -44,12 +45,14 @@ export class CitiesController {
   }
 
   @Patch(':cityId/areas/:areaId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.admin)
   updateArea(@Param('cityId') cityId: string, @Param('areaId') areaId: string, @Body() dto: UpdateCityAreaDto) {
     return this.service.updateArea(cityId, areaId, dto);
   }
 
   @Delete(':cityId/areas/:areaId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.admin)
   removeArea(@Param('cityId') cityId: string, @Param('areaId') areaId: string) {
     return this.service.removeArea(cityId, areaId);
@@ -61,12 +64,14 @@ export class CitiesController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.admin)
   update(@Param('id') id: string, @Body() dto: UpdateCityDto) {
     return this.service.update(id, dto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.admin)
   remove(@Param('id') id: string) {
     return this.service.remove(id);
