@@ -117,7 +117,26 @@ export class PromotionsService {
         ...(filters.type && { type: filters.type as any }),
         ...productFilter,
       },
-      include: { promotionProducts: true, buyXgetY: true, childPromotions: { select: { id: true, title: true, distributorId: true } } },
+      include: {
+        promotionProducts: {
+          include: {
+            product: {
+              select: { id: true, nameAr: true, nameEn: true, imageUrl: true, distributorToPharmacistPrice: true },
+            },
+          },
+        },
+        buyXgetY: {
+          include: {
+            buyProduct: {
+              select: { id: true, nameAr: true, nameEn: true, imageUrl: true, distributorToPharmacistPrice: true },
+            },
+            freeProduct: {
+              select: { id: true, nameAr: true, nameEn: true, imageUrl: true, distributorToPharmacistPrice: true },
+            },
+          },
+        },
+        childPromotions: { select: { id: true, title: true, distributorId: true } },
+      },
       orderBy: { createdAt: 'desc' },
     });
   }
