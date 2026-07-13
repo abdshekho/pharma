@@ -331,7 +331,12 @@ export class OrdersService {
 
     return this.prisma.order.findMany({
       where,
-      include: { orderItems: true, city: { select: { nameAr: true } } },
+      include: {
+        orderItems: {
+          include: { product: { select: { imageUrl: true } } },
+        },
+        city: { select: { nameAr: true } },
+      },
       orderBy: { createdAt: "desc" },
     });
   }
