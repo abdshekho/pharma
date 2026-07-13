@@ -8,11 +8,16 @@ import { buildCatalogHtml, CatalogProductRow } from './catalog-pdf.template';
 export class DistributorCatalogService {
   constructor(private prisma: PrismaService) {}
 
-  async generateCatalogPdf(userId: string): Promise<Buffer> {
-    const distributor = await this.prisma.distributorProfile.findUnique({
-      where: { userId },
-      select: { id: true, companyName: true },
-    });
+  async generateCatalogPdf(params: { userId?: string; distributorId?: string }): Promise<Buffer> {
+    const distributor = params.distributorId
+      ? await this.prisma.distributorProfile.findUnique({
+          where: { id: params.distributorId },
+          select: { id: true, companyName: true },
+        })
+      : await this.prisma.distributorProfile.findUnique({
+          where: { userId: params.userId },
+          select: { id: true, companyName: true },
+        });
     if (!distributor) throw new NotFoundException('Distributor profile not found');
 
     const inventories = await this.prisma.inventory.findMany({
