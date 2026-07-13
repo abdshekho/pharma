@@ -9,7 +9,7 @@ export class EmailService {
   private readonly from: string;
 
   constructor(private config: ConfigService) {
-    this.from = this.config.get<string>('SMTP_FROM') ?? 'Teryaq <no-reply@teryaq.com>';
+    this.from = this.config.get<string>('SMTP_FROM') ?? `Teryaq <${this.config.get<string>('SMTP_USER')}>`;
 
     this.transporter = nodemailer.createTransport({
       host: this.config.get<string>('SMTP_HOST'),
@@ -30,6 +30,7 @@ export class EmailService {
         from: this.from,
         to,
         subject: 'Your Teryaq account has been verified',
+        text: `Hi ${fullName ?? 'there'},\n\nGood news — your account has been verified by our team. You can now log in to the dashboard:\n${dashboardUrl}\n\nThanks,\nThe Teryaq Team`,
         html: `
           <p>Hi ${fullName ?? 'there'},</p>
           <p>Good news — your account has been verified by our team. You can now log in to the dashboard:</p>
