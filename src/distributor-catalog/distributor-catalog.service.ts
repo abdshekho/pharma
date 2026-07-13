@@ -1,8 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PromotionLevel, ProductStatus } from '@prisma/client';
-import puppeteer from 'puppeteer';
+import type { Browser } from 'puppeteer-core';
 import { buildCatalogHtml, CatalogProductRow } from './catalog-pdf.template';
+
+const isServerless = !!(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+
+async function launchBrowser(): Promise<Browser> {
+  if (isServerless) {
+    const chromium = (await import('@sparticuz/chromium')).default;
+    const puppeteerCore = (await import('puppeteer-core')).default;
+    return puppeteerCore.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath(),
+      headless: true,
+    });
+  }
+
+  const puppeteer = (await import('puppeteer')).default;
+  return puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  }) as unknown as Promise<Browser>;
+}
 
 @Injectable()
 export class DistributorCatalogService {
@@ -99,9 +118,7 @@ export class DistributorCatalogService {
       rows,
     });
 
-    const browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+    const browser = await launchBrowser();
     try {
       const page = await browser.newPage();
       await page.setContent(html, { waitUntil: 'load' });
