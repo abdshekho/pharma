@@ -50,6 +50,15 @@ export class OrdersService {
     return profile;
   }
 
+  private async getDeliveryStaffProfile(userId: string) {
+    const profile = await this.prisma.deliveryStaffProfile.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+    if (!profile) throw new NotFoundException("Delivery staff profile not found");
+    return profile;
+  }
+
   private generateOrderNumber(): string {
     const year = new Date().getFullYear();
     const random = Math.floor(Math.random() * 99999)
@@ -326,6 +335,9 @@ export class OrdersService {
     } else if (role === UserRole.distributor) {
       const profile = await this.getDistributorProfile(userId);
       where.distributorId = profile.id;
+    } else if (role === UserRole.delivery_staff) {
+      const profile = await this.getDeliveryStaffProfile(userId);
+      where.deliveryStaffId = profile.id;
     }
     // admin يشوف الكل
 
@@ -335,6 +347,9 @@ export class OrdersService {
         orderItems: {
           include: { product: { select: { imageUrl: true } } },
         },
+        pharmacist: { select: { pharmacyName: true } },
+        distributor: { select: { companyName: true } },
+        deliveryStaff: { select: { id: true, user: { select: { fullName: true } } } },
         city: { select: { nameAr: true } },
       },
       orderBy: { createdAt: "desc" },
@@ -350,6 +365,7 @@ export class OrdersService {
         },
         pharmacist: { select: { pharmacyName: true } },
         distributor: { select: { companyName: true } },
+        deliveryStaff: { select: { id: true, user: { select: { fullName: true } } } },
         city: { select: { nameAr: true } },
       },
     });
@@ -362,6 +378,9 @@ export class OrdersService {
     } else if (role === UserRole.distributor) {
       const profile = await this.getDistributorProfile(userId);
       if (order.distributorId !== profile.id) throw new ForbiddenException();
+    } else if (role === UserRole.delivery_staff) {
+      const profile = await this.getDeliveryStaffProfile(userId);
+      if (order.deliveryStaffId !== profile.id) throw new ForbiddenException();
     }
 
     return order;
@@ -422,6 +441,11 @@ export class OrdersService {
     if (role === UserRole.pharmacist) {
       const profile = await this.getPharmacistProfileId(userId);
       if (order.pharmacistId !== profile.id) throw new ForbiddenException();
+    }
+
+    if (role === UserRole.delivery_staff) {
+      const profile = await this.getDeliveryStaffProfile(userId);
+      if (order.deliveryStaffId !== profile.id) throw new ForbiddenException();
     }
 
     if (dto.status === OrderStatus.rejected && !dto.rejectionReason) {
