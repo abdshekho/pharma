@@ -4,10 +4,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { UserRole, UserStatus } from '@prisma/client';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private emailService: EmailService,
+  ) {}
 
   async findById(id: string) {
     return this.prisma.user.findUnique({
@@ -179,11 +183,15 @@ private getProfileField(role: string): string {
     };
 
     await profileMap[user.role]();
-    return this.prisma.user.update({
+    const verifiedUser = await this.prisma.user.update({
       where: { id: userId },
       data: { status: UserStatus.active },
-      select: { id: true, email: true, role: true, status: true,fullName: true },
+      select: { id: true, email: true, role: true, status: true, fullName: true },
     });
+
+    await this.emailService.sendAccountVerifiedEmail(verifiedUser.email, verifiedUser.fullName);
+
+    return verifiedUser;
   }
 
   async remove(id: string) {
