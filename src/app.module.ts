@@ -27,6 +27,7 @@ import { DeliveryStaffModule } from './delivery-staff/delivery-staff.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { CompanyOrdersModule } from './company-orders/company-orders.module';
 import { StatisticsModule } from './statistics/statistics.module';
+import { DistributorCatalogModule } from './distributor-catalog/distributor-catalog.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { StatisticsModule } from './statistics/statistics.module';
     InventoryModule,
     CompanyOrdersModule,
     StatisticsModule,
+    DistributorCatalogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
