@@ -3524,6 +3524,82 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "increase freeQuantity (Company)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{product_id}}\",\n  \"quantity\": 14,\n  \"note\":\"increse test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/inventory/free-quantity/increase",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventory",
+                "free-quantity",
+                "increase"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "decrease freeQuantity (Company)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{product_id}}\",\n  \"quantity\": 14,\n  \"note\":\"decrese test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/inventory/free-quantity/decrease",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventory",
+                "free-quantity",
+                "decrease"
+              ]
+            }
+          },
+          "response": []
         }
       ],
       "description": "Unified inventory endpoints. The inventory owner is resolved from the bearer token role: company, distributor, or pharmacist."
@@ -5267,7 +5343,7 @@
           "response": []
         },
         {
-          "name": "distributor statistics(Admin Company)",
+          "name": "distributor statistics(Admin distributor)",
           "request": {
             "auth": {
               "type": "bearer",
@@ -5315,6 +5391,46 @@
     },
     {
       "name": "import drug_group file",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{access_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "localhost:3000/drug-groups/import/atc/local",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "drug-groups",
+            "import",
+            "atc",
+            "local"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "distributor-report",
       "request": {
         "auth": {
           "type": "bearer",
