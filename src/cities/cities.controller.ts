@@ -58,6 +58,7 @@ export class CitiesController {
     return this.service.removeArea(cityId, areaId);
   }
 
+  //test commit
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.service.findOne(id);
