@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { EmailModule } from './email/email.module';
 import { CompanyProfileModule } from './profiles/company/company-profile.module';
 import { DoctorProfileModule } from './profiles/doctor/doctor-profile.module';
 import { PharmacistProfileModule } from './profiles/pharmacist/pharmacist-profile.module';
@@ -26,11 +27,13 @@ import { DeliveryStaffModule } from './delivery-staff/delivery-staff.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { CompanyOrdersModule } from './company-orders/company-orders.module';
 import { StatisticsModule } from './statistics/statistics.module';
+import { DistributorCatalogModule } from './distributor-catalog/distributor-catalog.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
+    EmailModule,
     AuthModule,
     UsersModule,
     CompanyProfileModule,
@@ -53,6 +56,7 @@ import { StatisticsModule } from './statistics/statistics.module';
     InventoryModule,
     CompanyOrdersModule,
     StatisticsModule,
+    DistributorCatalogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

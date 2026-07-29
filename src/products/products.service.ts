@@ -29,6 +29,9 @@ const ALLOWED_FIELDS = [
   "companyId",
   "drugGroups",
   "specializations",
+  "quantityAvailable",
+  "freeQuantity",
+  "lowStockThreshold",
 ] as const;
 type ProductField = (typeof ALLOWED_FIELDS)[number];
 
@@ -82,7 +85,7 @@ export class ProductsService {
   }
 
   private format(item: any): any {
-    const { productDrugGroups, productSpecializations, ...rest } = item;
+    const { productDrugGroups, productSpecializations, inventories, ...rest } = item;
     return {
       ...rest,
       ...(productDrugGroups !== undefined && {
@@ -97,6 +100,11 @@ export class ProductsService {
         specializations: productSpecializations.map(
           (r: any) => r.specialization,
         ),
+      }),
+      ...(inventories !== undefined && {
+        quantityAvailable: inventories[0]?.quantityAvailable ?? 0,
+        freeQuantity: inventories[0]?.freeQuantity ?? 0,
+        lowStockThreshold: inventories[0]?.lowStockThreshold ?? 0,
       }),
     };
   }
@@ -142,6 +150,7 @@ export class ProductsService {
     dosageForm?: string;
     status?: string;
     specializationId?: string;
+    distributorId?: string;
     page?: number;
     limit?: number;
     fields?: string;
@@ -177,6 +186,17 @@ export class ProductsService {
         productSpecializations: {
           some: {
             specializationId: filters.specializationId,
+          },
+        },
+      });
+    }
+
+    // Distributor filter — only products this distributor carries in their inventory
+    if (filters?.distributorId) {
+      whereConditions.push({
+        inventories: {
+          some: {
+            distributorId: filters.distributorId,
           },
         },
       });
@@ -221,7 +241,19 @@ export class ProductsService {
     const [items, total] = await Promise.all([
       this.prisma.product.findMany({
         where,
-        include: this.buildInclude(parsedFields),
+        include: {
+          ...this.buildInclude(parsedFields),
+          ...(filters?.distributorId && {
+            inventories: {
+              where: { distributorId: filters.distributorId },
+              select: {
+                quantityAvailable: true,
+                freeQuantity: true,
+                lowStockThreshold: true,
+              },
+            },
+          }),
+        },
         skip,
         take: limit,
       }),

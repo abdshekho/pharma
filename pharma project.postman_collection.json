@@ -1354,6 +1354,44 @@
               "response": []
             },
             {
+              "name": "Create Managed Representative (Company)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"rep@example.com\",\n  \"password\": \"password123\",\n  \"fullName\": \"Sara Khaled\",\n  \"phone\": \"0911223344\",\n  \"cityId\": \"{{city_id}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/profiles/representative/managed",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "representative",
+                    "managed"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "Get My Representative Profile",
               "request": {
                 "auth": {
@@ -1440,6 +1478,44 @@
                       "key": "isActive",
                       "value": "true"
                     }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Representative Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{access_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"fullName\": \"Sara Khaled Updated\",\n  \"phone\": \"0999887766\",\n  \"cityId\": \"{{city_id}}\",\n  \"isActive\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/profiles/representative/{{representative_id}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "profiles",
+                    "representative",
+                    "{{representative_id}}"
                   ]
                 }
               },

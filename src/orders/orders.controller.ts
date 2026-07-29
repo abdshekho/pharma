@@ -27,13 +27,13 @@ export class OrdersController {
   }
 
   @Get()
-  @Roles(UserRole.pharmacist, UserRole.distributor, UserRole.admin)
+  @Roles(UserRole.pharmacist, UserRole.distributor, UserRole.admin, UserRole.delivery_staff)
   findAll(@CurrentUser() user: any) {
     return this.service.findAll(user.id, user.role);
   }
 
   @Get(':id')
-  @Roles(UserRole.pharmacist, UserRole.distributor, UserRole.admin)
+  @Roles(UserRole.pharmacist, UserRole.distributor, UserRole.admin, UserRole.delivery_staff)
   findOne(@Param('id') id: string, @CurrentUser() user: any) {
     return this.service.findOne(id, user.id, user.role);
   }

@@ -29,18 +29,20 @@ export class ProductsController {
     @Query('dosageForm') dosageForm?: string,
     @Query('status') status?: string,
     @Query('specializationId') specializationId?: string,
+    @Query('distributorId') distributorId?: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('fields') fields?: string,
   ) {
-    return this.service.findAll({ 
-      search, 
-      companyId, 
-      dosageForm, 
+    return this.service.findAll({
+      search,
+      companyId,
+      dosageForm,
       status,
       specializationId,
-      page, 
-      limit, 
+      distributorId,
+      page,
+      limit,
       fields,
       userRole: user?.role
     });

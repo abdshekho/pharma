@@ -37,7 +37,13 @@ export class PharmacistProfileService {
   }
 
   async findByUser(userId: string) {
-    const profile = await this.prisma.pharmacistProfile.findUnique({ where: { userId } });
+    const profile = await this.prisma.pharmacistProfile.findUnique({
+      where: { userId },
+      include: {
+        area: { include: { city: true } },
+        user: { select: { fullName: true, email: true, phone: true, avatarUrl: true } },
+      },
+    });
     if (!profile) throw new NotFoundException('Pharmacist profile not found');
     return profile;
   }
