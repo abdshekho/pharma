@@ -192,16 +192,33 @@ export class InventoryService {
     userId: string,
     role: UserRole,
     productId?: string,
+    referenceType?: string,
+    startDate?: string,
+    endDate?: string,
   ) {
     const owner = await this.resolveOwner(userId, role);
     const inventoryWhere = this.ownerWhere(owner);
 
+    const where: any = {
+      inventory: inventoryWhere,
+    };
+
+    if (productId) where.productId = productId;
+    if (referenceType) where.referenceType = referenceType;
+    
+    if (startDate || endDate) {
+      where.createdAt = {};
+      if (startDate) where.createdAt.gte = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        where.createdAt.lte = end;
+      }
+    }
+
     return this.prisma.stockMovement.findMany({
-      where: {
-        inventory: inventoryWhere,
-        ...(productId && { productId }),
-      },
-      include: { product: { select: { nameAr: true, nameEn: true } } },
+      where,
+      include: { product: { select: { nameAr: true, nameEn: true, dosageForm: true } } },
       orderBy: { createdAt: "desc" },
     });
   }

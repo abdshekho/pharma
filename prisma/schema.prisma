@@ -165,6 +165,10 @@ model PharmacistProfile {
   inventories       Inventory[] @relation("PharmacistInventory")
   user              User        @relation("UserPharmacistProfile", fields: [userId], references: [id])
   verifier          User?       @relation("PharmacistVerifier", fields: [verifiedBy], references: [id])
+  posSales          PosSale[]
+  posReturns        PosReturn[]
+  posDisposals      PosDisposal[]
+  posCashWithdrawals PosCashWithdrawal[]
 
   @@map("pharmacist_profiles")
 }
@@ -296,7 +300,9 @@ model Product {
   promotionProducts            PromotionProduct[]
   sampleQuotas                 SampleQuota[]
   sampleRequests               SampleRequest[]
-
+  posSaleItems                 PosSaleItem[]
+  posReturns                   PosReturn[]
+  posDisposals                 PosDisposal[]
 
   @@index([nameAr])
   @@index([nameEn])
@@ -757,6 +763,9 @@ enum InventoryMovementType {
   in
   out
   adjustment
+  sale
+  return
+  disposal
 }
 
 enum InventoryOwnerType {
@@ -769,6 +778,83 @@ enum InventoryReferenceType {
   order
   manual
   adjustment
+  pos_sale
+  pos_return
+  pos_disposal
+}
+
+enum PaymentMethodPos {
+  cash
+  card
+}
+
+model PosSale {
+  id            String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  pharmacistId  String            @map("pharmacist_id") @db.Uuid
+  saleNumber    String            @unique @map("sale_number") @db.VarChar(20)
+  paymentMethod PaymentMethodPos  @default(cash) @map("payment_method")
+  totalAmount   Decimal           @default(0) @map("total_amount") @db.Decimal(10, 2)
+  createdAt     DateTime          @default(now()) @map("created_at")
+  pharmacist    PharmacistProfile @relation(fields: [pharmacistId], references: [id])
+  items         PosSaleItem[]
+
+  @@index([pharmacistId, createdAt])
+  @@map("pos_sales")
+}
+
+model PosSaleItem {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  saleId      String   @map("sale_id") @db.Uuid
+  productId   String   @map("product_id") @db.Uuid
+  productName String?  @map("product_name") @db.VarChar(200)
+  quantity    Int
+  unitPrice   Decimal  @map("unit_price") @db.Decimal(10, 2)
+  subtotal    Decimal  @db.Decimal(10, 2)
+  sale        PosSale  @relation(fields: [saleId], references: [id])
+  product     Product  @relation(fields: [productId], references: [id])
+
+  @@map("pos_sale_items")
+}
+
+model PosReturn {
+  id           String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  pharmacistId String            @map("pharmacist_id") @db.Uuid
+  productId    String            @map("product_id") @db.Uuid
+  quantity     Int
+  refundAmount Decimal?          @map("refund_amount") @db.Decimal(10, 2)
+  note         String?
+  createdAt    DateTime          @default(now()) @map("created_at")
+  pharmacist   PharmacistProfile @relation(fields: [pharmacistId], references: [id])
+  product      Product           @relation(fields: [productId], references: [id])
+
+  @@index([pharmacistId, createdAt])
+  @@map("pos_returns")
+}
+
+model PosDisposal {
+  id           String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  pharmacistId String            @map("pharmacist_id") @db.Uuid
+  productId    String            @map("product_id") @db.Uuid
+  quantity     Int
+  note         String?
+  createdAt    DateTime          @default(now()) @map("created_at")
+  pharmacist   PharmacistProfile @relation(fields: [pharmacistId], references: [id])
+  product      Product           @relation(fields: [productId], references: [id])
+
+  @@index([pharmacistId, createdAt])
+  @@map("pos_disposals")
+}
+
+model PosCashWithdrawal {
+  id           String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  pharmacistId String            @map("pharmacist_id") @db.Uuid
+  amount       Decimal           @db.Decimal(10, 2)
+  reason       String?
+  createdAt    DateTime          @default(now()) @map("created_at")
+  pharmacist   PharmacistProfile @relation(fields: [pharmacistId], references: [id])
+
+  @@index([pharmacistId, createdAt])
+  @@map("pos_cash_withdrawals")
 }
 
 enum NotificationRelatedType {

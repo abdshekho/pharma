@@ -7,6 +7,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AddInventoryStockDto } from './dto/add-inventory-stock.dto';
 import { AdjustInventoryStockDto } from './dto/adjust-inventory-stock.dto';
 import { IncreaseFreeQuantityDto } from './dto/increase-free-quantity.dto';
+import { InventoryMovementsQueryDto } from './dto/inventory-movements-query.dto';
 import { InventoryService } from './inventory.service';
 
 @Controller('inventory')
@@ -38,12 +39,23 @@ export class InventoryController {
   }
 
   @Get()
+  // @Roles(UserRole.company, UserRole.distributor, UserRole.pharmacist)
   findAll(@CurrentUser() user: any) {
     return this.service.findAllForUser(user.id, user.role);
   }
 
   @Get('movements')
-  findMovements(@CurrentUser() user: any, @Query('productId') productId?: string) {
-    return this.service.findMovementsForUser(user.id, user.role, productId);
+  findMovements(
+    @CurrentUser() user: any, 
+    @Query() query: InventoryMovementsQueryDto,
+  ) {
+    return this.service.findMovementsForUser(
+      user.id, 
+      user.role, 
+      query.productId, 
+      query.referenceType, 
+      query.startDate, 
+      query.endDate
+    );
   }
 }
