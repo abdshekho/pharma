@@ -221,40 +221,90 @@ export class PosService {
     const end = new Date(targetDate);
     end.setHours(23, 59, 59, 999);
 
-    const allTimeStart = new Date('2000-01-01');
+    // تنفيذ الاستعلامات في مجموعات لتجنب مشكلة اتصالات قاعدة البيانات
+    const [
+      todayData,
+      cumulativeData,
+    ] = await Promise.all([
+      // بيانات اليوم
+      this.getTodayData(pharmacist.id, start, end),
+      // البيانات التراكمية حتى التاريخ المحدد
+      this.getCumulativeData(pharmacist.id, end),
+    ]);
 
+    const {
+      totalSales,
+      salesCount,
+      cashSales,
+      withdrawals,
+      withdrawalsCount,
+      distributorPayments,
+      distributorPaymentsCount,
+      returns,
+      returnsCount,
+    } = todayData;
+
+    const {
+      cashSalesUntilDate,
+      distributorPaymentsUntilDate,
+      withdrawalsUntilDate,
+      returnsUntilDate,
+    } = cumulativeData;
+
+    const drawerAmount = cashSalesUntilDate - distributorPaymentsUntilDate - withdrawalsUntilDate - returnsUntilDate;
+
+    return {
+      date: targetDate.toISOString().split('T')[0],
+      today: {
+        totalSales,
+        salesCount,
+        cashSales,
+        withdrawals,
+        withdrawalsCount,
+        distributorPayments,
+        distributorPaymentsCount,
+        returns,
+        returnsCount,
+      },
+      drawer: {
+        cashSalesUntilDate,
+        distributorPaymentsUntilDate,
+        withdrawalsUntilDate,
+        returnsUntilDate,
+        currentAmount: drawerAmount,
+      },
+    };
+  }
+
+  private async getTodayData(pharmacistId: string, start: Date, end: Date) {
     const [
       todaySales,
       todayCashSales,
       todayWithdrawals,
       todayDistributorPayments,
       todayReturns,
-      cashSalesUntilDate,
-      distributorPaymentsUntilDate,
-      withdrawalsUntilDate,
-      returnsUntilDate,
     ] = await Promise.all([
       // مجموع مبيعات اليوم (كل طرق الدفع)
       this.prisma.posSale.aggregate({
-        where: { pharmacistId: pharmacist.id, createdAt: { gte: start, lte: end } },
+        where: { pharmacistId: pharmacistId, createdAt: { gte: start, lte: end } },
         _sum: { totalAmount: true },
         _count: true,
       }),
       // مبيعات كاش اليوم فقط
       this.prisma.posSale.aggregate({
-        where: { pharmacistId: pharmacist.id, paymentMethod: 'cash', createdAt: { gte: start, lte: end } },
+        where: { pharmacistId: pharmacistId, paymentMethod: 'cash', createdAt: { gte: start, lte: end } },
         _sum: { totalAmount: true },
       }),
       // سحوبات اليوم
       this.prisma.posCashWithdrawal.aggregate({
-        where: { pharmacistId: pharmacist.id, createdAt: { gte: start, lte: end } },
+        where: { pharmacistId: pharmacistId, createdAt: { gte: start, lte: end } },
         _sum: { amount: true },
         _count: true,
       }),
       // مدفوعات الموزعين نقداً (cod) في اليوم المحدد
       this.prisma.order.aggregate({
         where: {
-          pharmacistId: pharmacist.id,
+          pharmacistId: pharmacistId,
           paymentMethod: 'cod',
           status: 'delivered',
           createdAt: { gte: start, lte: end },
@@ -264,19 +314,41 @@ export class PosService {
       }),
       // المرتجعات في اليوم المحدد
       this.prisma.posReturn.aggregate({
-        where: { pharmacistId: pharmacist.id, createdAt: { gte: start, lte: end } },
+        where: { pharmacistId: pharmacistId, createdAt: { gte: start, lte: end } },
         _sum: { refundAmount: true },
         _count: true,
       }),
+    ]);
+
+    return {
+      totalSales: Number(todaySales._sum.totalAmount ?? 0),
+      salesCount: todaySales._count,
+      cashSales: Number(todayCashSales._sum.totalAmount ?? 0),
+      withdrawals: Number(todayWithdrawals._sum.amount ?? 0),
+      withdrawalsCount: todayWithdrawals._count,
+      distributorPayments: Number(todayDistributorPayments._sum.totalAmount ?? 0),
+      distributorPaymentsCount: todayDistributorPayments._count,
+      returns: Number(todayReturns._sum.refundAmount ?? 0),
+      returnsCount: todayReturns._count,
+    };
+  }
+
+  private async getCumulativeData(pharmacistId: string, end: Date) {
+    const [
+      cashSalesUntilDate,
+      distributorPaymentsUntilDate,
+      withdrawalsUntilDate,
+      returnsUntilDate,
+    ] = await Promise.all([
       // مبيعات الكاش حتى التاريخ المحدد
       this.prisma.posSale.aggregate({
-        where: { pharmacistId: pharmacist.id, paymentMethod: 'cash', createdAt: { lte: end } },
+        where: { pharmacistId: pharmacistId, paymentMethod: 'cash', createdAt: { lte: end } },
         _sum: { totalAmount: true },
       }),
       // مدفوعات الموزعين نقداً (cod) حتى التاريخ المحدد
       this.prisma.order.aggregate({
         where: {
-          pharmacistId: pharmacist.id,
+          pharmacistId: pharmacistId,
           paymentMethod: 'cod',
           status: 'delivered',
           createdAt: { lte: end },
@@ -285,49 +357,21 @@ export class PosService {
       }),
       // السحوبات حتى التاريخ المحدد
       this.prisma.posCashWithdrawal.aggregate({
-        where: { pharmacistId: pharmacist.id, createdAt: { lte: end } },
+        where: { pharmacistId: pharmacistId, createdAt: { lte: end } },
         _sum: { amount: true },
       }),
       // المرتجعات حتى التاريخ المحدد
       this.prisma.posReturn.aggregate({
-        where: { pharmacistId: pharmacist.id, createdAt: { lte: end } },
+        where: { pharmacistId: pharmacistId, createdAt: { lte: end } },
         _sum: { refundAmount: true },
       }),
     ]);
 
-    const totalCashSalesUntilDate = Number(cashSalesUntilDate._sum.totalAmount ?? 0);
-    const totalDistributorPaymentsUntilDate = Number(distributorPaymentsUntilDate._sum.totalAmount ?? 0);
-    const totalWithdrawalsUntilDate = Number(withdrawalsUntilDate._sum.amount ?? 0);
-    const totalReturnsUntilDate = Number(returnsUntilDate._sum.refundAmount ?? 0);
-    const todayDistributorPaymentsAmount = Number(todayDistributorPayments._sum.totalAmount ?? 0);
-    const todayDistributorPaymentsCount = todayDistributorPayments._count;
-    const todayWithdrawalsAmount = Number(todayWithdrawals._sum.amount ?? 0);
-    const todayWithdrawalsCount = todayWithdrawals._count;
-    const todayReturnsAmount = Number(todayReturns._sum.refundAmount ?? 0);
-    const todayReturnsCount = todayReturns._count;
-
-    const drawerAmount = totalCashSalesUntilDate - totalDistributorPaymentsUntilDate - totalWithdrawalsUntilDate - totalReturnsUntilDate;
-
     return {
-      date: targetDate.toISOString().split('T')[0],
-      today: {
-        totalSales: Number(todaySales._sum.totalAmount ?? 0),
-        salesCount: todaySales._count,
-        cashSales: Number(todayCashSales._sum.totalAmount ?? 0),
-        withdrawals: todayWithdrawalsAmount,
-        withdrawalsCount: todayWithdrawalsCount,
-        distributorPayments: todayDistributorPaymentsAmount,
-        distributorPaymentsCount: todayDistributorPaymentsCount,
-        returns: todayReturnsAmount,
-        returnsCount: todayReturnsCount,
-      },
-      drawer: {
-        cashSalesUntilDate: totalCashSalesUntilDate,
-        distributorPaymentsUntilDate: totalDistributorPaymentsUntilDate,
-        withdrawalsUntilDate: totalWithdrawalsUntilDate,
-        returnsUntilDate: totalReturnsUntilDate,
-        currentAmount: drawerAmount,
-      },
+      cashSalesUntilDate: Number(cashSalesUntilDate._sum.totalAmount ?? 0),
+      distributorPaymentsUntilDate: Number(distributorPaymentsUntilDate._sum.totalAmount ?? 0),
+      withdrawalsUntilDate: Number(withdrawalsUntilDate._sum.amount ?? 0),
+      returnsUntilDate: Number(returnsUntilDate._sum.refundAmount ?? 0),
     };
   }
 
