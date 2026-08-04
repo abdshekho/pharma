@@ -1,9 +1,8 @@
 import {
-  BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InventoryMovementType, InventoryOwnerType, InventoryReferenceType } from '@prisma/client';
+import { InventoryOwnerType, InventoryReferenceType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { InventoryService } from '../inventory/inventory.service';
 import { CreateSaleDto } from './dto/create-sale.dto';

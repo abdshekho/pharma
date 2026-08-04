@@ -188,6 +188,63 @@ export class InventoryService {
     });
   }
 
+  async findLowStockForPharmacist(userId: string, excludeOrdered: string = 'true') {
+    const excludeOrderedBool = excludeOrdered === 'true';
+    const owner = await this.resolveOwner(userId, UserRole.pharmacist);
+
+    // الحصول على جميع المنتجات في مخزون الصيدلي
+    const inventories = await this.prisma.inventory.findMany({
+      where: {
+        ...this.ownerWhere(owner),
+        quantityAvailable: {
+          lt: this.prisma.inventory.fields.lowStockThreshold
+        }
+      },
+      include: {
+        product: {
+          select: {
+            id: true,
+            nameAr: true,
+            nameEn: true,
+            dosageForm: true,
+            imageUrl: true,
+            company: {
+              select: {
+                id: true,
+                companyName: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!excludeOrderedBool || inventories.length === 0) {
+      return inventories;
+    }
+
+    // الحصول على المنتجات المطلوبة في أوامر pending, approved, in_delivery
+    const orderedProductIds = await this.prisma.orderItem.findMany({
+      where: {
+        order: {
+          pharmacistId: owner.ownerId,
+          status: {
+            in: ['pending', 'approved', 'in_delivery']
+          }
+        }
+      },
+      select: {
+        productId: true
+      },
+      distinct: ['productId']
+    }).then(items => items.map(item => item.productId));
+
+    // تصفية المنتجات المطلوبة
+    return inventories.filter(inventory => 
+      !orderedProductIds.includes(inventory.productId)
+    );
+  }
+
   async findMovementsForUser(
     userId: string,
     role: UserRole,

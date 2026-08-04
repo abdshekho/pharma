@@ -8,6 +8,7 @@ import { AddInventoryStockDto } from './dto/add-inventory-stock.dto';
 import { AdjustInventoryStockDto } from './dto/adjust-inventory-stock.dto';
 import { IncreaseFreeQuantityDto } from './dto/increase-free-quantity.dto';
 import { InventoryMovementsQueryDto } from './dto/inventory-movements-query.dto';
+import { LowStockQueryDto } from './dto/low-stock-query.dto';
 import { InventoryService } from './inventory.service';
 
 @Controller('inventory')
@@ -57,5 +58,14 @@ export class InventoryController {
       query.startDate, 
       query.endDate
     );
+  }
+
+  @Get('low-stock')
+  @Roles(UserRole.pharmacist)
+  findLowStock(
+    @CurrentUser() user: any,
+    @Query() query: LowStockQueryDto
+  ) {
+    return this.service.findLowStockForPharmacist(user.id, query.excludeOrdered);
   }
 }
