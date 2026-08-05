@@ -3,6 +3,7 @@ import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { FindDistributorsDto } from './dto/find-distributors.dto';
+import { CheckAvailabilityDto } from './dto/check-availability.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -18,6 +19,13 @@ export class OrdersController {
   @Roles(UserRole.pharmacist)
   create(@Body() dto: CreateOrderDto, @CurrentUser() user: any) {
     return this.service.create(user.id, dto);
+  }
+
+  // distributor and products
+  @Post('check-availability')
+  @Roles(UserRole.pharmacist)
+  checkAvailability(@Body() dto: CheckAvailabilityDto) {
+    return this.service.checkAvailability(dto);
   }
 
   @Get('available-distributors')

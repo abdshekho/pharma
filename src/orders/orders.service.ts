@@ -8,12 +8,20 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateOrderDto } from "./dto/create-order.dto";
 import { UpdateOrderStatusDto } from "./dto/update-order-status.dto";
 import { FindDistributorsDto } from "./dto/find-distributors.dto";
+import { CheckAvailabilityDto } from "./dto/check-availability.dto";
+import {
+  CheckAvailabilityResponseDto,
+  DistributorAvailabilityDto,
+  AvailabilityItemDto,
+  PromotionDto,
+} from "./dto/availability-response.dto";
 import {
   InventoryOwnerType,
   OrderStatus,
   PromotionLevel,
   UserRole,
   WeekDay,
+  PromotionType,
 } from "@prisma/client";
 import { InventoryService } from "../inventory/inventory.service";
 
@@ -514,6 +522,177 @@ export class OrdersService {
 
       return updated;
     });
+  }
+
+  async checkAvailability(dto: CheckAvailabilityDto): Promise<CheckAvailabilityResponseDto> {
+    const results: DistributorAvailabilityDto[] = [];
+    const now = new Date();
+
+    for (const distributorId of dto.distributorIds) {
+      const distributor = await this.prisma.distributorProfile.findUnique({
+        where: { id: distributorId },
+        select: { id: true, companyName: true },
+      });
+
+      if (!distributor) continue;
+
+      const availableItems: AvailabilityItemDto[] = [];
+      const missingProducts: string[] = [];
+      let availableCount = 0;
+      const promotions: PromotionDto[] = [];
+
+      for (const item of dto.items) {
+        const inventory = await this.prisma.inventory.findUnique({
+          where: { distributorId_productId: { distributorId, productId: item.productId } },
+          select: { quantityAvailable: true },
+        });
+
+        const stock = inventory?.quantityAvailable || 0;
+        const available = stock >= item.quantity;
+        
+        if (available) {
+          availableCount++;
+        } else {
+          missingProducts.push(item.productId);
+        }
+
+        // جلب العروض المتاحة للمنتج
+        const productPromotions = await this.getProductPromotions(item.productId, distributorId, now);
+        
+        availableItems.push({
+          productId: item.productId,
+          available,
+          stock,
+          promotions: productPromotions,
+        });
+
+        // إضافة العروض إلى قائمة العروض العامة للموزع
+        promotions.push(...productPromotions);
+      }
+
+      const coverage = `${Math.round((availableCount / dto.items.length) * 100)}%`;
+      const canFulfill = availableCount === dto.items.length;
+      const status = canFulfill ? 'full' : 'partial';
+
+      results.push({
+        distributorId: distributor.id,
+        companyName: distributor.companyName,
+        coverage,
+        availableItems,
+        promotions: this.removeDuplicatePromotions(promotions),
+        canFulfill,
+        status,
+        ...(missingProducts.length > 0 && { missingProducts }),
+      });
+    }
+
+    return { results };
+  }
+
+  private removeDuplicatePromotions(promotions: PromotionDto[]): PromotionDto[] {
+    const seen = new Set<string>();
+    return promotions.filter(promo => {
+      const key = promo.id;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  private async getProductPromotions(productId: string, distributorId: string, now: Date): Promise<PromotionDto[]> {
+    const promotions: PromotionDto[] = [];
+
+    // العروض من نوع percentage
+    const percentagePromotions = await this.prisma.promotionProduct.findMany({
+      where: {
+        productId,
+        promotion: {
+          isActive: true,
+          startsAt: { lte: now },
+          endsAt: { gte: now },
+          level: PromotionLevel.pharmacist,
+          OR: [
+            { distributorId: null },
+            { distributorId },
+          ],
+        },
+      },
+      include: {
+        promotion: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            type: true,
+          },
+        },
+      },
+    });
+
+    for (const promo of percentagePromotions) {
+
+      // console.log('🚀 ~ orders.service.ts ~ OrdersService ~ getProductPromotions ~ promo:', promo);
+
+      promotions.push({
+        id: promo.id,
+        type: 'percentage' as const,
+        title: promo.promotion.title,
+        description: promo.promotion.description,
+        discountPercent: Number(promo.discountPercent),
+      });
+    }
+
+    // العروض من نوع buyXgetY
+    const buyXgetYPromotions = await this.prisma.promotionBuyXGetY.findMany({
+      where: {
+        OR: [
+          { buyProductId: productId },
+          // { freeProductId: productId },
+        ],
+        promotion: {
+          isActive: true,
+          startsAt: { lte: now },
+          endsAt: { gte: now },
+          level: PromotionLevel.pharmacist,
+          type: PromotionType.buyXgetY,
+          OR: [
+            { distributorId: null },
+            { distributorId },
+          ],
+        },
+      },
+      include: {
+        promotion: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            type: true,
+          },
+        },
+      },
+    });
+    
+    for (const promo of buyXgetYPromotions) {
+      // console.log('🚀 ~ orders.service.ts ~ OrdersService ~ getProductPromotions ~ promo:', promo);
+
+
+      promotions.push({
+        id: promo.id,
+        promotionId: promo.promotionId,
+        type: 'buyXgetY' as const,
+        title: promo.promotion.title,
+        description: promo.promotion.description,
+        buyXgetYDetails: {
+          buyProductId: promo.buyProductId,
+          buyQuantity: promo.buyQuantity,
+          freeProductId: promo.freeProductId,
+          freeQuantity: promo.freeQuantity,
+        },
+      });
+    }
+
+    return promotions;
   }
 
   async findAvailableDistributors(userId: string, dto: FindDistributorsDto) {
