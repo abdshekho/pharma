@@ -334,7 +334,7 @@ export class OrdersService {
     };
   }
 
-  async findAll(userId: string, role: UserRole) {
+  async findAll(userId: string, role: UserRole, status?: string) {
     const where: any = {};
 
     if (role === UserRole.pharmacist) {
@@ -348,6 +348,11 @@ export class OrdersService {
       where.deliveryStaffId = profile.id;
     }
     // admin يشوف الكل
+
+    // فلترة حسب الحالة إذا تم توفيرها
+    if (status) {
+      where.status = status;
+    }
 
     return this.prisma.order.findMany({
       where,

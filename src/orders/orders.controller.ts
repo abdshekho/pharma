@@ -36,8 +36,8 @@ export class OrdersController {
 
   @Get()
   @Roles(UserRole.pharmacist, UserRole.distributor, UserRole.admin, UserRole.delivery_staff)
-  findAll(@CurrentUser() user: any) {
-    return this.service.findAll(user.id, user.role);
+  findAll(@CurrentUser() user: any, @Query('status') status?: string) {
+    return this.service.findAll(user.id, user.role, status);
   }
 
   @Get(':id')

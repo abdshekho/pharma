@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, Put, Param } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -9,6 +9,7 @@ import { AdjustInventoryStockDto } from './dto/adjust-inventory-stock.dto';
 import { IncreaseFreeQuantityDto } from './dto/increase-free-quantity.dto';
 import { InventoryMovementsQueryDto } from './dto/inventory-movements-query.dto';
 import { LowStockQueryDto } from './dto/low-stock-query.dto';
+import { UpdateLowStockThresholdDto } from './dto/update-low-stock-threshold.dto';
 import { InventoryService } from './inventory.service';
 
 @Controller('inventory')
@@ -67,5 +68,19 @@ export class InventoryController {
     @Query() query: LowStockQueryDto
   ) {
     return this.service.findLowStockForPharmacist(user.id, query.excludeOrdered);
+  }
+
+  @Put('low-stock-threshold/:productId')
+  updateLowStockThreshold(
+    @Param('productId') productId: string,
+    @Body() dto: UpdateLowStockThresholdDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.service.updateLowStockThreshold(
+      user.id,
+      user.role,
+      productId,
+      dto.lowStockThreshold,
+    );
   }
 }

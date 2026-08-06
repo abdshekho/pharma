@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsString, IsNumber, Min, ValidateNested, IsOptional } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString, IsNumber, Min, ValidateNested } from 'class-validator';
 
 export class CheckAvailabilityItemDto {
   @IsString()

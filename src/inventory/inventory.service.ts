@@ -280,6 +280,32 @@ export class InventoryService {
     });
   }
 
+  async updateLowStockThreshold(
+    userId: string,
+    role: UserRole,
+    productId: string,
+    lowStockThreshold: number,
+  ) {
+    const owner = await this.resolveOwner(userId, role);
+    await this.validateProductAccess(owner, productId);
+
+    return this.prisma.inventory.upsert({
+      where: this.ownerProductUnique(owner, productId),
+      create: {
+        ownerType: owner.ownerType,
+        ...this.ownerData(owner),
+        productId,
+        quantityAvailable: 0,
+        freeQuantity: 0,
+        lowStockThreshold,
+      },
+      update: {
+        lowStockThreshold,
+        lastUpdated: new Date(),
+      },
+    });
+  }
+
   async transferForOrder(
     from: InventoryOwner,
     to: InventoryOwner,
