@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, Param } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -17,6 +17,10 @@ export class PosController {
   @Get('search')
   search(@CurrentUser() user: any, @Query('q') q: string) {
     return this.service.searchProducts(user.id, q);
+  }
+  @Get('searchForOrder')
+  searchProductsOrder(@CurrentUser() user: any, @Query('q') q: string) {
+    return this.service.searchProductsOrder(user.id, q);
   }
 
   // إجراء عملية بيع
@@ -65,5 +69,15 @@ export class PosController {
   @Get('summary')
   getSummary(@CurrentUser() user: any, @Query('date') date?: string) {
     return this.service.getDailySummary(user.id, date);
+  }
+
+  @Get('alternatives/:productId')
+  getAlternatives(
+    @CurrentUser() user: any, 
+    @Param('productId') productId: string,
+    @Query('withDosageForm') withDosageForm?: string
+  ) {
+    const withDosageFormBool = withDosageForm === 'true';
+    return this.service.getAlternatives(user.id, productId, withDosageFormBool);
   }
 }

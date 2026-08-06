@@ -60,9 +60,57 @@ export class PosService {
           { nameAr: { contains: query, mode: 'insensitive' } },
           { nameEn: { contains: query, mode: 'insensitive' } },
         ],
-        inventories: { some: { pharmacistId: pharmacist.id, quantityAvailable: { gt: 0 } } },
+        inventories: { some: { pharmacistId: pharmacist.id } },
       },
       take: 10,
+      select: {
+        id: true, nameAr: true, nameEn: true, barcode: true,
+        dosageForm: true, strength: true, packSize: true, packUnit: true,
+        pharmacistToConsumerPrice: true, imageUrl: true,
+        inventories: {
+          where: { pharmacistId: pharmacist.id },
+          select: { quantityAvailable: true },
+        },
+      },
+    });
+
+    return products.map(({ inventories, ...rest }) => ({
+      ...rest,
+      quantityAvailable: inventories[0]?.quantityAvailable ?? 0,
+    }));
+  }
+  async searchProductsOrder(userId: string, query: string) {
+    const pharmacist = await this.resolvePharmacist(userId);
+
+    const isBarcode = /^[0-9]+$/.test(query.trim()) && query.trim().length >= 6;
+
+    if (isBarcode) {
+      const product = await this.prisma.product.findUnique({
+        where: { barcode: query.trim() },
+        select: {
+          id: true, nameAr: true, nameEn: true, barcode: true,
+          dosageForm: true, strength: true, packSize: true, packUnit: true,
+          pharmacistToConsumerPrice: true, imageUrl: true,
+          inventories: {
+            where: { pharmacistId: pharmacist.id },
+            select: { quantityAvailable: true },
+          },
+        },
+      });
+      if (!product) throw new NotFoundException('Product not found');
+      const { inventories, ...rest } = product;
+      return [{ ...rest, quantityAvailable: inventories[0]?.quantityAvailable ?? 0 }];
+    }
+
+    const products = await this.prisma.product.findMany({
+      where: {
+        OR: [
+          { nameAr: { contains: query, mode: 'insensitive' } },
+          { nameEn: { contains: query, mode: 'insensitive' } },
+        ],
+        // inventories: { some: { pharmacistId: pharmacist.id, quantityAvailable: { gt: 0 } } },
+      },
+      take: 5,
       select: {
         id: true, nameAr: true, nameEn: true, barcode: true,
         dosageForm: true, strength: true, packSize: true, packUnit: true,
@@ -113,8 +161,8 @@ export class PosService {
         });
       }
 
-      const count = await tx.posSale.count({ where: { pharmacistId: pharmacist.id } });
-      const saleNumber = `POS-${Date.now()}-${count + 1}`;
+      // const count = await tx.posSale.count({ where: { pharmacistId: pharmacist.id } });
+      const saleNumber = `POS-${Date.now()}`;
 
       return tx.posSale.create({
         data: {
@@ -427,5 +475,80 @@ export class PosService {
       where,
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  async getAlternatives(userId: string, productId: string, withDosageForm: boolean = false) {
+    const pharmacist = await this.resolvePharmacist(userId);
+
+    // الحصول على معلومات المنتج الأصلي (لجلب dosageForm إذا لزم الأمر)
+    const originalProduct = await this.prisma.product.findUnique({
+      where: { id: productId },
+      select: { dosageForm: true },
+    });
+
+    if (!originalProduct) {
+      throw new NotFoundException('Product not found');
+    }
+
+    // الحصول على drug_groups الخاصة بالمنتج المطلوب
+    const productDrugGroups = await this.prisma.productDrugGroup.findMany({
+      where: { productId },
+      select: { drugGroupId: true },
+    });
+
+    if (productDrugGroups.length === 0) {
+      return [];
+    }
+
+    const drugGroupIds = productDrugGroups.map(pdg => pdg.drugGroupId);
+
+    // بناء شرط where ديناميكي
+    const whereConditions: any = {
+      AND: [
+        { id: { not: productId } }, // استبعاد المنتج الأصلي
+        { status: 'active' }, // فقط المنتجات النشطة
+        {
+          productDrugGroups: {
+            some: {
+              drugGroupId: { in: drugGroupIds },
+            },
+          },
+        },
+      ],
+    };
+
+    // إضافة شرط dosageForm إذا كان المطلوب
+    if (withDosageForm && originalProduct.dosageForm) {
+      whereConditions.AND.push({ dosageForm: originalProduct.dosageForm });
+    }
+
+    // البحث عن المنتجات الأخرى التي تشترك في نفس drug_groups
+    const alternativeProducts = await this.prisma.product.findMany({
+      where: whereConditions,
+      select: {
+        id: true,
+        nameAr: true,
+        nameEn: true,
+        barcode: true,
+        dosageForm: true,
+        strength: true,
+        packSize: true,
+        packUnit: true,
+        pharmacistToConsumerPrice: true,
+        imageUrl: true,
+        inventories: {
+          where: { pharmacistId: pharmacist.id },
+          select: { quantityAvailable: true },
+        },
+      },
+      orderBy: { nameAr: 'asc' },
+    });
+
+    // تنسيق النتائج مع إضافة quantityAvailable
+    return alternativeProducts.map(product => ({
+      ...product,
+      quantityAvailable: product.inventories[0]?.quantityAvailable ?? 0,
+      inventories: undefined, // إزالة الحقل الأصلي
+    }));
   }
 }
