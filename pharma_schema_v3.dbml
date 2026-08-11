@@ -1,0 +1,722 @@
+// ===== ENUMS =====
+// Generated from prisma/schema.prisma
+
+Enum user_roles {
+  company
+  doctor
+  pharmacist
+  distributor
+  representative
+  admin
+  delivery_staff
+}
+
+Enum user_status {
+  pending
+  active
+  suspended
+}
+
+Enum week_day {
+  sunday
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+  saturday
+}
+
+Enum company_distributor_status {
+  pending
+  active
+  inactive
+}
+
+Enum dosage_forms {
+  tablet
+  capsule
+  syrup
+  injection
+  cream
+  ointment
+  drop
+  inhaler
+}
+
+Enum pack_units {
+  tablet
+  capsule
+  ml
+  syringe
+  vial
+  ampoule
+}
+
+Enum package_types {
+  box
+  bottle
+  strip
+  tube
+  vial_pack
+}
+
+Enum product_status {
+  draft
+  active
+  inactive
+}
+
+Enum price_types {
+  company_to_distributor
+  distributor_to_pharmacist
+  pharmacist_to_consumer
+}
+
+Enum promotion_types {
+  percentage
+  buyXgetY
+}
+
+Enum promotion_levels {
+  distributor
+  pharmacist
+}
+
+Enum promotion_target_types {
+  all
+  doctors
+  pharmacists
+}
+
+Enum order_status {
+  pending
+  approved
+  in_delivery
+  delivered
+  cancelled
+  rejected
+}
+
+Enum payment_methods {
+  cod
+  bank_transfer
+}
+
+Enum sample_request_status {
+  pending
+  approved
+  in_delivery
+  delivered
+  cancelled
+  rejected
+}
+
+Enum inventory_owner_types {
+  company
+  distributor
+  pharmacist
+}
+
+Enum inventory_movement_types {
+  in
+  out
+  adjustment
+  sale
+  return
+  disposal
+}
+
+Enum inventory_reference_types {
+  order
+  manual
+  adjustment
+  pos_sale
+  pos_return
+  pos_disposal
+}
+
+Enum payment_method_pos {
+  cash
+  card
+}
+
+Enum notification_related_types {
+  order
+  product
+  sample_request
+  promotion
+  user
+}
+
+// ===== LOCATIONS =====
+
+Table cities {
+  id           uuid        [pk, default: `uuid_generate_v4()`]
+  name_ar      varchar(100) [not null]
+  name_en      varchar(100)
+  country_code char(3)     [not null, default: 'DAM']
+  is_active    boolean     [not null, default: true]
+  created_at   timestamp   [not null, default: `now()`]
+}
+
+Table city_areas {
+  id        uuid         [pk, default: `uuid_generate_v4()`]
+  city_id   uuid         [not null, ref: > cities.id]
+  name_ar   varchar(100) [not null]
+  name_en   varchar(100)
+  is_active boolean      [not null, default: true]
+  created_at timestamp  [not null, default: `now()`]
+
+  indexes {
+    (city_id, name_ar) [unique]
+    (city_id, is_active)
+  }
+}
+
+// ===== USERS & PROFILES =====
+
+Table users {
+  id                uuid          [pk, default: `uuid_generate_v4()`]
+  email             varchar(255)  [unique, not null]
+  phone             varchar(20)   [unique]
+  password_hash     varchar(255)  [not null]
+  role              user_roles    [not null]
+  status            user_status   [not null, default: 'pending']
+  full_name         varchar(150)
+  avatar_url        varchar(500)
+  city_id           uuid          [ref: > cities.id]
+  email_verified_at timestamp
+  last_login_at     timestamp
+  created_at        timestamp     [not null, default: `now()`]
+  updated_at        timestamp     [not null, default: `now()`]
+}
+
+Table company_profiles {
+  id                      uuid          [pk, default: `uuid_generate_v4()`]
+  user_id                 uuid          [unique, not null, ref: > users.id]
+  company_name            varchar(200)  [not null]
+  commercial_reg_no       varchar(50)   [not null]
+  health_ministry_license varchar(50)   [not null]
+  logo_url                varchar(500)
+  website                 varchar(500)
+  description             text
+  verified_at             timestamp
+  verified_by             uuid          [ref: > users.id]
+  created_at              timestamp     [not null, default: `now()`]
+}
+
+Table doctor_profiles {
+  id                uuid         [pk, default: `uuid_generate_v4()`]
+  user_id           uuid         [unique, not null, ref: > users.id]
+  license_number    varchar(50)  [unique, not null]
+  specialization_id uuid         [ref: > specializations.id]
+  hospital_name     varchar(200)
+  license_doc_url   varchar(500) [not null]
+  verified_by       uuid         [ref: > users.id]
+  verified_at       timestamp
+  created_at        timestamp    [not null, default: `now()`]
+}
+
+Table pharmacist_profiles {
+  id                  uuid          [pk, default: `uuid_generate_v4()`]
+  user_id             uuid          [unique, not null, ref: > users.id]
+  pharmacy_license_no varchar(50)   [unique, not null]
+  pharmacy_name       varchar(200)  [not null]
+  commercial_reg_no   varchar(50)
+  address             text          [not null]
+  license_doc_url     varchar(500)
+  verified_at         timestamp
+  verified_by         uuid          [ref: > users.id]
+  created_at          timestamp     [not null, default: `now()`]
+  area_id             uuid          [ref: > city_areas.id]
+}
+
+Table distributor_profiles {
+  id              uuid         [pk, default: `uuid_generate_v4()`]
+  user_id         uuid         [unique, not null, ref: > users.id]
+  company_name    varchar(200) [not null]
+  license_doc_url varchar(500)
+  verified_at     timestamp
+  verified_by     uuid         [ref: > users.id]
+  created_at      timestamp    [not null, default: `now()`]
+}
+
+Table delivery_staff_profiles {
+  id            uuid         [pk, default: `uuid_generate_v4()`]
+  user_id       uuid         [unique, not null, ref: > users.id]
+  distributor_id uuid        [not null, ref: > distributor_profiles.id]
+  license_plate varchar(50)
+  is_active     boolean      [not null, default: true]
+  created_at    timestamp    [not null, default: `now()`]
+}
+
+Table representative_profiles {
+  id          uuid      [pk, default: `uuid_generate_v4()`]
+  user_id     uuid      [unique, not null, ref: > users.id]
+  company_id  uuid      [not null, ref: > company_profiles.id]
+  city_id     uuid      [not null, ref: > cities.id]
+  verified_at timestamp
+  is_active   boolean   [not null, default: true]
+  verified_by uuid      [ref: > users.id]
+  created_at  timestamp [not null, default: `now()`]
+}
+
+// ===== COVERAGE & COMPANY-DISTRIBUTOR MAPPING =====
+
+Table distributor_coverage_areas {
+  id            uuid      [pk, default: `uuid_generate_v4()`]
+  distributor_id uuid     [not null, ref: > distributor_profiles.id]
+  area_id       uuid      [not null, ref: > city_areas.id]
+  day_of_week   week_day  [not null]
+
+  indexes {
+    (distributor_id, day_of_week, area_id) [unique]
+    (distributor_id, day_of_week)
+    (area_id)
+  }
+}
+
+Table company_distributors {
+  id             uuid                       [pk, default: `uuid_generate_v4()`]
+  company_id     uuid                       [not null, ref: > company_profiles.id]
+  distributor_id uuid                       [not null, ref: > distributor_profiles.id]
+  city_id        uuid                       [not null, ref: > cities.id]
+  status         company_distributor_status [not null, default: 'active']
+  assigned_at    timestamp                  [not null, default: `now()`]
+
+  indexes {
+    (company_id, distributor_id, city_id) [unique]
+  }
+}
+
+// ===== SPECIALIZATIONS & CATEGORIES =====
+
+Table specializations {
+  id          uuid         [pk, default: `uuid_generate_v4()`]
+  parent_id   uuid         [ref: > specializations.id]
+  name_ar     varchar(100) [not null]
+  name_en     varchar(100)
+  description text
+  is_active   boolean      [not null, default: true]
+}
+
+Table categories {
+  id        uuid         [pk, default: `uuid_generate_v4()`]
+  parent_id uuid         [ref: > categories.id]
+  code      varchar(20)  [unique]
+  name_ar   varchar(100) [not null]
+  name_en   varchar(100)
+  icon      varchar(255)
+  is_active boolean      [not null, default: true]
+}
+
+// ===== DRUG GROUPS =====
+
+Table drug_groups {
+  id          uuid         [pk, default: `uuid_generate_v4()`]
+  code        varchar(20)  [unique]
+  name_ar     varchar(200) [not null]
+  name_en     varchar(200)
+  description text
+  is_active   boolean      [not null, default: true]
+  created_at  timestamp    [not null, default: `now()`]
+  updated_at  timestamp    [not null, default: `now()`]
+
+  indexes {
+    (name_ar)
+    (name_en)
+  }
+}
+
+Table drug_group_categories {
+  drug_group_id uuid [not null, ref: > drug_groups.id]
+  category_id   uuid [not null, ref: > categories.id]
+
+  indexes {
+    (drug_group_id, category_id) [pk]
+  }
+}
+
+// ===== PRODUCTS =====
+
+Table products {
+  id                              uuid           [pk, default: `uuid_generate_v4()`]
+  company_id                      uuid           [not null, ref: > company_profiles.id]
+  name_ar                         varchar(200)   [not null]
+  name_en                         varchar(200)
+  dosage_form                     dosage_forms
+  pack_size                       int
+  pack_unit                       pack_units
+  package_type                    package_types
+  barcode                         varchar(100)   [unique]
+  strength                        varchar(50)
+  usage_instructions              text
+  company_to_distributor_price    decimal(10,2)  [not null, note: 'شركة → موزّع']
+  distributor_to_pharmacist_price decimal(10,2)  [not null, note: 'موزّع → صيدلي']
+  pharmacist_to_consumer_price    decimal(10,2)  [not null, note: 'صيدلي → مستهلك']
+  status                          product_status [not null, default: 'draft']
+  image_url                       varchar(500)
+  brochure_url                    varchar(500)
+  created_at                      timestamp      [not null, default: `now()`]
+  updated_at                      timestamp      [not null, default: `now()`]
+
+  indexes {
+    (name_ar)
+    (name_en)
+  }
+}
+
+Table product_drug_groups {
+  product_id    uuid [not null, ref: > products.id]
+  drug_group_id uuid [not null, ref: > drug_groups.id]
+
+  indexes {
+    (drug_group_id)
+    (product_id)
+    (drug_group_id, product_id) [pk]
+  }
+}
+
+Table product_specializations {
+  product_id        uuid [not null, ref: > products.id]
+  specialization_id uuid [not null, ref: > specializations.id]
+
+  indexes {
+    (product_id, specialization_id) [pk]
+  }
+}
+
+Table product_target_specializations {
+  id                uuid [pk, default: `uuid_generate_v4()`]
+  drug_group_id     uuid [not null, ref: > drug_groups.id]
+  specialization_id uuid [not null, ref: > specializations.id]
+
+  indexes {
+    (drug_group_id, specialization_id) [unique]
+  }
+}
+
+// ===== PROMOTIONS =====
+// type → percentage: خصم بنسبة مئوية | buyXgetY: اشتري X خذ Y مجاناً
+// level → distributor: عرض للموزّع من الشركة | pharmacist: عرض للصيدلاني
+// distributor_id → null لو الشركة أنشأته | parent_promotion_id → لو الموزّع نسخ عرض الشركة
+
+Table promotions {
+  id                  uuid                  [pk, default: `uuid_generate_v4()`]
+  company_id          uuid                  [not null, ref: > company_profiles.id]
+  distributor_id      uuid                  [ref: > distributor_profiles.id]
+  parent_promotion_id uuid                  [ref: > promotions.id]
+  title               varchar(200)          [not null]
+  description         text
+  type                promotion_types       [not null, default: 'percentage']
+  level               promotion_levels      [not null, default: 'pharmacist']
+  starts_at           timestamp             [not null]
+  ends_at             timestamp             [not null]
+  target_type         promotion_target_types [not null, default: 'all']
+  image_url           varchar(500)
+  is_active           boolean               [not null, default: false]
+  created_at          timestamp             [not null, default: `now()`]
+}
+
+Table promotion_products {
+  id               uuid         [pk, default: `uuid_generate_v4()`]
+  promotion_id     uuid         [not null, ref: > promotions.id]
+  product_id       uuid         [not null, ref: > products.id]
+  discount_percent decimal(5,2) [not null]
+
+  indexes {
+    (promotion_id, product_id) [unique]
+  }
+}
+
+Table promotion_buyxgety {
+  id              uuid [pk, default: `uuid_generate_v4()`]
+  promotion_id    uuid [unique, not null, ref: > promotions.id]
+  buy_product_id  uuid [not null, ref: > products.id]
+  buy_quantity    int  [not null]
+  free_product_id uuid [not null, ref: > products.id]
+  free_quantity   int  [not null]
+}
+
+// ===== SAMPLE QUOTAS =====
+
+Table sample_quotas {
+  id             uuid    [pk, default: `uuid_generate_v4()`]
+  company_id     uuid    [not null, ref: > company_profiles.id]
+  product_id     uuid    [not null, ref: > products.id]
+  max_per_doctor int     [not null, default: 1]
+  cooldown_days  int     [not null, default: 30]
+  is_active      boolean [not null, default: true]
+  created_at     timestamp [not null, default: `now()`]
+
+  indexes {
+    (company_id, product_id) [unique]
+  }
+}
+
+// ===== ORDERS (Distributor → Pharmacist) =====
+
+Table orders {
+  id               uuid           [pk, default: `uuid_generate_v4()`]
+  order_number     varchar(20)    [unique, not null, note: 'ORD-YYYY-xxxxx']
+  pharmacist_id    uuid           [not null, ref: > pharmacist_profiles.id]
+  distributor_id   uuid           [ref: > distributor_profiles.id]
+  delivery_staff_id uuid          [ref: > delivery_staff_profiles.id]
+  city_id          uuid           [not null, ref: > cities.id]
+  area_id          uuid           [ref: > city_areas.id]
+  status           order_status   [not null, default: 'pending']
+  total_amount     decimal(10,2)  [not null, default: 0]
+  payment_method   payment_methods [not null, default: 'cod']
+  delivery_address text           [not null]
+  notes            text
+  rejection_reason text
+  approved_at      timestamp
+  delivered_at     timestamp
+  created_at       timestamp      [not null, default: `now()`]
+  updated_at       timestamp      [not null, default: `now()`]
+
+  note: 'status: pending → approved → in_delivery → delivered | pending → rejected/cancelled'
+}
+
+Table order_items {
+  id                   uuid          [pk, default: `uuid_generate_v4()`]
+  order_id             uuid          [not null, ref: > orders.id]
+  product_id           uuid          [not null, ref: > products.id]
+  product_name         varchar(200)
+  quantity             int           [not null, note: 'CHECK > 0']
+  unit_price           decimal(10,2) [not null]
+  promotion_product_id uuid          [ref: > promotion_products.id]
+  discount_amount      decimal(10,2) [not null, default: 0]
+  subtotal             decimal(10,2) [note: 'qty * price - discount']
+}
+
+// ===== ORDERS (Company → Distributor) =====
+
+Table company_distributor_orders {
+  id                uuid          [pk, default: `uuid_generate_v4()`]
+  order_number      varchar(24)   [unique, not null, note: 'CDO-YYYY-xxxxx']
+  company_id        uuid          [not null, ref: > company_profiles.id]
+  distributor_id    uuid          [not null, ref: > distributor_profiles.id]
+  delivery_staff_id uuid          [ref: > delivery_staff_profiles.id]
+  status            order_status  [not null, default: 'pending']
+  total_amount      decimal(10,2) [not null, default: 0]
+  payment_method    payment_methods [not null, default: 'bank_transfer']
+  delivery_address  text          [not null]
+  notes             text
+  rejection_reason  text
+  approved_at       timestamp
+  delivered_at      timestamp
+  created_at        timestamp     [not null, default: `now()`]
+  updated_at        timestamp     [not null, default: `now()`]
+
+  indexes {
+    (company_id, status)
+    (distributor_id, status)
+  }
+}
+
+Table company_distributor_order_items {
+  id                   uuid          [pk, default: `uuid_generate_v4()`]
+  order_id             uuid          [not null, ref: > company_distributor_orders.id]
+  product_id           uuid          [not null, ref: > products.id]
+  product_name         varchar(200)
+  quantity             int           [not null]
+  unit_price           decimal(10,2) [not null]
+  promotion_product_id uuid          [ref: > promotion_products.id]
+  discount_amount      decimal(10,2) [not null, default: 0]
+  subtotal             decimal(10,2)
+}
+
+// ===== SAMPLE REQUESTS =====
+
+Table sample_requests {
+  id                uuid                  [pk, default: `uuid_generate_v4()`]
+  doctor_id         uuid                  [not null, ref: > doctor_profiles.id]
+  product_id        uuid                  [not null, ref: > products.id]
+  company_id        uuid                  [not null, ref: > company_profiles.id]
+  representative_id uuid                  [ref: > representative_profiles.id]
+  status            sample_request_status [not null, default: 'pending']
+  quantity          int                   [not null, default: 1]
+  delivery_address  text                  [not null]
+  rejection_reason  text
+  approved_at       timestamp
+  delivered_at      timestamp
+  feedback          text
+  created_at        timestamp             [not null, default: `now()`]
+  updated_at        timestamp             [not null, default: `now()`]
+
+  note: 'status: pending → approved → in_delivery → delivered | pending → rejected/cancelled'
+}
+
+// ===== INVENTORY & STOCK MOVEMENTS =====
+// ملكية المخزون (owner_type): company | distributor | pharmacist
+// مع فهرس unique جزئي لكل مالك: (company_id, product_id) / (distributor_id, product_id) / (pharmacist_id, product_id)
+
+Table inventories {
+  id                  uuid                  [pk, default: `uuid_generate_v4()`]
+  owner_type          inventory_owner_types [not null]
+  company_id          uuid                  [ref: > company_profiles.id]
+  distributor_id      uuid                  [ref: > distributor_profiles.id]
+  pharmacist_id       uuid                  [ref: > pharmacist_profiles.id]
+  product_id          uuid                  [not null, ref: > products.id]
+  quantity_available  int                   [not null, default: 0]
+  free_quantity       int                   [not null, default: 0]
+  low_stock_threshold int                   [not null, default: 10]
+  last_updated        timestamp             [not null, default: `now()`]
+
+  indexes {
+    (company_id, product_id) [unique]
+    (distributor_id, product_id) [unique]
+    (pharmacist_id, product_id) [unique]
+    (owner_type)
+    (distributor_id)
+    (product_id)
+    (quantity_available)
+    (distributor_id, quantity_available)
+    (product_id, distributor_id)
+  }
+}
+
+Table stock_movements {
+  id             uuid                      [pk, default: `uuid_generate_v4()`]
+  inventory_id   uuid                      [not null, ref: > inventories.id]
+  product_id     uuid                      [not null, ref: > products.id]
+  owner_type     inventory_owner_types     [not null]
+  type           inventory_movement_types  [not null]
+  quantity       int                       [not null]
+  reference_type inventory_reference_types [note: 'order | manual | pos_sale ...']
+  reference_id   uuid
+  note           text
+  created_by     uuid                      [ref: > users.id]
+  created_at     timestamp                 [not null, default: `now()`]
+
+  indexes {
+    (inventory_id, created_at)
+    (product_id)
+    (reference_type, reference_id)
+  }
+}
+
+// ===== COMMUNICATION =====
+
+Table messages {
+  id                 uuid      [pk, default: `uuid_generate_v4()`]
+  conversation_id    uuid
+  parent_message_id  uuid      [ref: > messages.id]
+  sender_id          uuid      [not null, ref: > users.id]
+  receiver_id        uuid      [not null, ref: > users.id]
+  related_product_id uuid      [ref: > products.id]
+  body               text      [not null]
+  attachment_url     varchar(500)
+  read_at            timestamp
+  created_at         timestamp [not null, default: `now()`]
+
+  indexes {
+    (conversation_id)
+    (sender_id)
+    (receiver_id)
+  }
+}
+
+Table notifications {
+  id           uuid                      [pk, default: `uuid_generate_v4()`]
+  user_id      uuid                      [not null, ref: > users.id]
+  type         varchar(50)               [not null]
+  title        varchar(200)              [not null]
+  body         text
+  related_id   uuid
+  related_type notification_related_types
+  read_at      timestamp
+  created_at   timestamp                 [not null, default: `now()`]
+
+  indexes {
+    (user_id, read_at)
+  }
+}
+
+// ===== AUDIT =====
+
+Table audit_logs {
+  id          uuid         [pk, default: `uuid_generate_v4()`]
+  user_id     uuid         [ref: > users.id]
+  action      varchar(100) [not null]
+  entity_type varchar(50)
+  entity_id   uuid
+  old_data    jsonb
+  new_data    jsonb
+  ip_address  varchar(45)
+  user_agent  text
+  created_at  timestamp    [not null, default: `now()`]
+}
+
+// ===== POS (Pharmacist Point of Sale) =====
+
+Table pos_sales {
+  id             uuid                [pk, default: `uuid_generate_v4()`]
+  pharmacist_id  uuid                [not null, ref: > pharmacist_profiles.id]
+  sale_number    varchar(20)         [unique, not null]
+  payment_method payment_method_pos  [not null, default: 'cash']
+  total_amount   decimal(10,2)       [not null, default: 0]
+  created_at     timestamp           [not null, default: `now()`]
+
+  indexes {
+    (pharmacist_id, created_at)
+  }
+}
+
+Table pos_sale_items {
+  id          uuid         [pk, default: `uuid_generate_v4()`]
+  sale_id     uuid         [not null, ref: > pos_sales.id]
+  product_id  uuid         [not null, ref: > products.id]
+  product_name varchar(200)
+  quantity    int          [not null]
+  unit_price  decimal(10,2) [not null]
+  subtotal    decimal(10,2) [not null]
+}
+
+Table pos_returns {
+  id           uuid         [pk, default: `uuid_generate_v4()`]
+  pharmacist_id uuid        [not null, ref: > pharmacist_profiles.id]
+  product_id   uuid         [not null, ref: > products.id]
+  quantity     int          [not null]
+  refund_amount decimal(10,2)
+  note         text
+  created_at   timestamp    [not null, default: `now()`]
+
+  indexes {
+    (pharmacist_id, created_at)
+  }
+}
+
+Table pos_disposals {
+  id           uuid         [pk, default: `uuid_generate_v4()`]
+  pharmacist_id uuid        [not null, ref: > pharmacist_profiles.id]
+  product_id   uuid         [not null, ref: > products.id]
+  quantity     int          [not null]
+  note         text
+  created_at   timestamp    [not null, default: `now()`]
+
+  indexes {
+    (pharmacist_id, created_at)
+  }
+}
+
+Table pos_cash_withdrawals {
+  id           uuid         [pk, default: `uuid_generate_v4()`]
+  pharmacist_id uuid        [not null, ref: > pharmacist_profiles.id]
+  amount       decimal(10,2) [not null]
+  reason       text
+  created_at   timestamp    [not null, default: `now()`]
+
+  indexes {
+    (pharmacist_id, created_at)
+  }
+}
+
+// ===== FLOW SUMMARY =====
+// orders:         pharmacist → create → validate stock → distributor approve/reject → in_delivery → delivered
+// company_orders: distributor → create (linked company) → company approve/reject → in_delivery → delivered
+// sample_requests: doctor → create (quota check) → auto-assign representative → company approve/reject → representative deliver
+// inventory:      add stock (in) → transfer on order approve → sale/return/disposal (POS)
+// promotions:     company create (percentage|buyXgetY) → apply on order items
