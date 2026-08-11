@@ -10,6 +10,7 @@ import { StatisticsQueryDto } from "./dto/statistics-query.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { RolesGuard } from "../auth/guards/roles.guard";
 import { Roles } from "../auth/decorators/roles.decorator";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { UserRole } from "@prisma/client";
 
 @Controller("statistics")
@@ -21,6 +22,18 @@ export class StatisticsController {
   @Roles(UserRole.admin)
   getAdminStats(@Query() query: StatisticsQueryDto) {
     return this.service.getAdminStats(query.startDate, query.endDate);
+  }
+
+  @Get("doctor/me")
+  @Roles(UserRole.doctor)
+  getDoctorStats(@CurrentUser() user: any) {
+    return this.service.getDoctorStats(user.id);
+  }
+
+  @Get("pharmacist/me")
+  @Roles(UserRole.pharmacist)
+  getPharmacistStats(@CurrentUser() user: any) {
+    return this.service.getPharmacistStats(user.id);
   }
 
   @Get("company/:companyId")

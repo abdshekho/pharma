@@ -6,11 +6,34 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
-import { PromotionType, UserRole } from '@prisma/client';
+import { PromotionType, PromotionTargetType, UserRole, NotificationRelatedType } from '@prisma/client';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class PromotionsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notifications: NotificationsService,
+  ) {}
+
+  private async notifyForTargetType(targetType: PromotionTargetType, title: string, relatedId: string) {
+    if (targetType === PromotionTargetType.doctors || targetType === PromotionTargetType.all) {
+      await this.notifications.createForRole(UserRole.doctor, {
+        type: 'promotion',
+        title,
+        relatedId,
+        relatedType: NotificationRelatedType.promotion,
+      });
+    }
+    if (targetType === PromotionTargetType.pharmacists || targetType === PromotionTargetType.all) {
+      await this.notifications.createForRole(UserRole.pharmacist, {
+        type: 'promotion',
+        title,
+        relatedId,
+        relatedType: NotificationRelatedType.promotion,
+      });
+    }
+  }
 
   private async resolveCompanyId(userId: string) {
     const p = await this.prisma.companyProfile.findUnique({ where: { userId }, select: { id: true } });
@@ -64,7 +87,7 @@ export class PromotionsService {
       throw new ForbiddenException();
     }
 
-    return this.prisma.promotion.create({
+    const created = await this.prisma.promotion.create({
       data: {
         title: dto.title,
         description: dto.description,
@@ -96,9 +119,23 @@ export class PromotionsService {
       },
       include: { promotionProducts: true, buyXgetY: true },
     });
+
+    if (created.isActive) {
+      await this.notifyForTargetType(created.targetType, `New offer: ${created.title}`, created.id);
+    }
+
+    return created;
   }
 
-  async findAll(filters: { companyId?: string; distributorId?: string; level?: string; type?: string; productId?: string }) {
+  async findAll(filters: {
+    companyId?: string;
+    distributorId?: string;
+    distributorIds?: string;
+    level?: string;
+    type?: string;
+    productId?: string;
+    targetType?: string;
+  }) {
     const productFilter = filters.productId
       ? {
           OR: [
@@ -109,12 +146,19 @@ export class PromotionsService {
         }
       : {};
 
+    const distributorIdList = filters.distributorIds
+      ?.split(',')
+      .map((id) => id.trim())
+      .filter(Boolean);
+
     return this.prisma.promotion.findMany({
       where: {
         ...(filters.companyId && { companyId: filters.companyId }),
         ...(filters.distributorId && { distributorId: filters.distributorId }),
+        ...(distributorIdList?.length && { distributorId: { in: distributorIdList } }),
         ...(filters.level && { level: filters.level as any }),
         ...(filters.type && { type: filters.type as any }),
+        ...(filters.targetType && { targetType: filters.targetType as any }),
         ...productFilter,
       },
       include: {
@@ -172,6 +216,13 @@ export class PromotionsService {
       if (promo.distributorId !== distributorId) throw new ForbiddenException();
     }
 
-    return this.prisma.promotion.update({ where: { id }, data: { isActive: !promo.isActive } });
+    const newIsActive = !promo.isActive;
+    const updated = await this.prisma.promotion.update({ where: { id }, data: { isActive: newIsActive } });
+
+    if (newIsActive) {
+      await this.notifyForTargetType(updated.targetType, `New offer: ${updated.title}`, updated.id);
+    }
+
+    return updated;
   }
 }

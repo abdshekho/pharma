@@ -26,6 +26,12 @@ export class SampleRequestsController {
     return this.service.findAll(user.id, user.role);
   }
 
+  @Get('eligibility/:productId')
+  @Roles(UserRole.doctor)
+  getEligibility(@Param('productId') productId: string, @CurrentUser() user: any) {
+    return this.service.getEligibility(user.id, productId);
+  }
+
   @Get(':id')
   @Roles(UserRole.doctor, UserRole.company, UserRole.representative, UserRole.admin)
   findOne(@Param('id') id: string, @CurrentUser() user: any) {

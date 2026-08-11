@@ -20,7 +20,7 @@ export class CompanyProfileController {
   }
 
   @Get()
-  @Roles(UserRole.admin)
+  @Roles(UserRole.admin, UserRole.doctor)
   findAll() {
     return this.service.findAll();
   }
@@ -32,7 +32,7 @@ export class CompanyProfileController {
   }
 
   @Get(':id')
-  @Roles(UserRole.admin)
+  @Roles(UserRole.admin, UserRole.doctor)
   findOne(@Param('id') id: string) {
     return this.service.findOne(id);
   }

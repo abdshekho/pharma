@@ -7,12 +7,25 @@ import {
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateSampleRequestDto } from "./dto/create-sample-request.dto";
 import { UpdateSampleRequestStatusDto } from "./dto/update-sample-request-status.dto";
-import { SampleRequestStatus, UserRole } from "@prisma/client";
+import { SampleRequestStatus, UserRole, NotificationRelatedType } from "@prisma/client";
 import { assignSampleRequestDto } from "./dto/assign-Sample-RequestDto.dto copy";
+import { NotificationsService } from "../notifications/notifications.service";
+
+const STATUS_LABEL: Record<SampleRequestStatus, string> = {
+  pending: "Pending",
+  approved: "Approved",
+  in_delivery: "In Delivery",
+  delivered: "Delivered",
+  cancelled: "Cancelled",
+  rejected: "Rejected",
+};
 
 @Injectable()
 export class SampleRequestsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notifications: NotificationsService,
+  ) {}
 
   private async getDoctorProfile(userId: string) {
     const p = await this.prisma.doctorProfile.findUnique({
@@ -129,6 +142,111 @@ export class SampleRequestsService {
     });
   }
 
+  async getEligibility(userId: string, productId: string) {
+    const doctor = await this.getDoctorProfile(userId);
+
+    const product = await this.prisma.product.findUnique({
+      where: { id: productId },
+      select: {
+        id: true,
+        companyId: true,
+        status: true,
+        productSpecializations: { select: { specializationId: true } },
+      },
+    });
+    if (!product) throw new NotFoundException("Product not found");
+
+    const notEligible = (reason: string) => ({
+      eligible: false,
+      reason,
+      remaining: null as number | null,
+      cooldownDays: null as number | null,
+      nextEligibleAt: null as string | null,
+      freeQuantityAvailable: 0,
+    });
+
+    if (product.status !== "active") {
+      return notEligible("Product is not active");
+    }
+
+    const specializationOk =
+      product.productSpecializations.length === 0 ||
+      (doctor.specializationId != null &&
+        product.productSpecializations.some(
+          (s) => s.specializationId === doctor.specializationId,
+        ));
+    if (!specializationOk) {
+      return notEligible("Not available for your specialization");
+    }
+
+    const inventory = await this.prisma.inventory.findUnique({
+      where: {
+        companyId_productId: { companyId: product.companyId, productId },
+      },
+      select: { freeQuantity: true },
+    });
+    const freeQuantityAvailable = inventory?.freeQuantity ?? 0;
+
+    const quota = await this.prisma.sampleQuota.findUnique({
+      where: {
+        companyId_productId: { companyId: product.companyId, productId },
+      },
+    });
+
+    if (!quota || !quota.isActive) {
+      return {
+        eligible: freeQuantityAvailable > 0,
+        reason:
+          freeQuantityAvailable > 0
+            ? undefined
+            : "No free samples currently available",
+        remaining: null,
+        cooldownDays: null,
+        nextEligibleAt: null,
+        freeQuantityAvailable,
+      };
+    }
+
+    const since = new Date();
+    since.setDate(since.getDate() - quota.cooldownDays);
+
+    const recentRequests = await this.prisma.sampleRequest.findMany({
+      where: {
+        doctorId: doctor.id,
+        productId,
+        companyId: product.companyId,
+        createdAt: { gte: since },
+        status: { notIn: [SampleRequestStatus.rejected] },
+      },
+      select: { createdAt: true },
+      orderBy: { createdAt: "asc" },
+    });
+
+    const remaining = Math.max(0, quota.maxPerDoctor - recentRequests.length);
+    const nextEligibleAt =
+      remaining === 0 && recentRequests.length > 0
+        ? new Date(
+            recentRequests[0].createdAt.getTime() +
+              quota.cooldownDays * 24 * 60 * 60 * 1000,
+          ).toISOString()
+        : null;
+
+    const eligible = remaining > 0 && freeQuantityAvailable > 0;
+    let reason: string | undefined;
+    if (remaining === 0) reason = "You've reached the limit for this product";
+    else if (freeQuantityAvailable <= 0)
+      reason = "No free samples currently available";
+
+    return {
+      eligible,
+      reason,
+      remaining,
+      cooldownDays: quota.cooldownDays,
+      nextEligibleAt,
+      freeQuantityAvailable,
+    };
+  }
+
   async findAll(userId: string, role: UserRole) {
     const where: any = {};
 
@@ -152,6 +270,7 @@ export class SampleRequestsService {
       include: {
         product: { select: { nameAr: true, imageUrl: true } },
         doctor: { select: { user: { select: { fullName: true } } } },
+        company: { select: { companyName: true } },
         representative: { select: { user: { select: { fullName: true } } } },
       },
       orderBy: { createdAt: "desc" },
@@ -216,7 +335,7 @@ export class SampleRequestsService {
       throw new BadRequestException("Rejection reason is required");
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const updated = await this.prisma.$transaction(async (tx) => {
       if (dto.status === SampleRequestStatus.approved) {
         await this.decreaseCompanyFreeSamples(
           req.companyId,
@@ -238,8 +357,24 @@ export class SampleRequestsService {
             deliveredAt: new Date(),
           }),
         },
+        include: { product: { select: { nameAr: true } } },
       });
     });
+
+    const doctorProfile = await this.prisma.doctorProfile.findUnique({
+      where: { id: updated.doctorId },
+      select: { userId: true },
+    });
+    if (doctorProfile) {
+      await this.notifications.create(doctorProfile.userId, {
+        type: "sample_request_status",
+        title: `${updated.product.nameAr} sample request: ${STATUS_LABEL[updated.status]}`,
+        relatedId: updated.id,
+        relatedType: NotificationRelatedType.sample_request,
+      });
+    }
+
+    return updated;
   }
 
 

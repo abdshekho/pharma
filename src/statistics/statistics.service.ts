@@ -414,4 +414,91 @@ private async getLowStockProducts(
   return this.prisma.$queryRaw(query);
 }
 
+async getDoctorStats(userId: string) {
+  const doctor = await this.prisma.doctorProfile.findUnique({
+    where: { userId },
+    select: { id: true },
+  });
+  if (!doctor) throw new NotFoundException("Doctor profile not found");
+
+  const last30Days = new Date();
+  last30Days.setDate(last30Days.getDate() - 30);
+
+  const [total, byStatusRaw, requestsLast30Days] = await Promise.all([
+    this.prisma.sampleRequest.count({ where: { doctorId: doctor.id } }),
+    this.prisma.sampleRequest.groupBy({
+      by: ["status"],
+      _count: { id: true },
+      where: { doctorId: doctor.id },
+    }),
+    this.prisma.sampleRequest.count({
+      where: { doctorId: doctor.id, createdAt: { gte: last30Days } },
+    }),
+  ]);
+
+  const byStatus: Record<string, number> = {
+    pending: 0,
+    approved: 0,
+    in_delivery: 0,
+    delivered: 0,
+    cancelled: 0,
+    rejected: 0,
+  };
+  for (const row of byStatusRaw) byStatus[row.status] = row._count.id;
+
+  return { totalRequests: total, byStatus, requestsLast30Days };
+}
+
+async getPharmacistStats(userId: string) {
+  const pharmacist = await this.prisma.pharmacistProfile.findUnique({
+    where: { userId },
+    select: { id: true },
+  });
+  if (!pharmacist) throw new NotFoundException("Pharmacist profile not found");
+
+  const last30Days = new Date();
+  last30Days.setDate(last30Days.getDate() - 30);
+
+  const [totalOrders, ordersLast30Days, totalSpent, bestSellersRaw] =
+    await Promise.all([
+      this.prisma.order.count({ where: { pharmacistId: pharmacist.id } }),
+      this.prisma.order.count({
+        where: { pharmacistId: pharmacist.id, createdAt: { gte: last30Days } },
+      }),
+      this.prisma.order.aggregate({
+        _sum: { totalAmount: true },
+        where: { pharmacistId: pharmacist.id, status: OrderStatus.delivered },
+      }),
+      this.prisma.orderItem.groupBy({
+        by: ["productId"],
+        _sum: { quantity: true },
+        orderBy: { _sum: { quantity: "desc" } },
+        take: 5,
+        where: { order: { pharmacistId: pharmacist.id } },
+      }),
+    ]);
+
+  const bestSellerIds = bestSellersRaw.map((b) => b.productId);
+  const products =
+    bestSellerIds.length > 0
+      ? await this.prisma.product.findMany({
+          where: { id: { in: bestSellerIds } },
+          select: { id: true, nameAr: true, nameEn: true },
+        })
+      : [];
+  const productMap = new Map(products.map((p) => [p.id, p]));
+
+  return {
+    totalOrders,
+    ordersLast30Days,
+    totalSpent: totalSpent._sum.totalAmount?.toNumber() ?? 0,
+    topProducts: bestSellersRaw.map((b) => ({
+      productId: b.productId,
+      nameAr: productMap.get(b.productId)?.nameAr ?? "",
+      nameEn: productMap.get(b.productId)?.nameEn ?? "",
+      totalQuantity: b._sum.quantity ?? 0,
+    })),
+  };
+}
+
 }

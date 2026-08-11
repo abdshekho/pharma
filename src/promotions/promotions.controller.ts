@@ -22,11 +22,13 @@ export class PromotionsController {
   findAll(
     @Query('companyId') companyId?: string,
     @Query('distributorId') distributorId?: string,
+    @Query('distributorIds') distributorIds?: string,
     @Query('level') level?: string,
     @Query('type') type?: string,
     @Query('productId') productId?: string,
+    @Query('targetType') targetType?: string,
   ) {
-    return this.service.findAll({ companyId, distributorId, level, type, productId });
+    return this.service.findAll({ companyId, distributorId, distributorIds, level, type, productId, targetType });
   }
 
   @Get(':id')

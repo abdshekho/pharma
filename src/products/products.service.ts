@@ -241,6 +241,7 @@ export class ProductsService {
     const [items, total] = await Promise.all([
       this.prisma.product.findMany({
         where,
+        orderBy: { createdAt: "desc" },
         include: {
           ...this.buildInclude(parsedFields),
           ...(filters?.distributorId && {

@@ -29,6 +29,7 @@ import { CompanyOrdersModule } from './company-orders/company-orders.module';
 import { StatisticsModule } from './statistics/statistics.module';
 import { DistributorCatalogModule } from './distributor-catalog/distributor-catalog.module';
 import { PosModule } from './pos/pos.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { PosModule } from './pos/pos.module';
     StatisticsModule,
     DistributorCatalogModule,
     PosModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

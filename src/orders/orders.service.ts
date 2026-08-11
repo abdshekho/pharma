@@ -22,14 +22,26 @@ import {
   UserRole,
   WeekDay,
   PromotionType,
+  NotificationRelatedType,
 } from "@prisma/client";
 import { InventoryService } from "../inventory/inventory.service";
+import { NotificationsService } from "../notifications/notifications.service";
+
+const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
+  pending: "Pending",
+  approved: "Approved",
+  in_delivery: "In Delivery",
+  delivered: "Delivered",
+  cancelled: "Cancelled",
+  rejected: "Rejected",
+};
 
 @Injectable()
 export class OrdersService {
   constructor(
     private prisma: PrismaService,
     private stockService: InventoryService,
+    private notifications: NotificationsService,
   ) {}
 
   private async getPharmacistProfileId(userId: string) {
@@ -465,7 +477,7 @@ export class OrdersService {
       throw new BadRequestException("Rejection reason is required");
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const updated = await this.prisma.$transaction(async (tx) => {
       const updated = await tx.order.update({
         where: { id },
         data: {
@@ -527,6 +539,21 @@ export class OrdersService {
 
       return updated;
     });
+
+    const pharmacistProfile = await this.prisma.pharmacistProfile.findUnique({
+      where: { id: updated.pharmacistId },
+      select: { userId: true },
+    });
+    if (pharmacistProfile) {
+      await this.notifications.create(pharmacistProfile.userId, {
+        type: "order_status",
+        title: `Order ${updated.orderNumber}: ${ORDER_STATUS_LABEL[updated.status]}`,
+        relatedId: updated.id,
+        relatedType: NotificationRelatedType.order,
+      });
+    }
+
+    return updated;
   }
 
   async checkAvailability(dto: CheckAvailabilityDto): Promise<CheckAvailabilityResponseDto> {
