@@ -28,7 +28,13 @@ export class DoctorProfileService {
   }
 
   async findByUser(userId: string) {
-    const profile = await this.prisma.doctorProfile.findUnique({ where: { userId }, include: { specialization: true } });
+    const profile = await this.prisma.doctorProfile.findUnique({
+      where: { userId },
+      include: {
+        user: { select: { id: true, email: true, fullName: true, status: true } },
+        specialization: true,
+      },
+    });
     if (!profile) throw new NotFoundException('Doctor profile not found');
     return profile;
   }
