@@ -1,0 +1,129 @@
+flowchart LR
+    %% Actors
+    COMPANY([🏭 Company])
+    DIST([🚚 Distributor])
+    PHARM([💊 Pharmacist])
+    DOCTOR([👨⚕️ Doctor])
+    REP([🧑💼 Representative])
+    DELIVERY([🛵 Delivery Staff])
+    ADMIN([🔧 Admin])
+
+    %% ─────────────────────────────────────────
+    subgraph Product Catalog
+        P1[Add/Edit Product]
+        P2[Set Product Prices]
+        P3[Manage Product Status]
+        P4[Assign Drug Groups]
+        P5[Assign Specializations]
+    end
+
+    subgraph Distribution
+        D1[Assign Distributor to City]
+        D2[Set Coverage Areas]
+        D3[Set Delivery Schedule]
+        D4[Manage Delivery Staff]
+    end
+
+    subgraph Orders
+        O1[Place Order to Distributor]
+        O2[Approve/Reject Order]
+        O3[Assign Delivery Staff to Order]
+        O4[Track Order Status]
+        O5[Cancel Order]
+        O6[Place Order to Company]
+        O7[Approve/Reject Company Order]
+        O8[Update Order to In-Delivery]
+        O9[Confirm Order Delivered]
+    end
+
+    subgraph Promotions
+        PR1[Create Promotion]
+        PR2[Add Promotion Products]
+        PR3[Create BuyX GetY Offer]
+        PR4[View & Apply Promotion]
+    end
+
+    subgraph Inventory
+        I1[View & Track Company Inventory]
+        I2[View & Track Distributor Inventory]
+        I3[View & Track Pharmacy Inventory]
+        I4[Track Stock Movements]
+    end
+
+    subgraph Samples
+        S1[Set Sample Quota]
+        S2[Request Sample]
+        S3[Approve/Reject Sample Request]
+        S4[Manage Sample Delivery]
+        S5[Submit Feedback]
+    end
+
+    subgraph POS
+        POS1[Create Sale]
+        POS2[Process Return]
+        POS3[Record Disposal]
+        POS4[Cash Withdrawal]
+    end
+
+    subgraph Messaging & Notifications
+        M1[Send Message]
+        M2[Receive Message]
+        M3[View Notifications]
+    end
+
+    subgraph Admin Panel
+        A1[Verify Company]
+        A2[Verify Distributor]
+        A3[Verify Doctor]
+        A4[Verify Pharmacist]
+        A5[Verify Representative]
+        A6[Suspend/Activate User]
+        A7[Manage Cities & Areas]
+        A8[Manage Categories & Drug Groups]
+        A9[Manage Specializations]
+        A10[View Audit Logs]
+        A11[View All Orders]
+        A12[View All Inventory]
+        A13[Send Notifications]
+    end
+
+    %% ─────────────────────────────────────────
+    %% Company
+    COMPANY --> P1 & P2 & P3 & P4 & P5
+    COMPANY --> D1
+    COMPANY --> O6 & O7
+    COMPANY --> PR1 & PR2 & PR3
+    COMPANY --> I1 & I4
+    COMPANY --> S1 & S3
+    COMPANY --> M1 & M2 & M3
+
+    %% Distributor
+    DIST --> D2 & D3 & D4
+    DIST --> O2 & O3 & O8
+    DIST --> PR1 & PR2
+    DIST --> I2 & I4
+    DIST --> M1 & M2 & M3
+
+    %% Pharmacist
+    PHARM --> O1 & O4 & O5
+    PHARM --> PR4
+    PHARM --> I3 & I4
+    PHARM --> POS1 & POS2 & POS3 & POS4
+    PHARM --> M1 & M2 & M3
+
+    %% Doctor
+    DOCTOR --> S2 & S5
+    DOCTOR --> M1 & M2 & M3
+
+    %% Representative
+    REP --> S3 & S4
+    REP --> M1 & M2 & M3
+
+    %% Delivery Staff
+    DELIVERY --> O8 & O9
+    DELIVERY --> M3
+
+    %% Admin
+    ADMIN --> A1 & A2 & A3 & A4 & A5 & A6
+    ADMIN --> A7 & A8 & A9
+    ADMIN --> A10 & A11 & A12 & A13

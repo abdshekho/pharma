@@ -49,7 +49,7 @@ export class PosService {
           },
         },
       });
-      if (!product) throw new NotFoundException('Product not found');
+      if (!product) return [];
       const { inventories, ...rest } = product;
       return [{ ...rest, quantityAvailable: inventories[0]?.quantityAvailable ?? 0 }];
     }

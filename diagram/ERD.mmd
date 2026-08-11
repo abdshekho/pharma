@@ -1,0 +1,455 @@
+erDiagram
+    City {
+        uuid id PK
+        string nameAr
+        string nameEn
+        string countryCode
+        boolean isActive
+        datetime createdAt
+    }
+
+    CityArea {
+        uuid id PK
+        uuid cityId FK
+        string nameAr
+        string nameEn
+        boolean isActive
+        datetime createdAt
+    }
+
+    User {
+        uuid id PK
+        string email
+        string phone
+        string passwordHash
+        enum role
+        enum status
+        string fullName
+        uuid cityId FK
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    CompanyProfile {
+        uuid id PK
+        uuid userId FK
+        string companyName
+        string commercialRegNo
+        string healthMinistryLicense
+        uuid verifiedBy FK
+        datetime createdAt
+    }
+
+    DistributorProfile {
+        uuid id PK
+        uuid userId FK
+        string companyName
+        uuid verifiedBy FK
+        datetime createdAt
+    }
+
+    DoctorProfile {
+        uuid id PK
+        uuid userId FK
+        string licenseNumber
+        uuid specializationId FK
+        uuid verifiedBy FK
+        datetime createdAt
+    }
+
+    PharmacistProfile {
+        uuid id PK
+        uuid userId FK
+        string pharmacyLicenseNo
+        string pharmacyName
+        uuid areaId FK
+        uuid verifiedBy FK
+        datetime createdAt
+    }
+
+    RepresentativeProfile {
+        uuid id PK
+        uuid userId FK
+        uuid companyId FK
+        uuid cityId FK
+        uuid verifiedBy FK
+        datetime createdAt
+    }
+
+    DeliveryStaffProfile {
+        uuid id PK
+        uuid userId FK
+        uuid distributorId FK
+        string licensePlate
+        boolean isActive
+        datetime createdAt
+    }
+
+    Specialization {
+        uuid id PK
+        uuid parentId FK
+        string nameAr
+        string nameEn
+        boolean isActive
+    }
+
+    Category {
+        uuid id PK
+        uuid parentId FK
+        string code
+        string nameAr
+        string nameEn
+        boolean isActive
+    }
+
+    DrugGroup {
+        uuid id PK
+        string code
+        string nameAr
+        string nameEn
+        boolean isActive
+        datetime createdAt
+    }
+
+    DrugGroupCategory {
+        uuid drugGroupId FK
+        uuid categoryId FK
+    }
+
+    Product {
+        uuid id PK
+        uuid companyId FK
+        string nameAr
+        string nameEn
+        enum dosageForm
+        decimal companyToDistributorPrice
+        decimal distributorToPharmacistPrice
+        decimal pharmacistToConsumerPrice
+        enum status
+        datetime createdAt
+    }
+
+    ProductDrugGroup {
+        uuid productId FK
+        uuid drugGroupId FK
+    }
+
+    ProductSpecialization {
+        uuid productId FK
+        uuid specializationId FK
+    }
+
+    ProductTargetSpecialization {
+        uuid id PK
+        uuid drugGroupId FK
+        uuid specializationId FK
+    }
+
+    CompanyDistributor {
+        uuid id PK
+        uuid companyId FK
+        uuid distributorId FK
+        uuid cityId FK
+        enum status
+        datetime assignedAt
+    }
+
+    DistributorCoverageArea {
+        uuid id PK
+        uuid distributorId FK
+        uuid areaId FK
+        enum dayOfWeek
+    }
+
+    Promotion {
+        uuid id PK
+        uuid companyId FK
+        uuid distributorId FK
+        uuid parentPromotionId FK
+        string title
+        enum type
+        enum level
+        datetime startsAt
+        datetime endsAt
+        boolean isActive
+    }
+
+    PromotionProduct {
+        uuid id PK
+        uuid promotionId FK
+        uuid productId FK
+        decimal discountPercent
+    }
+
+    PromotionBuyXGetY {
+        uuid id PK
+        uuid promotionId FK
+        uuid buyProductId FK
+        int buyQuantity
+        uuid freeProductId FK
+        int freeQuantity
+    }
+
+    Order {
+        uuid id PK
+        string orderNumber
+        uuid pharmacistId FK
+        uuid distributorId FK
+        uuid deliveryStaffId FK
+        uuid cityId FK
+        uuid areaId FK
+        enum status
+        decimal totalAmount
+        enum paymentMethod
+        datetime createdAt
+    }
+
+    OrderItem {
+        uuid id PK
+        uuid orderId FK
+        uuid productId FK
+        int quantity
+        decimal unitPrice
+        uuid promotionProductId FK
+        decimal discountAmount
+    }
+
+    CompanyDistributorOrder {
+        uuid id PK
+        string orderNumber
+        uuid companyId FK
+        uuid distributorId FK
+        uuid deliveryStaffId FK
+        enum status
+        decimal totalAmount
+        datetime createdAt
+    }
+
+    CompanyDistributorOrderItem {
+        uuid id PK
+        uuid orderId FK
+        uuid productId FK
+        int quantity
+        decimal unitPrice
+        uuid promotionProductId FK
+    }
+
+    Inventory {
+        uuid id PK
+        enum ownerType
+        uuid companyId FK
+        uuid distributorId FK
+        uuid pharmacistId FK
+        uuid productId FK
+        int quantityAvailable
+        int freeQuantity
+        datetime lastUpdated
+    }
+
+    StockMovement {
+        uuid id PK
+        uuid inventoryId FK
+        uuid productId FK
+        enum ownerType
+        enum type
+        int quantity
+        uuid createdBy FK
+        datetime createdAt
+    }
+
+    SampleQuota {
+        uuid id PK
+        uuid companyId FK
+        uuid productId FK
+        int maxPerDoctor
+        int cooldownDays
+        boolean isActive
+    }
+
+    SampleRequest {
+        uuid id PK
+        uuid doctorId FK
+        uuid productId FK
+        uuid companyId FK
+        uuid representativeId FK
+        enum status
+        int quantity
+        datetime createdAt
+    }
+
+    Message {
+        uuid id PK
+        uuid senderId FK
+        uuid receiverId FK
+        uuid relatedProductId FK
+        uuid parentMessageId FK
+        string body
+        datetime createdAt
+    }
+
+    Notification {
+        uuid id PK
+        uuid userId FK
+        string type
+        string title
+        datetime createdAt
+    }
+
+    AuditLog {
+        uuid id PK
+        uuid userId FK
+        string action
+        string entityType
+        datetime createdAt
+    }
+
+    PosSale {
+        uuid id PK
+        uuid pharmacistId FK
+        string saleNumber
+        enum paymentMethod
+        decimal totalAmount
+        datetime createdAt
+    }
+
+    PosSaleItem {
+        uuid id PK
+        uuid saleId FK
+        uuid productId FK
+        int quantity
+        decimal unitPrice
+    }
+
+    PosReturn {
+        uuid id PK
+        uuid pharmacistId FK
+        uuid productId FK
+        int quantity
+        datetime createdAt
+    }
+
+    PosDisposal {
+        uuid id PK
+        uuid pharmacistId FK
+        uuid productId FK
+        int quantity
+        datetime createdAt
+    }
+
+    PosCashWithdrawal {
+        uuid id PK
+        uuid pharmacistId FK
+        decimal amount
+        datetime createdAt
+    }
+
+    %% Geography
+    City ||--o{ CityArea : "has"
+    City ||--o{ User : "has"
+    City ||--o{ Order : "has"
+    City ||--o{ CompanyDistributor : "has"
+    City ||--o{ RepresentativeProfile : "has"
+    CityArea ||--o{ PharmacistProfile : "has"
+    CityArea ||--o{ DistributorCoverageArea : "covers"
+    CityArea ||--o{ Order : "has"
+
+    %% User → Profiles (1-to-1)
+    User ||--o| CompanyProfile : "has"
+    User ||--o| DistributorProfile : "has"
+    User ||--o| DoctorProfile : "has"
+    User ||--o| PharmacistProfile : "has"
+    User ||--o| RepresentativeProfile : "has"
+    User ||--o| DeliveryStaffProfile : "has"
+
+    %% Verifiers
+    User ||--o{ CompanyProfile : "verifies"
+    User ||--o{ DistributorProfile : "verifies"
+    User ||--o{ DoctorProfile : "verifies"
+    User ||--o{ PharmacistProfile : "verifies"
+    User ||--o{ RepresentativeProfile : "verifies"
+
+    %% Hierarchy
+    Specialization ||--o{ Specialization : "parent-child"
+    Category ||--o{ Category : "parent-child"
+    Promotion ||--o{ Promotion : "parent-child"
+
+    %% Drug & Category
+    DrugGroup ||--o{ DrugGroupCategory : "has"
+    Category ||--o{ DrugGroupCategory : "has"
+    DrugGroup ||--o{ ProductDrugGroup : "has"
+    DrugGroup ||--o{ ProductTargetSpecialization : "targets"
+    Specialization ||--o{ ProductTargetSpecialization : "targeted-by"
+
+    %% Product
+    CompanyProfile ||--o{ Product : "owns"
+    Product ||--o{ ProductDrugGroup : "belongs-to"
+    Product ||--o{ ProductSpecialization : "targets"
+    Specialization ||--o{ ProductSpecialization : "has"
+    Specialization ||--o{ DoctorProfile : "has"
+
+    %% Distribution
+    CompanyProfile ||--o{ CompanyDistributor : "has"
+    DistributorProfile ||--o{ CompanyDistributor : "has"
+    DistributorProfile ||--o{ DistributorCoverageArea : "covers"
+    DistributorProfile ||--o{ DeliveryStaffProfile : "employs"
+
+    %% Promotions
+    CompanyProfile ||--o{ Promotion : "creates"
+    DistributorProfile ||--o{ Promotion : "creates"
+    Promotion ||--o| PromotionBuyXGetY : "has"
+    Promotion ||--o{ PromotionProduct : "has"
+    Product ||--o{ PromotionProduct : "in"
+    Product ||--o{ PromotionBuyXGetY : "buy"
+    Product ||--o{ PromotionBuyXGetY : "free"
+
+    %% Orders (Pharmacist → Distributor)
+    PharmacistProfile ||--o{ Order : "places"
+    DistributorProfile ||--o{ Order : "fulfills"
+    DeliveryStaffProfile ||--o{ Order : "delivers"
+    Order ||--o{ OrderItem : "contains"
+    Product ||--o{ OrderItem : "in"
+    PromotionProduct ||--o{ OrderItem : "applied-to"
+
+    %% Orders (Company → Distributor)
+    CompanyProfile ||--o{ CompanyDistributorOrder : "places"
+    DistributorProfile ||--o{ CompanyDistributorOrder : "receives"
+    DeliveryStaffProfile ||--o{ CompanyDistributorOrder : "delivers"
+    CompanyDistributorOrder ||--o{ CompanyDistributorOrderItem : "contains"
+    Product ||--o{ CompanyDistributorOrderItem : "in"
+    PromotionProduct ||--o{ CompanyDistributorOrderItem : "applied-to"
+
+    %% Inventory & Stock
+    CompanyProfile ||--o{ Inventory : "owns"
+    DistributorProfile ||--o{ Inventory : "owns"
+    PharmacistProfile ||--o{ Inventory : "owns"
+    Product ||--o{ Inventory : "tracked-in"
+    Inventory ||--o{ StockMovement : "has"
+    Product ||--o{ StockMovement : "in"
+    User ||--o{ StockMovement : "creates"
+
+    %% Samples
+    CompanyProfile ||--o{ SampleQuota : "sets"
+    Product ||--o{ SampleQuota : "for"
+    DoctorProfile ||--o{ SampleRequest : "requests"
+    Product ||--o{ SampleRequest : "for"
+    CompanyProfile ||--o{ SampleRequest : "handles"
+    RepresentativeProfile ||--o{ SampleRequest : "manages"
+    CompanyProfile ||--o{ RepresentativeProfile : "employs"
+
+    %% POS
+    PharmacistProfile ||--o{ PosSale : "makes"
+    PosSale ||--o{ PosSaleItem : "contains"
+    Product ||--o{ PosSaleItem : "in"
+    PharmacistProfile ||--o{ PosReturn : "makes"
+    Product ||--o{ PosReturn : "for"
+    PharmacistProfile ||--o{ PosDisposal : "makes"
+    Product ||--o{ PosDisposal : "for"
+    PharmacistProfile ||--o{ PosCashWithdrawal : "makes"
+
+    %% Messaging & Notifications
+    User ||--o{ Message : "sends"
+    User ||--o{ Message : "receives"
+    Product ||--o{ Message : "related-to"
+    Message ||--o{ Message : "replies"
+    User ||--o{ Notification : "receives"
+    User ||--o{ AuditLog : "generates"
