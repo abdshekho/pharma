@@ -12,11 +12,21 @@ import { RolesGuard } from "../auth/guards/roles.guard";
 import { Roles } from "../auth/decorators/roles.decorator";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { UserRole } from "@prisma/client";
+import { ForecastingService } from "../forecasting/forecasting.service";
 
 @Controller("statistics")
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class StatisticsController {
-  constructor(private readonly service: StatisticsService) {}
+  constructor(
+    private readonly service: StatisticsService,
+    private readonly forecasting: ForecastingService,
+  ) {}
+
+  @Get("pharmacist/reorder-suggestions")
+  @Roles(UserRole.pharmacist)
+  getPharmacistReorderSuggestions(@CurrentUser() user: any) {
+    return this.forecasting.getPharmacistReorderSuggestions(user.id);
+  }
 
   @Get("admin")
   @Roles(UserRole.admin)
@@ -56,5 +66,14 @@ export class StatisticsController {
       query.startDate,
       query.endDate,
     );
+  }
+
+  @Get("distributor/:distributorId/forecast")
+  @Roles(UserRole.admin, UserRole.distributor)
+  getDistributorForecast(
+    @Param("distributorId") distributorId: string,
+    @CurrentUser() user: any,
+  ) {
+    return this.forecasting.getDistributorForecast(distributorId, user.id, user.role);
   }
 }

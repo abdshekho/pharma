@@ -18,7 +18,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "convert:atc": "node scripts/convert-atc-to-csv.js"
+    "convert:atc": "node scripts/convert-atc-to-csv.js",
+    "seed:demand": "ts-node -T prisma/seed-demand-data.ts",
+    "train:forecast": "ts-node -T scripts/train-demand-forecast.ts"
   },
   "dependencies": {
     "@fontsource/cairo": "^5.2.7",
@@ -31,6 +33,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/client": "^6.19.2",
     "@sparticuz/chromium": "^149.0.0",
+    "@tensorflow/tfjs": "^4.22.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/passport-jwt": "^4.0.1",
     "bcryptjs": "^3.0.3",
