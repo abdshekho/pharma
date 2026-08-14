@@ -1,10 +1,11 @@
 /**
  * Generates realistic-but-synthetic weekly order history so the demand
  * forecasting model (see src/forecasting/) has something to train on.
- * Safe to run on a fresh database: creates the minimum supporting entities
- * (company/products/distributors/pharmacists) if too few already exist.
- * All synthetic rows are tagged with SYNTHETIC_TAG in Order.notes so they
- * stay identifiable/removable later.
+ * Always creates/reuses its own dedicated synthetic company, distributors,
+ * and pharmacists (tagged @teryaq.local emails) — never touches or borrows
+ * real accounts, no matter how many already exist. Safe to re-run: it's
+ * idempotent per tagged email. All synthetic orders are additionally tagged
+ * with SYNTHETIC_TAG in Order.notes so they stay identifiable/removable later.
  *
  * Run: npm run seed:demand
  */
@@ -63,6 +64,19 @@ async function hashTestPassword(): Promise<string> {
   return bcrypt.hash(TEST_PASSWORD, 10);
 }
 
+/** Deterministic, collision-free placeholder phone per synthetic account. */
+function syntheticPhone(roleCode: string, index: number): string {
+  return `099${roleCode}${String(index).padStart(4, '0')}`;
+}
+
+function placeholderAvatar(label: string): string {
+  return `https://placehold.co/200x200?text=${encodeURIComponent(label)}`;
+}
+
+function placeholderDoc(label: string): string {
+  return `https://placehold.co/600x800?text=${encodeURIComponent(label)}`;
+}
+
 async function ensureCity(): Promise<string> {
   const existing = await prisma.city.findFirst();
   if (existing) return existing.id;
@@ -73,16 +87,27 @@ async function ensureCity(): Promise<string> {
   return city.id;
 }
 
+const SYNTHETIC_COMPANY_EMAIL = 'synthetic-company@teryaq.local';
+
 async function ensureCompanyWithProducts(cityId: string): Promise<{ companyId: string; productIds: string[] }> {
-  let company = await prisma.companyProfile.findFirst();
+  // Always the same dedicated synthetic company (looked up by its tagged email),
+  // never a real one picked up via findFirst — keeps synthetic data fully isolated.
+  const existingUser = await prisma.user.findUnique({ where: { email: SYNTHETIC_COMPANY_EMAIL } });
+  let company = existingUser
+    ? await prisma.companyProfile.findUnique({ where: { userId: existingUser.id } })
+    : null;
+
   if (!company) {
     const user = await prisma.user.create({
       data: {
-        email: 'synthetic-company@teryaq.local',
+        email: SYNTHETIC_COMPANY_EMAIL,
         passwordHash: await hashTestPassword(),
         role: UserRole.company,
         status: UserStatus.active,
         fullName: 'Synthetic Pharma Co.',
+        phone: syntheticPhone('0', 1),
+        avatarUrl: placeholderAvatar('Synthetic Pharma Co.'),
+        emailVerifiedAt: new Date(),
         cityId,
       },
     });
@@ -92,6 +117,9 @@ async function ensureCompanyWithProducts(cityId: string): Promise<{ companyId: s
         companyName: 'Teryaq Synthetic Pharma',
         commercialRegNo: 'SYN-REG-0001',
         healthMinistryLicense: 'SYN-LIC-0001',
+        logoUrl: placeholderAvatar('Teryaq Synthetic Pharma'),
+        website: 'https://synthetic-pharma.teryaq.local',
+        description: 'شركة أدوية تجريبية تستخدم لتوليد بيانات اختبار نموذج التنبؤ بالطلب.',
         verifiedAt: new Date(),
       },
     });
@@ -119,9 +147,11 @@ async function ensureCompanyWithProducts(cityId: string): Promise<{ companyId: s
         packUnit: PackUnit.tablet,
         packageType: PackageType.box,
         strength: '500mg',
+        usageInstructions: 'يستخدم حسب إرشادات الطبيب أو الصيدلي. منتج تجريبي لأغراض الاختبار.',
         companyToDistributorPrice: 1.5,
         distributorToPharmacistPrice: 2.5,
         pharmacistToConsumerPrice: 4,
+        imageUrl: placeholderAvatar(variant > 1 ? `${baseName} ${variant}` : baseName),
         status: ProductStatus.active,
       },
     });
@@ -132,58 +162,125 @@ async function ensureCompanyWithProducts(cityId: string): Promise<{ companyId: s
   return { companyId: company.id, productIds };
 }
 
-async function ensureDistributors(cityId: string): Promise<string[]> {
-  const existing = await prisma.distributorProfile.findMany({ select: { id: true } });
-  const ids = existing.map((d) => d.id);
+/**
+ * Creates (or reuses, on re-run) exactly `count` dedicated synthetic distributor
+ * accounts, looked up by their tagged email — never touches/counts real distributors,
+ * so synthetic data always lives on its own accounts regardless of what already exists.
+ */
+async function ensureDistributors(cityId: string, count: number): Promise<string[]> {
+  const ids: string[] = [];
+  let created = 0;
 
-  for (let i = ids.length; i < MIN_DISTRIBUTORS; i++) {
-    const user = await prisma.user.create({
-      data: {
-        email: `synthetic-distributor-${i + 1}@teryaq.local`,
-        passwordHash: await hashTestPassword(),
-        role: UserRole.distributor,
-        status: UserStatus.active,
-        fullName: `Synthetic Distributor ${i + 1}`,
-        cityId,
-      },
-    });
-    const distributor = await prisma.distributorProfile.create({
-      data: { userId: user.id, companyName: `Synthetic Distribution ${i + 1}`, verifiedAt: new Date() },
-    });
+  for (let i = 1; i <= count; i++) {
+    const email = `synthetic-distributor-${i}@teryaq.local`;
+    let user = await prisma.user.findUnique({ where: { email } });
+    let distributor = user
+      ? await prisma.distributorProfile.findUnique({ where: { userId: user.id } })
+      : null;
+
+    if (!distributor) {
+      if (!user) {
+        user = await prisma.user.create({
+          data: {
+            email,
+            passwordHash: await hashTestPassword(),
+            role: UserRole.distributor,
+            status: UserStatus.active,
+            fullName: `Synthetic Distributor ${i}`,
+            phone: syntheticPhone('1', i),
+            avatarUrl: placeholderAvatar(`Distributor ${i}`),
+            emailVerifiedAt: new Date(),
+            cityId,
+          },
+        });
+      }
+      distributor = await prisma.distributorProfile.create({
+        data: {
+          userId: user.id,
+          companyName: `Synthetic Distribution ${i}`,
+          licenseDocUrl: placeholderDoc(`Distributor License ${i}`),
+          verifiedAt: new Date(),
+        },
+      });
+      created++;
+    }
     ids.push(distributor.id);
   }
-  if (ids.length > existing.length) console.log(`Created ${ids.length - existing.length} synthetic distributors`);
+  if (created > 0) console.log(`Created ${created} synthetic distributors`);
   return ids;
 }
 
-async function ensurePharmacists(cityId: string): Promise<string[]> {
-  const existing = await prisma.pharmacistProfile.findMany({ select: { id: true } });
-  const ids = existing.map((p) => p.id);
+/**
+ * Same idea as ensureDistributors: exactly `count` dedicated synthetic pharmacist
+ * accounts, looked up/created by tagged email, isolated from real pharmacists.
+ */
+async function ensurePharmacists(cityId: string, count: number): Promise<string[]> {
+  const ids: string[] = [];
+  let created = 0;
 
-  for (let i = ids.length; i < MIN_PHARMACISTS; i++) {
-    const user = await prisma.user.create({
-      data: {
-        email: `synthetic-pharmacist-${i + 1}@teryaq.local`,
-        passwordHash: await hashTestPassword(),
-        role: UserRole.pharmacist,
-        status: UserStatus.active,
-        fullName: `Synthetic Pharmacist ${i + 1}`,
-        cityId,
-      },
-    });
-    const pharmacist = await prisma.pharmacistProfile.create({
-      data: {
-        userId: user.id,
-        pharmacyLicenseNo: `SYN-PH-${i + 1}-${Date.now()}`,
-        pharmacyName: `Synthetic Pharmacy ${i + 1}`,
-        address: 'Synthetic Street 1, Damascus',
-        verifiedAt: new Date(),
-      },
-    });
+  for (let i = 1; i <= count; i++) {
+    const email = `synthetic-pharmacist-${i}@teryaq.local`;
+    let user = await prisma.user.findUnique({ where: { email } });
+    let pharmacist = user
+      ? await prisma.pharmacistProfile.findUnique({ where: { userId: user.id } })
+      : null;
+
+    if (!pharmacist) {
+      if (!user) {
+        user = await prisma.user.create({
+          data: {
+            email,
+            passwordHash: await hashTestPassword(),
+            role: UserRole.pharmacist,
+            status: UserStatus.active,
+            fullName: `Synthetic Pharmacist ${i}`,
+            phone: syntheticPhone('2', i),
+            avatarUrl: placeholderAvatar(`Pharmacist ${i}`),
+            emailVerifiedAt: new Date(),
+            cityId,
+          },
+        });
+      }
+      pharmacist = await prisma.pharmacistProfile.create({
+        data: {
+          userId: user.id,
+          pharmacyLicenseNo: `SYN-PH-${i}-${Date.now()}`,
+          pharmacyName: `Synthetic Pharmacy ${i}`,
+          commercialRegNo: `SYN-PH-CR-${i}`,
+          address: 'Synthetic Street 1, Damascus',
+          licenseDocUrl: placeholderDoc(`Pharmacy License ${i}`),
+          verifiedAt: new Date(),
+        },
+      });
+      created++;
+    }
     ids.push(pharmacist.id);
   }
-  if (ids.length > existing.length) console.log(`Created ${ids.length - existing.length} synthetic pharmacists`);
+  if (created > 0) console.log(`Created ${created} synthetic pharmacists`);
   return ids;
+}
+
+async function ensureCompanyInventory(companyId: string, productIds: string[]) {
+  let created = 0;
+  for (const productId of productIds) {
+    const existing = await prisma.inventory.findUnique({
+      where: { companyId_productId: { companyId, productId } },
+    });
+    if (!existing) {
+      await prisma.inventory.create({
+        data: {
+          ownerType: InventoryOwnerType.company,
+          companyId,
+          productId,
+          quantityAvailable: randInt(1000, 5000),
+          freeQuantity: randInt(20, 100),
+          lowStockThreshold: 200,
+        },
+      });
+      created++;
+    }
+  }
+  if (created > 0) console.log(`Created ${created} company inventory rows`);
 }
 
 async function ensureDistributorInventory(distributorIds: string[], productIds: string[]) {
@@ -322,10 +419,11 @@ async function main() {
   console.log('Seeding synthetic demand data...\n');
 
   const cityId = await ensureCity();
-  const { productIds } = await ensureCompanyWithProducts(cityId);
-  const distributorIds = await ensureDistributors(cityId);
-  const pharmacistIds = await ensurePharmacists(cityId);
+  const { companyId, productIds } = await ensureCompanyWithProducts(cityId);
+  const distributorIds = await ensureDistributors(cityId, MIN_DISTRIBUTORS);
+  const pharmacistIds = await ensurePharmacists(cityId, MIN_PHARMACISTS);
 
+  await ensureCompanyInventory(companyId, productIds);
   await ensureDistributorInventory(distributorIds, productIds);
 
   let totalOrders = 0;
@@ -376,7 +474,14 @@ async function main() {
   }
 
   console.log(`\nDone. Total: ${totalOrders} synthetic orders, ${totalItems} order items.`);
-  console.log(`Test login password for any synthetic account: ${TEST_PASSWORD}`);
+  console.log(`\nSynthetic login accounts (password for all: ${TEST_PASSWORD}):`);
+  console.log(`  Company:     ${SYNTHETIC_COMPANY_EMAIL}`);
+  for (let i = 1; i <= MIN_DISTRIBUTORS; i++) {
+    console.log(`  Distributor: synthetic-distributor-${i}@teryaq.local`);
+  }
+  for (let i = 1; i <= MIN_PHARMACISTS; i++) {
+    console.log(`  Pharmacist:  synthetic-pharmacist-${i}@teryaq.local`);
+  }
 }
 
 main()

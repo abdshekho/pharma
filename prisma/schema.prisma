@@ -462,6 +462,7 @@ model CompanyDistributorOrder {
   companyId       String                        @map("company_id") @db.Uuid
   distributorId   String                        @map("distributor_id") @db.Uuid
   deliveryStaffId String?                       @map("delivery_staff_id") @db.Uuid
+  representativeId String?                      @map("representative_id") @db.Uuid
   status          OrderStatus                   @default(pending)
   totalAmount     Decimal                       @default(0) @map("total_amount") @db.Decimal(10, 2)
   paymentMethod   PaymentMethod                 @default(bank_transfer) @map("payment_method")
@@ -475,6 +476,7 @@ model CompanyDistributorOrder {
   company         CompanyProfile                @relation(fields: [companyId], references: [id])
   distributor     DistributorProfile            @relation(fields: [distributorId], references: [id])
   deliveryStaff   DeliveryStaffProfile?         @relation(fields: [deliveryStaffId], references: [id])
+  representative  RepresentativeProfile?        @relation(fields: [representativeId], references: [id])
   orderItems      CompanyDistributorOrderItem[]
 
   @@index([companyId, status])
@@ -513,6 +515,7 @@ model RepresentativeProfile {
   user           User            @relation("UserRepresentativeProfile", fields: [userId], references: [id])
   verifier       User?           @relation("RepresentativeVerifier", fields: [verifiedBy], references: [id])
   sampleRequests SampleRequest[]
+  companyDistributorOrders CompanyDistributorOrder[]
 
   @@map("representative_profiles")
 }
