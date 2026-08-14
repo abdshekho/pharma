@@ -30,7 +30,7 @@ import { StatisticsModule } from './statistics/statistics.module';
 import { DistributorCatalogModule } from './distributor-catalog/distributor-catalog.module';
 import { PosModule } from './pos/pos.module';
 import { NotificationsModule } from './notifications/notifications.module';
-
+import { ProductAnalyticsModule } from './product-analytics/product-analytics.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -61,6 +61,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     DistributorCatalogModule,
     PosModule,
     NotificationsModule,
+    ProductAnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -415,20 +415,20 @@ export class AtcImportService {
 
   private async linkDrugGroupToCategory(drugGroupId: string, categoryId: string): Promise<void> {
     // Check if link already exists
-    const existing = await this.prisma.drugGroupCategory.findFirst({
-      where: {
-        drugGroupId,
-        categoryId
-      }
-    });
+    // const existing = await this.prisma.drugGroupCategory.findFirst({
+    //   where: {
+    //     drugGroupId,
+    //     categoryId
+    //   }
+    // });
 
-    if (!existing) {
+    // if (!existing) {
       await this.prisma.drugGroupCategory.create({
         data: {
           drugGroupId,
           categoryId
         }
       });
-    }
+    // }
   }
 }
