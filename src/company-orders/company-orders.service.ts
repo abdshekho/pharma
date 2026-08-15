@@ -312,6 +312,49 @@ export class CompanyOrdersService {
     });
   }
 
+  async updateAssignRepresentative(
+    id: string,
+    userId: string,
+    role: UserRole,
+    representativeId?: string,
+  ) {
+    const order = await this.prisma.companyDistributorOrder.findUnique({
+      where: { id },
+    });
+    if (!order) throw new NotFoundException("Company order not found");
+
+    await this.assertOrderAccess(
+      order.companyId,
+      order.distributorId,
+      userId,
+      role,
+    );
+
+    if (order.status !== OrderStatus.approved) {
+      throw new BadRequestException(
+        "Order should be approved first to assign a representative",
+      );
+    }
+
+    if (!representativeId) {
+      throw new BadRequestException("representativeId is required");
+    }
+
+    const representative = await this.prisma.representativeProfile.findUnique({
+      where: { id: representativeId },
+    });
+    if (!representative || representative.companyId !== order.companyId) {
+      throw new BadRequestException("Representative not found");
+    }
+
+    return this.prisma.companyDistributorOrder.update({
+      where: { id },
+      data: {
+        representativeId,
+      },
+    });
+  }
+
   private async assertCompanyStockAvailable(
     companyId: string,
     items: { productId: string; quantity: number }[],

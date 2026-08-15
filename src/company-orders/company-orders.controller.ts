@@ -52,5 +52,19 @@ export class CompanyOrdersController {
     return this.service.updateAssign(id, user.id, user.role, deliveryStaffId);
   }
 
+  @Patch(':id/assign-representative')
+  @Roles(UserRole.company)
+  updateAssignRepresentative(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+    @Body('representativeId') representativeId?: string,
+  ) {
+    return this.service.updateAssignRepresentative(
+      id,
+      user.id,
+      user.role,
+      representativeId,
+    );
+  }
 
 }
