@@ -9,9 +9,22 @@ import { ContractStatus, UserRole } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { TerminateContractDto } from './dto/terminate-contract.dto';
 
+function canonicalize(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value !== null && typeof value === 'object') {
+    return Object.keys(value as Record<string, unknown>)
+      .sort()
+      .reduce<Record<string, unknown>>((acc, key) => {
+        acc[key] = canonicalize((value as Record<string, unknown>)[key]);
+        return acc;
+      }, {});
+  }
+  return value;
+}
+
 function hashTerms(termsSnapshot: unknown): string {
   return createHash('sha256')
-    .update(JSON.stringify(termsSnapshot))
+    .update(JSON.stringify(canonicalize(termsSnapshot)))
     .digest('hex');
 }
 
