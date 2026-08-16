@@ -47,7 +47,7 @@ export class DistributorProfileController {
   }
 
   @Get(':id')
-  @Roles(UserRole.admin)
+  @Roles(UserRole.admin,UserRole.company)
   findOne(@Param('id') id: string) {
     return this.service.findOne(id);
   }
