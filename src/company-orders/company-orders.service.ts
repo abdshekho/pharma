@@ -63,6 +63,16 @@ export class CompanyOrdersService {
         "Distributor is not linked to this company",
       );
 
+    const contract = await this.prisma.distributorContract.findUnique({
+      where: { companyDistributorId: linked.id },
+      select: { status: true },
+    });
+    if (!contract || contract.status !== "active") {
+      throw new BadRequestException(
+        "Distributor must sign the distribution contract before placing orders",
+      );
+    }
+
     const orderItemsData = (
       await Promise.all(
         dto.items.map(async (item) => {

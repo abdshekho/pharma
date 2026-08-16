@@ -8,10 +8,14 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCompanyDistributorDto, CreateRequestCompanyDistributorDto, UpdateCompanyDistributorDto, FindAvailableCompaniesDto } from './dto/company-distributor.dto';
 import { UserRole } from '@prisma/client';
+import { ContractsService } from '../contracts/contracts.service';
 
 @Injectable()
 export class CompanyDistributorsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private contractsService: ContractsService,
+  ) {}
 
   private async resolveCompanyId(userId: string) {
     const p = await this.prisma.companyProfile.findUnique({ where: { userId }, select: { id: true } });
@@ -133,7 +137,7 @@ export class CompanyDistributorsService {
     }
     if (!record) throw new NotFoundException('Record not found');
 
-    return this.prisma.companyDistributor.update({
+    const updated = await this.prisma.companyDistributor.update({
       where: { id: record.id },
       data: { status: dto.status },
       include: {
@@ -141,6 +145,12 @@ export class CompanyDistributorsService {
         city: { select: { nameAr: true } },
       },
     });
+
+    if (dto.status === 'active') {
+      await this.contractsService.generateForApproval(record.id);
+    }
+
+    return updated;
   }
 
   async findMyAcceptedCompanies(userId: string) {
