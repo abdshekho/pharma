@@ -26,6 +26,7 @@ export class DrugGroupsController {
   }
 
   @Get()
+  @Roles(UserRole.company,UserRole.distributor,UserRole.pharmacist,UserRole.admin)
   findAll(@Query('fields') fields?: string,@Query('search') search?: string,) {
     return this.service.findAll(fields,search);
   }
