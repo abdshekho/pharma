@@ -40,6 +40,15 @@ export class CompanyOrdersService {
     return profile;
   }
 
+  private async getRepresentativeProfile(userId: string) {
+    const profile = await this.prisma.representativeProfile.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+    if (!profile) throw new NotFoundException("Representative profile not found");
+    return profile;
+  }
+
   private generateOrderNumber(): string {
     const year = new Date().getFullYear();
     const random = Math.floor(Math.random() * 99999)
@@ -163,6 +172,9 @@ export class CompanyOrdersService {
     } else if (role === UserRole.distributor) {
       const profile = await this.getDistributorProfile(userId);
       where.distributorId = profile.id;
+    } else if (role === UserRole.representative) {
+      const profile = await this.getRepresentativeProfile(userId);
+      where.representativeId = profile.id;
     }
 
     return this.prisma.companyDistributorOrder.findMany({
@@ -194,6 +206,7 @@ export class CompanyOrdersService {
       order.distributorId,
       userId,
       role,
+      order.representativeId,
     );
     return order;
   }
@@ -214,6 +227,7 @@ export class CompanyOrdersService {
       order.distributorId,
       userId,
       role,
+      order.representativeId,
     );
     this.validateStatusTransition(order.status, dto.status, role);
 
@@ -520,6 +534,7 @@ export class CompanyOrdersService {
     distributorId: string,
     userId: string,
     role: UserRole,
+    representativeId?: string | null,
   ) {
     if (role === UserRole.company) {
       const profile = await this.getCompanyProfile(userId);
@@ -527,6 +542,9 @@ export class CompanyOrdersService {
     } else if (role === UserRole.distributor) {
       const profile = await this.getDistributorProfile(userId);
       if (distributorId !== profile.id) throw new ForbiddenException();
+    } else if (role === UserRole.representative) {
+      const profile = await this.getRepresentativeProfile(userId);
+      if (representativeId !== profile.id) throw new ForbiddenException();
     }
   }
 
@@ -564,7 +582,10 @@ export class CompanyOrdersService {
       },
       [UserRole.pharmacist]: {},
       [UserRole.doctor]: {},
-      [UserRole.representative]: {},
+      [UserRole.representative]: {
+        [OrderStatus.approved]: [OrderStatus.in_delivery],
+        [OrderStatus.in_delivery]: [OrderStatus.delivered],
+      },
       [UserRole.delivery_staff]: {
         [OrderStatus.approved]: [OrderStatus.in_delivery],
         [OrderStatus.in_delivery]: [OrderStatus.delivered],

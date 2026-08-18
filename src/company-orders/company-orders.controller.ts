@@ -20,19 +20,19 @@ export class CompanyOrdersController {
   }
 
   @Get()
-  @Roles(UserRole.company, UserRole.distributor, UserRole.admin)
+  @Roles(UserRole.company, UserRole.distributor, UserRole.admin, UserRole.representative)
   findAll(@CurrentUser() user: any) {
     return this.service.findAll(user.id, user.role);
   }
 
   @Get(':id')
-  @Roles(UserRole.company, UserRole.distributor, UserRole.admin)
+  @Roles(UserRole.company, UserRole.distributor, UserRole.admin, UserRole.representative)
   findOne(@Param('id') id: string, @CurrentUser() user: any) {
     return this.service.findOne(id, user.id, user.role);
   }
 
   @Patch(':id/status')
-  @Roles(UserRole.company, UserRole.distributor, UserRole.admin,UserRole.delivery_staff)
+  @Roles(UserRole.company, UserRole.distributor, UserRole.admin,UserRole.delivery_staff, UserRole.representative)
   updateStatus(
     @Param('id') id: string,
     @Body() dto: UpdateCompanyOrderStatusDto,
