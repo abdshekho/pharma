@@ -45,17 +45,6 @@ export class SampleRequestsService {
     return p;
   }
 
-  private async findRepresentative(
-    companyId: string,
-    cityId: string,
-  ): Promise<string | null> {
-    const rep = await this.prisma.representativeProfile.findFirst({
-      where: { companyId, cityId },
-      select: { id: true },
-    });
-    return rep?.id ?? null;
-  }
-
   private async checkQuota(
     doctorId: string,
     productId: string,
@@ -121,17 +110,11 @@ export class SampleRequestsService {
     );
     await this.checkQuota(doctor.id, dto.productId, product.companyId);
 
-    const representativeId = await this.findRepresentative(
-      product.companyId,
-      user.cityId,
-    );
-
     return this.prisma.sampleRequest.create({
       data: {
         doctorId: doctor.id,
         productId: dto.productId,
         companyId: product.companyId,
-        representativeId,
         quantity,
         deliveryAddress: dto.deliveryAddress,
       },
