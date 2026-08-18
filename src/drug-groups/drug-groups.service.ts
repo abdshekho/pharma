@@ -91,7 +91,7 @@ async findAll(fields?: string, search?: string) {
     
     const items = await this.prisma.drugGroup.findMany({
         where: whereCondition,
-        include: this.buildInclude(parsedFields),
+        // include: this.buildInclude(parsedFields),
         orderBy: { nameAr: 'asc' },
     });
     
